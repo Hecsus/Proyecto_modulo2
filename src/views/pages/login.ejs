@@ -1,0 +1,19 @@
+<h1>Login</h1>
+<form action="/auth/login" method="POST" class="col-md-4 mx-auto">
+  <div class="mb-3">
+    <label class="form-label">Email</label>
+    <input type="email" name="email" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Contraseña</label>
+    <input type="password" name="password" class="form-control" required>
+  </div>
+  <% if (errors.length) { %>
+    <div class="alert alert-danger">
+      <ul class="mb-0">
+        <% errors.forEach(e => { %><li><%= e.msg %></li><% }) %>
+      </ul>
+    </div>
+  <% } %>
+  <button class="btn btn-primary">Ingresar</button>
+</form>
