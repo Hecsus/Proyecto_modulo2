@@ -78,7 +78,7 @@ INSERT INTO roles (nombre) VALUES ('admin'), ('operador');
 
 -- Hash creado con bcrypt para la contraseña 'admin123'
 INSERT INTO usuarios (nombre, email, password, rol_id) VALUES
-('Admin', 'admin@demo.local', '$2a$10$u1AK9aAU0z8ae0q/QAdZkO6pX6YsJhBKt3vnDnN/SfXlBx/6CkXQu', 1);
+('Admin', 'admin@demo.local', '$2a$12$pdEnaSyJUF53FPOfCwJ2S.8s9LT2Ozft9smeZlRJ1o0YmRvDbQ3Ju', 1);
 
 INSERT INTO localizaciones (nombre) VALUES
 ('Almacén A'),
