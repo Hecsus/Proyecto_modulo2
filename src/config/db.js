@@ -1,22 +1,33 @@
-/**
- * Archivo: src/config/db.js
- * Configuración de la conexión a MySQL usando mysql2/promise.
- * Cada línea está comentada para que se entienda claramente qué hace.
- */
+require('dotenv').config();
 
-require('dotenv').config(); // Carga las variables de entorno del archivo .env
+const required = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'];
+for (const k of required) {
+  if (process.env[k] === undefined) {
+    throw new Error(`[Config] Falta variable de entorno: ${k}. Crea .env en la raíz y rellénala.`);
+  }
+}
 
-const mysql = require('mysql2/promise'); // Importa la librería mysql2 en su versión basada en promesas
+const mysql = require('mysql2/promise');
 
-// Crea un pool de conexiones para reutilizar conexiones a la base de datos
 const pool = mysql.createPool({
-  host: process.env.DB_HOST,      // Host donde está la base de datos
-  user: process.env.DB_USER,      // Usuario con permisos en la base de datos
-  password: process.env.DB_PASSWORD, // Contraseña del usuario
-  database: process.env.DB_DATABASE, // Nombre de la base de datos a usar
-  waitForConnections: true,       // Espera si todas las conexiones están ocupadas
-  connectionLimit: 10,            // Número máximo de conexiones simultáneas
-  queueLimit: 0                   // 0 = ilimitado, las solicitudes se encolan hasta obtener conexión
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
 });
 
-module.exports = pool; // Exporta el pool para usarlo en otros módulos
+(async () => {
+  try {
+    const conn = await pool.getConnection();
+    await conn.ping();
+    console.log('DB OK');
+    conn.release();
+  } catch (err) {
+    console.error('Error al conectar con la base de datos:', err.message);
+  }
+})();
+
+module.exports = pool;

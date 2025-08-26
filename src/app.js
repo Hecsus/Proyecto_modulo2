@@ -17,44 +17,53 @@ const productosRoutes = require('./routes/productos.routes');     // 9. Rutas de
 const categoriasRoutes = require('./routes/categorias.routes');   // 10. Rutas de categorías
 const proveedoresRoutes = require('./routes/proveedores.routes'); // 11. Rutas de proveedores
 const localizacionesRoutes = require('./routes/localizaciones.routes'); // 12. Rutas de localizaciones
+const db = require('./config/db');                                // 13. Pool de conexiones a la base de datos
 
-const app = express();                           // 13. Crea la aplicación Express
-const PORT = process.env.PORT || 3000;           // 14. Puerto donde se levantará el servidor
+const app = express();                           // 14. Crea la aplicación Express
+const PORT = process.env.PORT || 3000;           // 15. Puerto donde se levantará el servidor
 
-app.set('view engine', 'ejs');                   // 15. Define EJS como motor de plantillas
-app.set('views', path.join(__dirname, 'views')); // 16. Carpeta donde viven las vistas
-app.use(ejsLayouts);                             // 17. Activa el uso de layouts
-app.set('layout', 'layouts/layout');             // 18. Layout por defecto
+app.set('view engine', 'ejs');                   // 16. Define EJS como motor de plantillas
+app.set('views', path.join(__dirname, 'views')); // 17. Carpeta donde viven las vistas
+app.use(ejsLayouts);                             // 18. Activa el uso de layouts
+app.set('layout', 'layouts/layout');             // 19. Layout por defecto
 
-app.use(express.urlencoded({ extended: false })); // 19. Middleware para procesar cuerpos de formularios
+app.use(express.urlencoded({ extended: false })); // 20. Middleware para procesar cuerpos de formularios
 
-app.use(express.static(path.join(__dirname, 'public'))); // 20. Archivos estáticos (css, js, imágenes)
+app.use(express.static(path.join(__dirname, 'public'))); // 21. Archivos estáticos (css, js, imágenes)
 
-app.use(session({                               // 21. Configuración de la sesión
-  secret: process.env.SESSION_SECRET || 'secret', // 22. Clave para firmar la cookie
-  resave: false,                                  // 23. No guardar la sesión si no hay cambios
-  saveUninitialized: false,                       // 24. No guardar sesiones vacías
-  cookie: { httpOnly: true, sameSite: 'lax' }     // 25. Configura la cookie de sesión
+app.use(session({                               // 22. Configuración de la sesión
+  secret: process.env.SESSION_SECRET || 'secret', // 23. Clave para firmar la cookie
+  resave: false,                                  // 24. No guardar la sesión si no hay cambios
+  saveUninitialized: false,                       // 25. No guardar sesiones vacías
+  cookie: { httpOnly: true, sameSite: 'lax' }     // 26. Configura la cookie de sesión
 }));
 
-app.use((req, res, next) => {                     // 26. Middleware propio para variables globales
-  res.locals.isAuthenticated = !!req.session.user; // 27. ¿Hay usuario logueado?
-  res.locals.userName = req.session.user ? req.session.user.nombre : null; // 28. Nombre del usuario
-  res.locals.userRole = req.session.user ? req.session.user.rol : null;    // 29. Rol del usuario
-  next();                                         // 30. Continúa con la siguiente función
+app.use((req, res, next) => {                     // 27. Middleware propio para variables globales
+  res.locals.isAuthenticated = !!req.session.user; // 28. ¿Hay usuario logueado?
+  res.locals.userName = req.session.user ? req.session.user.nombre : null; // 29. Nombre del usuario
+  res.locals.userRole = req.session.user ? req.session.user.rol : null;    // 30. Rol del usuario
+  next();                                         // 31. Continúa con la siguiente función
 });
 
-app.get('/', requireAuth, (req, res) => {         // 31. Ruta principal protegida
-  res.render('pages/index');                      // 32. Renderiza la vista de inicio
+app.get('/', requireAuth, (req, res) => {         // 32. Ruta principal protegida
+  res.render('pages/index');                      // 33. Renderiza la vista de inicio
 });
 
-app.use('/', authRoutes);                         // 33. Rutas de autenticación (login/logout)
-app.use('/productos', requireAuth, productosRoutes);       // 34. CRUD de productos
-app.use('/categorias', requireAuth, categoriasRoutes);    // 35. CRUD de categorías
-app.use('/proveedores', requireAuth, proveedoresRoutes);  // 36. CRUD de proveedores
-app.use('/localizaciones', requireAuth, localizacionesRoutes); // 37. CRUD de localizaciones
-
-app.listen(PORT, () => {                          // 38. Levanta el servidor
-  console.log(`Servidor escuchando en http://localhost:${PORT}`); // 39. Mensaje en consola
+app.get('/db-health', async (req, res) => {       // 34. Ruta de salud de la base de datos
+  try {
+    const [rows] = await db.query('SELECT 1 + 1 AS result');
+    res.json({ ok: true, result: rows[0].result });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
 });
 
+app.use('/', authRoutes);                         // 35. Rutas de autenticación (login/logout)
+app.use('/productos', requireAuth, productosRoutes);       // 36. CRUD de productos
+app.use('/categorias', requireAuth, categoriasRoutes);    // 37. CRUD de categorías
+app.use('/proveedores', requireAuth, proveedoresRoutes);  // 38. CRUD de proveedores
+app.use('/localizaciones', requireAuth, localizacionesRoutes); // 39. CRUD de localizaciones
+
+app.listen(PORT, () => {                          // 40. Levanta el servidor
+  console.log(`Servidor escuchando en http://localhost:${PORT}`); // 41. Mensaje en consola
+});
