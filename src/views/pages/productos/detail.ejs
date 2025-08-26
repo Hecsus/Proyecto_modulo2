@@ -1,0 +1,8 @@
+<h1><%= producto.nombre %></h1>
+<p><strong>Descripción:</strong> <%= producto.descripcion %></p>
+<p><strong>Precio:</strong> <%= producto.precio %></p>
+<p><strong>Stock:</strong> <%= producto.stock %> / <%= producto.stock_minimo %></p>
+<p><strong>Localización:</strong> <%= producto.localizacion %></p>
+<p><strong>Categorías:</strong> <%= producto.categorias.map(c=>c.nombre).join(', ') %></p>
+<p><strong>Proveedores:</strong> <%= producto.proveedores.map(p=>p.nombre).join(', ') %></p>
+<a href="/productos" class="btn btn-secondary">Volver</a>
