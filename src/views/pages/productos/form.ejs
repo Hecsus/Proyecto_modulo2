@@ -16,10 +16,12 @@
     <div class="col-md-4 mb-3">
       <label class="form-label">Stock</label>
       <input type="number" name="stock" class="form-control" value="<%= producto ? producto.stock : '' %>">
+      <div class="form-text">Cantidad actual disponible</div>
     </div>
     <div class="col-md-4 mb-3">
       <label class="form-label">Stock mínimo</label>
       <input type="number" name="stock_minimo" class="form-control" value="<%= producto ? producto.stock_minimo : '' %>">
+      <div class="form-text">Umbral mínimo antes de reponer</div>
     </div>
   </div>
   <div class="mb-3">

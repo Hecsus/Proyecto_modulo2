@@ -89,6 +89,28 @@ En XAMPP/MAMP el usuario `root` suele ir sin contraseña → deja `DB_PASSWORD` 
 - Vista bajo stock (productos con stock < stock_minimo).
 - Validación de formularios con express-validator y feedback visual (Bootstrap).
 
+## Datos de ejemplo
+Incluye un script con usuarios, categorías, proveedores, localizaciones y más de veinte productos.
+Importar:
+
+```
+mysql -u root -p inventario < db/seeds/20250901_semillas_realistas.sql
+```
+
+Contraseñas:
+- `admin123` para administradores.
+- `usuario123` para operadores.
+
+## Gestión de usuarios (solo admin)
+- El menú **Usuarios** sólo aparece para rol administrador.
+- Permite listar, crear, editar, eliminar y cambiar contraseñas.
+- Validaciones: email válido, rol existente y contraseña mínima de 8 caracteres.
+
+## Stock vs Stock mínimo – guía de uso
+- Listados muestran columnas separadas de stock y stock mínimo.
+- Si el stock es menor que el mínimo se marca la fila con `table-warning` y badge "Bajo stock".
+- Formularios de productos incluyen ayuda para cada campo de stock.
+
 ## Política de comentarios ("supercomentado")
 - `src/app.js` y `src/config/db.js`: comentados línea a línea explicando qué hace cada instrucción y por qué.
 - Resto de archivos (`routes/`, `controllers/`, `validators/`, `views/`): comentarios por bloques cubriendo propósito, entradas/salidas, validaciones y manejo de errores.
@@ -153,10 +175,33 @@ Nunca subas `.env` al repo.
 Cambia `SESSION_SECRET` en producción y activa `cookie.secure` detrás de HTTPS.
 Revisa inputs de formularios con express-validator (servidor) además de validación en cliente.
 
+### Errores al importar seeds
+- Confirma que la base `inventario` existe y el esquema está aplicado.
+- Ejecuta la migración `db/migrations/20250901_1200_add_campos_usuarios.sql` antes de importar si hay columnas faltantes.
+- El script de semillas trunca tablas, por lo que cualquier dato previo se pierde.
+
+## Pruebas manuales
+1. Importar seeds: `mysql -u root -p inventario < db/seeds/20250901_semillas_realistas.sql`.
+2. Login admin: `laura.gonzalez@tienda.local` / `admin123`.
+3. Usuarios: crear un operador, editarlo y eliminarlo.
+4. Productos: crear uno con stock/stock mínimo y observar badge "Bajo stock" en el listado.
+5. Bajo stock: visitar `/productos/bajo-stock` y comprobar resultados.
+6. Regresión básica: `/`, `/login`, `/health`, `/resources` y `/db-health` responden 200.
+
+## Resumen de cambios
+- Semillas realistas con múltiples entidades y contraseñas bcrypt.
+- CRUD de usuarios protegido exclusivamente para administradores.
+- Interfaz de productos con columnas separadas de stock y stock mínimo.
+
 ## Changelog
 ### 2025-08-26
 - Validación de variables de entorno y carga temprana de `dotenv`.
 - Log "DB OK" al iniciar la conexión y mensajes de error claros.
 - Ruta `/db-health` para comprobar la base de datos.
 - README completado y `.env.example` actualizado.
+
+### 2025-09-01
+- Script `20250901_semillas_realistas.sql` con datos de ejemplo realistas.
+- Rutas y vistas para gestionar usuarios solo por administradores.
+- Listados de productos con columnas de stock y stock mínimo y badges de bajo stock.
 

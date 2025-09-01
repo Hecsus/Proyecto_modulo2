@@ -17,6 +17,7 @@ const productosRoutes = require('./routes/productos.routes');     // Conjunto de
 const categoriasRoutes = require('./routes/categorias.routes');   // Conjunto de rutas CRUD de categorías
 const proveedoresRoutes = require('./routes/proveedores.routes'); // Conjunto de rutas CRUD de proveedores
 const localizacionesRoutes = require('./routes/localizaciones.routes'); // Conjunto de rutas CRUD de localizaciones
+const usuariosRoutes = require('./routes/usuarios.routes');     // Conjunto de rutas CRUD de usuarios
 const db = require('./config/db');                                // Pool de conexiones MySQL reutilizable
 
 const app = express();                           // Crea la instancia de Express
@@ -67,6 +68,7 @@ app.use('/productos', requireAuth, productosRoutes);       // CRUD de productos 
 app.use('/categorias', requireAuth, categoriasRoutes);    // CRUD de categorías (protección por login)
 app.use('/proveedores', requireAuth, proveedoresRoutes);  // CRUD de proveedores (protección por login)
 app.use('/localizaciones', requireAuth, localizacionesRoutes); // CRUD de localizaciones (protección por login)
+app.use('/usuarios', requireAuth, requireRole('admin'), usuariosRoutes); // CRUD de usuarios (solo admin)
 
 app.listen(PORT, () => {                          // Arranca el servidor
   console.log(`Servidor escuchando en http://localhost:${PORT}`); // Mensaje de inicio en consola

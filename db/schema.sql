@@ -16,7 +16,9 @@ CREATE TABLE roles (
 CREATE TABLE usuarios (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(100) NOT NULL,
+  apellidos VARCHAR(100) NOT NULL,
   email VARCHAR(100) NOT NULL UNIQUE,
+  telefono VARCHAR(20),
   password VARCHAR(100) NOT NULL,
   rol_id INT NOT NULL,
   FOREIGN KEY (rol_id) REFERENCES roles(id)
@@ -77,8 +79,8 @@ CREATE TABLE producto_proveedor (
 INSERT INTO roles (nombre) VALUES ('admin'), ('operador');
 
 -- Hash creado con bcrypt para la contraseña 'admin123'
-INSERT INTO usuarios (nombre, email, password, rol_id) VALUES
-('Admin', 'admin@demo.local', '$2a$12$pdEnaSyJUF53FPOfCwJ2S.8s9LT2Ozft9smeZlRJ1o0YmRvDbQ3Ju', 1);
+INSERT INTO usuarios (nombre, apellidos, email, telefono, password, rol_id) VALUES
+('Admin', 'Principal', 'admin@demo.local', NULL, '$2a$12$pdEnaSyJUF53FPOfCwJ2S.8s9LT2Ozft9smeZlRJ1o0YmRvDbQ3Ju', 1);
 
 INSERT INTO localizaciones (nombre) VALUES
 ('Almacén A'),
