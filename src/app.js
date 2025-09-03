@@ -13,6 +13,7 @@ const requireAuth = require('./middlewares/requireAuth'); // Middleware que exig
 const requireRole = require('./middlewares/requireRole'); // Middleware que limita acceso según rol del usuario
 
 const authRoutes = require('./routes/auth.routes');               // Conjunto de rutas de autenticación
+const panelRoutes = require('./routes/panel.routes');             // Conjunto de rutas del panel de inventario
 const productosRoutes = require('./routes/productos.routes');     // Conjunto de rutas CRUD de productos
 const categoriasRoutes = require('./routes/categorias.routes');   // Conjunto de rutas CRUD de categorías
 const proveedoresRoutes = require('./routes/proveedores.routes'); // Conjunto de rutas CRUD de proveedores
@@ -39,7 +40,8 @@ app.use(session({                               // Inicializa la gestión de ses
   cookie: { httpOnly: true, sameSite: 'lax' }     // Protege contra XSS y CSRF básicas
 }));
 
-app.use((req, res, next) => {                     // Middleware que expone datos de sesión a las vistas
+app.use((req, res, next) => {                     // Middleware que expone datos de sesión y ruta actual
+  res.locals.currentPath = req.path;              // Ruta actual para resaltar enlaces activos
   res.locals.isAuthenticated = !!req.session.user; // Booleano con estado de autenticación
   res.locals.userName = req.session.user ? req.session.user.nombre : null; // Nombre del usuario
   res.locals.userRole = req.session.user ? req.session.user.rol : null;    // Rol del usuario logueado
@@ -47,7 +49,7 @@ app.use((req, res, next) => {                     // Middleware que expone datos
 });
 
 app.get('/', requireAuth, (req, res) => {         // Página principal protegida por login
-  res.render('pages/index');                      // Renderiza la vista home
+  res.redirect('/panel');                        // Redirige al panel de inventario
 });
 
 app.get('/health', (req, res) => {                // Endpoint simple para monitorear el servidor
@@ -64,6 +66,7 @@ app.get('/db-health', async (req, res) => {       // Verifica conexión con la b
 });
 
 app.use('/', authRoutes);                         // Monta rutas de login/logout
+app.use('/panel', requireAuth, panelRoutes);      // Panel de inventario con métricas
 app.use('/productos', requireAuth, productosRoutes);       // CRUD de productos (protección por login)
 app.use('/categorias', requireAuth, categoriasRoutes);    // CRUD de categorías (protección por login)
 app.use('/proveedores', requireAuth, proveedoresRoutes);  // CRUD de proveedores (protección por login)
@@ -73,4 +76,3 @@ app.use('/usuarios', requireAuth, requireRole('admin'), usuariosRoutes); // CRUD
 app.listen(PORT, () => {                          // Arranca el servidor
   console.log(`Servidor escuchando en http://localhost:${PORT}`); // Mensaje de inicio en consola
 });
-

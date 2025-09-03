@@ -11,20 +11,20 @@ const { validationResult } = require('express-validator'); // Manejo de validaci
  * Manejo de errores: si la vista no existe, Express arrojará un 500.
  */
 exports.showLogin = (req, res) => {
-  res.render('pages/login', { errors: [] });
+  res.render('pages/login', { title: 'Login', errors: [] });
 };
 
 /**
  * Procesa las credenciales de login y crea la sesión.
  * Entradas: `email` y `password` desde el cuerpo del formulario.
- * Salidas: redirección a `/` o render de `login` con mensajes de error.
+ * Salidas: redirección a `/panel` o render de `login` con mensajes de error.
  * Validaciones: usa `validationResult` para recoger errores de `loginValidator`.
  * Manejo de errores: credenciales inválidas devuelven mensaje, errores de DB se propagan.
  */
 exports.login = async (req, res) => {
   const errors = validationResult(req); // Captura errores de validación
   if (!errors.isEmpty()) {
-    return res.render('pages/login', { errors: errors.array() });
+    return res.render('pages/login', { title: 'Login', errors: errors.array() });
   }
   const { email, password } = req.body;
   const [rows] = await pool.query(
@@ -32,15 +32,15 @@ exports.login = async (req, res) => {
     [email]
   );
   if (!rows.length) {
-    return res.render('pages/login', { errors: [{ msg: 'Credenciales inválidas' }] });
+    return res.render('pages/login', { title: 'Login', errors: [{ msg: 'Credenciales inválidas' }] });
   }
   const user = rows[0];
   const match = await bcrypt.compare(password, user.password); // Compara hash
   if (!match) {
-    return res.render('pages/login', { errors: [{ msg: 'Credenciales inválidas' }] });
+    return res.render('pages/login', { title: 'Login', errors: [{ msg: 'Credenciales inválidas' }] });
   }
   req.session.user = { id: user.id, nombre: user.nombre, rol: user.rol_nombre }; // Guarda datos mín. en sesión
-  res.redirect('/');
+  res.redirect('/panel');
 };
 
 /**

@@ -3,7 +3,7 @@ const { validationResult, body } = require('express-validator');
 
 exports.list = async (req, res) => {
   const [rows] = await pool.query('SELECT * FROM proveedores');
-  res.render('pages/proveedores/list', { proveedores: rows });
+  res.render('pages/proveedores/list', { title: 'Proveedores', proveedores: rows });
 };
 
 exports.form = async (req, res) => {
@@ -12,13 +12,14 @@ exports.form = async (req, res) => {
     const [rows] = await pool.query('SELECT * FROM proveedores WHERE id=?', [req.params.id]);
     proveedor = rows[0];
   }
-  res.render('pages/proveedores/form', { proveedor, errors: [] });
+  const title = req.params.id ? 'Editar proveedor' : 'Nuevo proveedor';
+  res.render('pages/proveedores/form', { title, proveedor, errors: [] });
 };
 
 exports.create = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.render('pages/proveedores/form', { proveedor: null, errors: errors.array() });
+    return res.render('pages/proveedores/form', { title: 'Nuevo proveedor', proveedor: null, errors: errors.array() });
   }
   await pool.query('INSERT INTO proveedores (nombre) VALUES (?)', [req.body.nombre]);
   res.redirect('/proveedores');
@@ -27,7 +28,7 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.render('pages/proveedores/form', { proveedor: { id: req.params.id, nombre: req.body.nombre }, errors: errors.array() });
+    return res.render('pages/proveedores/form', { title: 'Editar proveedor', proveedor: { id: req.params.id, nombre: req.body.nombre }, errors: errors.array() });
   }
   await pool.query('UPDATE proveedores SET nombre=? WHERE id=?', [req.body.nombre, req.params.id]);
   res.redirect('/proveedores');

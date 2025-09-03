@@ -4,7 +4,7 @@ const { validationResult, body } = require('express-validator');
 // Listar categorías
 exports.list = async (req, res) => {
   const [rows] = await pool.query('SELECT * FROM categorias');
-  res.render('pages/categorias/list', { categorias: rows });
+  res.render('pages/categorias/list', { title: 'Categorías', categorias: rows });
 };
 
 // Mostrar formulario
@@ -14,14 +14,15 @@ exports.form = async (req, res) => {
     const [rows] = await pool.query('SELECT * FROM categorias WHERE id=?', [req.params.id]);
     categoria = rows[0];
   }
-  res.render('pages/categorias/form', { categoria, errors: [] });
+  const title = req.params.id ? 'Editar categoría' : 'Nueva categoría';
+  res.render('pages/categorias/form', { title, categoria, errors: [] });
 };
 
 // Crear
 exports.create = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.render('pages/categorias/form', { categoria: null, errors: errors.array() });
+    return res.render('pages/categorias/form', { title: 'Nueva categoría', categoria: null, errors: errors.array() });
   }
   await pool.query('INSERT INTO categorias (nombre) VALUES (?)', [req.body.nombre]);
   res.redirect('/categorias');
@@ -31,7 +32,7 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.render('pages/categorias/form', { categoria: { id: req.params.id, nombre: req.body.nombre }, errors: errors.array() });
+    return res.render('pages/categorias/form', { title: 'Editar categoría', categoria: { id: req.params.id, nombre: req.body.nombre }, errors: errors.array() });
   }
   await pool.query('UPDATE categorias SET nombre=? WHERE id=?', [req.body.nombre, req.params.id]);
   res.redirect('/categorias');

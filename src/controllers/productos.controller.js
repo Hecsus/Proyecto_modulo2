@@ -9,13 +9,13 @@ exports.list = async (req, res) => {
   const [rows] = await pool.query(`SELECT p.*, l.nombre AS localizacion FROM productos p LEFT JOIN localizaciones l ON p.localizacion_id = l.id LIMIT ? OFFSET ?`, [limit, offset]);
   const [countRows] = await pool.query('SELECT COUNT(*) AS total FROM productos');
   const totalPages = Math.ceil(countRows[0].total / limit);
-  res.render('pages/productos/list', { productos: rows, bajoStock: false, page, totalPages });
+  res.render('pages/productos/list', { title: 'Productos', productos: rows, bajoStock: false, page, totalPages });
 };
 
 // Vista de productos bajo stock utilizando la VIEW creada en SQL
 exports.bajoStock = async (req, res) => {
   const [rows] = await pool.query('SELECT * FROM productos_bajo_stock');
-  res.render('pages/productos/list', { productos: rows, bajoStock: true, page: 1, totalPages: 1 });
+  res.render('pages/productos/list', { title: 'Productos bajo stock', productos: rows, bajoStock: true, page: 1, totalPages: 1 });
 };
 
 // Mostrar formulario de creación/edición
@@ -34,7 +34,8 @@ exports.form = async (req, res) => {
       producto.proveedores = pp.map(r => r.proveedor_id);
     }
   }
-  res.render('pages/productos/form', { producto, categorias, proveedores, localizaciones, errors: [] });
+  const title = req.params.id ? 'Editar producto' : 'Nuevo producto';
+  res.render('pages/productos/form', { title, producto, categorias, proveedores, localizaciones, errors: [] });
 };
 
 // Crear producto
@@ -44,7 +45,7 @@ exports.create = async (req, res) => {
     const [categorias] = await pool.query('SELECT * FROM categorias');
     const [proveedores] = await pool.query('SELECT * FROM proveedores');
     const [localizaciones] = await pool.query('SELECT * FROM localizaciones');
-    return res.render('pages/productos/form', { producto: null, categorias, proveedores, localizaciones, errors: errors.array() });
+    return res.render('pages/productos/form', { title: 'Nuevo producto', producto: null, categorias, proveedores, localizaciones, errors: errors.array() });
   }
   const { nombre, descripcion, precio, stock, stock_minimo, localizacion_id, categorias: cats = [], proveedores: provs = [] } = req.body;
   const [result] = await pool.query('INSERT INTO productos (nombre, descripcion, precio, stock, stock_minimo, localizacion_id) VALUES (?,?,?,?,?,?)',
@@ -70,7 +71,7 @@ exports.update = async (req, res) => {
     const [proveedores] = await pool.query('SELECT * FROM proveedores');
     const [localizaciones] = await pool.query('SELECT * FROM localizaciones');
     const [rows] = await pool.query('SELECT * FROM productos WHERE id=?', [id]);
-    return res.render('pages/productos/form', { producto: rows[0], categorias, proveedores, localizaciones, errors: errors.array() });
+    return res.render('pages/productos/form', { title: 'Editar producto', producto: rows[0], categorias, proveedores, localizaciones, errors: errors.array() });
   }
   const { nombre, descripcion, precio, stock, stock_minimo, localizacion_id, categorias: cats = [], proveedores: provs = [] } = req.body;
   await pool.query('UPDATE productos SET nombre=?, descripcion=?, precio=?, stock=?, stock_minimo=?, localizacion_id=? WHERE id=?',
@@ -104,5 +105,5 @@ exports.detail = async (req, res) => {
   const [provs] = await pool.query(`SELECT pr.* FROM proveedores pr JOIN producto_proveedor pp ON pr.id = pp.proveedor_id WHERE pp.producto_id = ?`, [id]);
   producto.categorias = cats;
   producto.proveedores = provs;
-  res.render('pages/productos/detail', { producto });
+  res.render('pages/productos/detail', { title: 'Detalle de producto', producto });
 };

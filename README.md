@@ -66,7 +66,7 @@ Aplicación de gestión de inventario para prácticas del módulo 2. Incluye aut
    ```
 
 ## Rutas rápidas de verificación
-- `GET /` → página principal (requiere sesión)
+- `GET /panel` → panel de inventario (requiere sesión)
 - `GET /login` → formulario de acceso
 - `GET /health` → `{ status: "ok" }`
 - `GET /db-health` → prueba `SELECT 1+1` y JSON con el resultado
@@ -87,7 +87,10 @@ En XAMPP/MAMP el usuario `root` suele ir sin contraseña → deja `DB_PASSWORD` 
 - Roles de usuario (admin/operador) y autorización por middleware.
 - CRUD: productos, categorías, proveedores y localizaciones.
 - Vista bajo stock (productos con stock < stock_minimo).
-- Validación de formularios con express-validator y feedback visual (Bootstrap).
+- Validación de formularios con express-validator y feedback visual (Bootstrap)
+- Panel de inventario con contadores.
+- Navbar responsive con saludo y enlaces activos.
+- Títulos dinámicos por vista.
 
 ## Datos de ejemplo
 Incluye un script con usuarios, categorías, proveedores, localizaciones y más de veinte productos.
@@ -96,6 +99,8 @@ Importar:
 ```
 mysql -u root -p inventario < db/seeds/20250901_semillas_realistas.sql
 ```
+
+Si aparece el error #1701 por TRUNCATE en phpMyAdmin, usa `db/seeds/20250903_semillas_realistas_delete.sql`.
 
 Contraseñas:
 - `admin123` para administradores.
@@ -181,17 +186,22 @@ Revisa inputs de formularios con express-validator (servidor) además de validac
 - El script de semillas trunca tablas, por lo que cualquier dato previo se pierde.
 
 ## Pruebas manuales
-1. Importar seeds: `mysql -u root -p inventario < db/seeds/20250901_semillas_realistas.sql`.
-2. Login admin: `laura.gonzalez@tienda.local` / `admin123`.
-3. Usuarios: crear un operador, editarlo y eliminarlo.
-4. Productos: crear uno con stock/stock mínimo y observar badge "Bajo stock" en el listado.
-5. Bajo stock: visitar `/productos/bajo-stock` y comprobar resultados.
-6. Regresión básica: `/`, `/login`, `/health`, `/resources` y `/db-health` responden 200.
+1. Importar seeds: `mysql -u root -p inventario < db/seeds/20250901_semillas_realistas.sql` (o `db/seeds/20250903_semillas_realistas_delete.sql` si TRUNCATE falla).
+2. Login operador: `marta.jimenez@tienda.local` / `usuario123`.
+3. Visitar `/panel`: se muestran tarjetas de Productos, Categorías, Proveedores, Localizaciones y Bajo stock.
+4. Login admin: `laura.gonzalez@tienda.local` / `admin123`.
+5. `/panel` añade tarjetas de Usuarios y Admins.
+6. En móvil, abrir menú: saludo "Hola, Nombre (rol)" arriba del desplegable.
+7. Navegar entre secciones: el enlace activo se resalta y hay separadores.
+8. Comprobar títulos del navegador cambian según la vista.
+9. Regresión básica: `/panel`, `/login`, `/health`, `/resources` y `/db-health` responden 200.
 
 ## Resumen de cambios
 - Semillas realistas con múltiples entidades y contraseñas bcrypt.
 - CRUD de usuarios protegido exclusivamente para administradores.
 - Interfaz de productos con columnas separadas de stock y stock mínimo.
+- Panel de inventario con contadores y navegación destacada.
+- Navbar responsive con saludo y títulos dinámicos.
 
 ## Changelog
 ### 2025-08-26
@@ -205,3 +215,7 @@ Revisa inputs de formularios con express-validator (servidor) además de validac
 - Rutas y vistas para gestionar usuarios solo por administradores.
 - Listados de productos con columnas de stock y stock mínimo y badges de bajo stock.
 
+### 2025-09-03
+- Panel de inventario con contadores.
+- Navbar responsive con saludo, enlaces activos y títulos dinámicos.
+- Script alternativo `20250903_semillas_realistas_delete.sql` sin TRUNCATE.
