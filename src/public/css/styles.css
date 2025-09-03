@@ -13,18 +13,10 @@ body { padding-top: 60px; }
   border-radius: .25rem;
 }
 
-.nav-separated .nav-link {
-  position: relative;
-  margin: 0 .5rem;
+.nav-separated .nav-link + .nav-link {
+  border-left: 1px solid rgba(0,0,0,.1);
 }
 
-.nav-separated .nav-link + .nav-link::before {
-  content: '';
-  position: absolute;
-  left: -0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1px;
-  height: 1.25rem;
-  background-color: rgba(255,255,255,0.2);
+.tile-icon {
+  font-size: 1.75rem;
 }

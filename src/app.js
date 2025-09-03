@@ -41,13 +41,14 @@ app.use(session({                               // Inicializa la gestión de ses
   cookie: { httpOnly: true, sameSite: 'lax' }     // Protege contra XSS y CSRF básicas
 }));
 
-app.use((req, res, next) => {                     // Middleware que expone datos de sesión y ruta actual
-  res.locals.currentPath = req.path;              // Ruta actual para resaltar enlaces activos
-  res.locals.isAuthenticated = !!req.session.user; // Booleano con estado de autenticación
-  res.locals.userName = req.session.user ? req.session.user.nombre : null; // Nombre del usuario
-  res.locals.userRole = req.session.user ? req.session.user.rol : null;    // Rol del usuario logueado
-  next();                                         // Continúa con el siguiente middleware
-});
+  app.use((req, res, next) => {                     // Middleware que expone datos de sesión y ruta actual
+    res.locals.currentPath = req.path;              // Ruta actual para resaltar enlaces activos
+    res.locals.isAuthenticated = !!req.session.user; // Booleano con estado de autenticación
+    res.locals.userName = req.session.user ? req.session.user.nombre : null; // Nombre del usuario
+    res.locals.userRole = req.session.user ? req.session.user.rol : null;    // Rol del usuario logueado
+    res.locals.request = req;                      // Objeto de la petición disponible en las vistas
+    next();                                         // Continúa con el siguiente middleware
+  });
 
 app.get('/', requireAuth, (req, res) => {         // Página principal protegida por login
   res.redirect('/panel');                        // Redirige al panel de inventario

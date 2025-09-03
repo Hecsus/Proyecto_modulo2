@@ -91,6 +91,8 @@ En XAMPP/MAMP el usuario `root` suele ir sin contraseña → deja `DB_PASSWORD` 
 - Panel de inventario con contadores.
 - Navbar responsive con saludo y enlaces activos.
 - Títulos dinámicos por vista.
+- Listados con filtros opcionales y panel de búsqueda plegable.
+- Navegación de detalle con parámetro `returnTo` para conservar filtros.
 
 ## Datos de ejemplo
 Incluye un script con usuarios, categorías, proveedores, localizaciones y más de veinte productos.
@@ -198,9 +200,9 @@ Revisa inputs de formularios con express-validator (servidor) además de validac
 - El script de semillas trunca tablas, por lo que cualquier dato previo se pierde.
 
 ## Pruebas manuales
-1. Panel: la tarjeta de **Proveedores** muestra icono y conteo correctos.
-2. Productos: filtrar por nombre parcial, precio ≤, stock ≥, localización, categoría y proveedor; ordenar por precio descendente. Los enlaces **Detalles** incluyen `returnTo` y **Volver** regresa al listado con filtros.
-3. Bajo stock: aplicar filtros (sin `low`), se ve la columna Localización. Enlace **Detalles** + **Volver** devuelve a la lista con filtros.
+1. Panel: la tarjeta de **Proveedores** muestra icono válido y conteo correcto.
+2. Productos: pulsar **Buscar** despliega el panel, enviar filtros vacíos no arroja errores. Probar combinaciones como nombre parcial + precio ≤ + proveedor. Ordenar por precio descendente y luego por nombre ascendente. Enlace **Detalles** incluye `returnTo` y el botón **Volver** respeta los filtros.
+3. Bajo stock: botón **Buscar** con los mismos filtros (sin `low`). Ver columna Localización y filtrar por localización, categoría y proveedor. Enlace **Detalles** + **Volver** retorna a la lista con filtros.
 4. Navbar: en móvil el saludo aparece arriba y no es clicable; en escritorio está a la derecha. Enlaces activos con separadores visibles.
 5. Títulos: el navegador muestra "Productos — Inventario", "Bajo stock — Inventario" y "Panel de inventario — Inventario" según la vista.
 6. Regresión básica: `/panel`, `/login`, `/health`, `/resources` y `/db-health` responden 200.
@@ -235,3 +237,8 @@ Revisa inputs de formularios con express-validator (servidor) además de validac
 - Filtros y ordenación en listados de productos y bajo stock.
 - Ruta `/inventario/bajo-stock` con columna Localización.
 - Navegación "Volver" con parámetro `returnTo` y títulos dinámicos en todas las vistas.
+
+### 2025-09-30
+- Panel de búsqueda plegable con filtros opcionales y validación amigable en Productos y Bajo stock.
+- Icono de Proveedores corregido y estilos unificados de iconos.
+- `returnTo` preserva filtros al navegar al detalle.

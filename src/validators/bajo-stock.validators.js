@@ -1,15 +1,6 @@
-const { body, query } = require('express-validator');
+const { query } = require('express-validator');
 
-// Validaciones para crear/editar productos
-exports.productValidator = [
-  body('nombre').notEmpty().withMessage('El nombre es obligatorio'),
-  body('precio').isFloat({ gt: 0 }).withMessage('Precio debe ser mayor a 0'),
-  body('stock').isInt({ min: 0 }).withMessage('Stock inválido'),
-  body('stock_minimo').isInt({ min: 0 }).withMessage('Stock mínimo inválido'),
-  body('localizacion_id').isInt().withMessage('Seleccione una localización válida')
-];
-
-// Filtros opcionales para listados de productos
+// Filtros opcionales para listado de bajo stock
 const SORT_BY = ['id', 'nombre', 'precio', 'stock', 'stock_minimo'];
 const SORT_DIR = ['asc', 'desc'];
 const OPS = ['eq', 'lte', 'gte'];
@@ -26,6 +17,5 @@ exports.listFilters = [
   query('min').optional({ checkFalsy: true }).isFloat().toFloat(),
   query('localizacionId').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt(),
   query('categoriaId').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt(),
-  query('proveedorId').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt(),
-  query('low').optional({ checkFalsy: true }).isIn(['1'])
+  query('proveedorId').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt()
 ];
