@@ -1,0 +1,34 @@
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Inventario</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse nav-separated" id="navbarNav">
+        <% if (isAuthenticated) { %>
+          <div class="navbar-identity d-lg-none mb-2">👋 Hola, <strong><%= userName %></strong> (<%= userRole %>)</div>
+        <% } %>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <% if (isAuthenticated) { %>
+            <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/panel') ? 'active' : '' %>" href="/panel">Panel</a></li>
+            <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/productos') ? 'active' : '' %>" href="/productos">Productos</a></li>
+            <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/categorias') ? 'active' : '' %>" href="/categorias">Categorías</a></li>
+            <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/proveedores') ? 'active' : '' %>" href="/proveedores">Proveedores</a></li>
+            <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/localizaciones') ? 'active' : '' %>" href="/localizaciones">Localizaciones</a></li>
+            <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/inventario/bajo-stock') ? 'active' : '' %>" href="/inventario/bajo-stock">Bajo stock</a></li>
+            <% if (userRole === 'admin') { %>
+              <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/usuarios') ? 'active' : '' %>" href="/usuarios">Usuarios</a></li>
+            <% } %>
+          <% } %>
+        </ul>
+        <ul class="navbar-nav">
+          <% if (isAuthenticated) { %>
+            <li class="nav-item d-none d-lg-block"><span class="navbar-text me-3">👋 Hola, <strong><%= userName %></strong> (<%= userRole %>)</span></li>
+            <li class="nav-item"><a class="nav-link" href="/auth/logout">Salir</a></li>
+          <% } else { %>
+            <li class="nav-item"><a class="nav-link <%= currentPath === '/login' ? 'active' : '' %>" href="/login">Login</a></li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>

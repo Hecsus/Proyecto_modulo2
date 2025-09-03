@@ -1,0 +1,27 @@
+<!--
+  Vista de formulario de login.
+  Propósito: permitir al usuario autenticarse.
+  Entradas: `errors` (array de errores de validación).
+  Salidas: formulario HTML.
+  Validaciones: errores mostrados bajo el formulario.
+  Manejo de errores: la ruta controla los fallos y pasa los mensajes.
+-->
+<h1>Login</h1>
+<form action="/auth/login" method="POST" class="col-md-4 mx-auto">
+  <div class="mb-3">
+    <label class="form-label">Email</label>
+    <input type="email" name="email" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Contraseña</label>
+    <input type="password" name="password" class="form-control" required>
+  </div>
+  <% if (errors.length) { %>
+    <div class="alert alert-danger">
+      <ul class="mb-0">
+        <% errors.forEach(e => { %><li><%= e.msg %></li><% }) %>
+      </ul>
+    </div>
+  <% } %>
+  <button class="btn btn-primary">Ingresar</button>
+</form>
