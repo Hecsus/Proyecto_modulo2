@@ -10,11 +10,11 @@
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <% if (isAuthenticated) { %>
             <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/panel') ? 'active' : '' %>" href="/panel">Panel</a></li>
-            <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/productos') && !currentPath.includes('/bajo-stock') ? 'active' : '' %>" href="/productos">Productos</a></li>
+            <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/productos') ? 'active' : '' %>" href="/productos">Productos</a></li>
             <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/categorias') ? 'active' : '' %>" href="/categorias">Categorías</a></li>
             <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/proveedores') ? 'active' : '' %>" href="/proveedores">Proveedores</a></li>
             <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/localizaciones') ? 'active' : '' %>" href="/localizaciones">Localizaciones</a></li>
-            <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/productos/bajo-stock') ? 'active' : '' %>" href="/productos/bajo-stock">Bajo stock</a></li>
+            <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/inventario/bajo-stock') ? 'active' : '' %>" href="/inventario/bajo-stock">Bajo stock</a></li>
             <% if (userRole === 'admin') { %>
               <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/usuarios') ? 'active' : '' %>" href="/usuarios">Usuarios</a></li>
             <% } %>

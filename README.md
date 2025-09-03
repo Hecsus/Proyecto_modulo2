@@ -116,6 +116,18 @@ Contraseñas:
 - Si el stock es menor que el mínimo se marca la fila con `table-warning` y badge "Bajo stock".
 - Formularios de productos incluyen ayuda para cada campo de stock.
 
+## Panel de inventario
+Las tarjetas del panel muestran conteos generales de productos, categorías, proveedores (con icono de camión), localizaciones y bajo stock. Los administradores ven además usuarios y administradores.
+
+## Navegación Volver
+Los enlaces de **Detalles** agregan `returnTo=<URL>` y el botón **Volver** en el detalle usa ese valor o vuelve a `/productos` si no existe.
+
+## Filtros y ordenación
+`GET /productos` y `GET /inventario/bajo-stock` aceptan filtros por nombre (`qName`), comparadores `priceOp`/`price`, `stockOp`/`stock`, `minOp`/`min`, relaciones (`localizacionId`, `categoriaId`, `proveedorId`), ordenación (`sortBy`, `sortDir`) y el flag `low=1` en productos.
+
+## Títulos dinámicos
+El layout define `<title><%= title ? title + ' — ' : '' %>Inventario</title>` para que cada vista establezca su propio título.
+
 ## Política de comentarios ("supercomentado")
 - `src/app.js` y `src/config/db.js`: comentados línea a línea explicando qué hace cada instrucción y por qué.
 - Resto de archivos (`routes/`, `controllers/`, `validators/`, `views/`): comentarios por bloques cubriendo propósito, entradas/salidas, validaciones y manejo de errores.
@@ -186,15 +198,12 @@ Revisa inputs de formularios con express-validator (servidor) además de validac
 - El script de semillas trunca tablas, por lo que cualquier dato previo se pierde.
 
 ## Pruebas manuales
-1. Importar seeds: `mysql -u root -p inventario < db/seeds/20250901_semillas_realistas.sql` (o `db/seeds/20250903_semillas_realistas_delete.sql` si TRUNCATE falla).
-2. Login operador: `marta.jimenez@tienda.local` / `usuario123`.
-3. Visitar `/panel`: se muestran tarjetas de Productos, Categorías, Proveedores, Localizaciones y Bajo stock.
-4. Login admin: `laura.gonzalez@tienda.local` / `admin123`.
-5. `/panel` añade tarjetas de Usuarios y Admins.
-6. En móvil, abrir menú: saludo "Hola, Nombre (rol)" arriba del desplegable.
-7. Navegar entre secciones: el enlace activo se resalta y hay separadores.
-8. Comprobar títulos del navegador cambian según la vista.
-9. Regresión básica: `/panel`, `/login`, `/health`, `/resources` y `/db-health` responden 200.
+1. Panel: la tarjeta de **Proveedores** muestra icono y conteo correctos.
+2. Productos: filtrar por nombre parcial, precio ≤, stock ≥, localización, categoría y proveedor; ordenar por precio descendente. Los enlaces **Detalles** incluyen `returnTo` y **Volver** regresa al listado con filtros.
+3. Bajo stock: aplicar filtros (sin `low`), se ve la columna Localización. Enlace **Detalles** + **Volver** devuelve a la lista con filtros.
+4. Navbar: en móvil el saludo aparece arriba y no es clicable; en escritorio está a la derecha. Enlaces activos con separadores visibles.
+5. Títulos: el navegador muestra "Productos — Inventario", "Bajo stock — Inventario" y "Panel de inventario — Inventario" según la vista.
+6. Regresión básica: `/panel`, `/login`, `/health`, `/resources` y `/db-health` responden 200.
 
 ## Resumen de cambios
 - Semillas realistas con múltiples entidades y contraseñas bcrypt.
@@ -202,6 +211,7 @@ Revisa inputs de formularios con express-validator (servidor) además de validac
 - Interfaz de productos con columnas separadas de stock y stock mínimo.
 - Panel de inventario con contadores y navegación destacada.
 - Navbar responsive con saludo y títulos dinámicos.
+- Filtros avanzados en listados y navegación "Volver" con `returnTo`.
 
 ## Changelog
 ### 2025-08-26
@@ -219,3 +229,9 @@ Revisa inputs de formularios con express-validator (servidor) además de validac
 - Panel de inventario con contadores.
 - Navbar responsive con saludo, enlaces activos y títulos dinámicos.
 - Script alternativo `20250903_semillas_realistas_delete.sql` sin TRUNCATE.
+
+### 2025-09-20
+- Icono para Proveedores en panel.
+- Filtros y ordenación en listados de productos y bajo stock.
+- Ruta `/inventario/bajo-stock` con columna Localización.
+- Navegación "Volver" con parámetro `returnTo` y títulos dinámicos en todas las vistas.

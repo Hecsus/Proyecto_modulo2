@@ -5,4 +5,4 @@
 <p><strong>Localización:</strong> <%= producto.localizacion %></p>
 <p><strong>Categorías:</strong> <%= producto.categorias.map(c=>c.nombre).join(', ') %></p>
 <p><strong>Proveedores:</strong> <%= producto.proveedores.map(p=>p.nombre).join(', ') %></p>
-<a href="/productos" class="btn btn-secondary">Volver</a>
+<a href="<%= returnTo || '/productos' %>" class="btn btn-secondary">Volver</a>

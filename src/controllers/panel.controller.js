@@ -4,6 +4,15 @@ const pool = require('../config/db');
 exports.index = async (req, res) => {
   const isAdmin = req.session.user && req.session.user.rol === 'admin'; // Verifica si el usuario es admin
   const counts = {};                                                   // Objeto que acumula los totales
+  const icons = {                                                     // Iconos Boxicons para cada tarjeta
+    productos: 'bx bx-box',
+    categorias: 'bx bx-list-ul',
+    proveedores: 'bxs-truck',
+    localizaciones: 'bx bx-map',
+    bajoStock: 'bx bx-error',
+    usuarios: 'bx bx-user',
+    admins: 'bx bx-user-check'
+  };
 
   const [prod] = await pool.query('SELECT COUNT(*) AS n FROM productos');
   const [cat] = await pool.query('SELECT COUNT(*) AS n FROM categorias');
@@ -24,5 +33,5 @@ exports.index = async (req, res) => {
     counts.admins = adm[0].n;
   }
 
-  res.render('pages/panel', { title: 'Panel de inventario', counts, isAdmin });
+  res.render('pages/panel', { title: 'Panel de inventario', counts, icons, isAdmin });
 };
