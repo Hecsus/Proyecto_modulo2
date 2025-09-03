@@ -1,0 +1,17 @@
+<h1>Proveedores</h1>
+<a href="/proveedores/nuevo" class="btn btn-success mb-2">Nuevo</a>
+<table class="table">
+  <thead><tr><th>ID</th><th>Nombre</th><th>Acciones</th></tr></thead>
+  <tbody>
+    <% proveedores.forEach(p => { %>
+      <tr>
+        <td><%= p.id %></td>
+        <td><%= p.nombre %></td>
+        <td>
+          <a href="/proveedores/<%= p.id %>/editar" class="btn btn-sm btn-warning"><i class='bx bx-edit'></i></a>
+          <a href="/proveedores/<%= p.id %>/eliminar" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar?')"><i class='bx bx-trash'></i></a>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>

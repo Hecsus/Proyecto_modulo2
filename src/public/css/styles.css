@@ -1,0 +1,22 @@
+body { padding-top: 60px; }
+
+.navbar-identity {
+  color: #fff;
+  padding: .5rem 1rem;
+  background-color: rgba(255,255,255,0.1);
+  border-radius: .25rem;
+}
+
+.nav-link.active {
+  font-weight: 500;
+  border-bottom: 2px solid #fff;
+  border-radius: .25rem;
+}
+
+.nav-separated .nav-link + .nav-link {
+  border-left: 1px solid rgba(0,0,0,.1);
+}
+
+.tile-icon {
+  font-size: 1.75rem;
+}
