@@ -1,0 +1,33 @@
+<h1>Usuarios</h1>
+<a href="/usuarios/nuevo" class="btn btn-success mb-2">Nuevo</a>
+<% if (message) { %>
+  <div class="alert alert-<%= message.type %>"><%= message.text %></div>
+<% } %>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Email</th>
+      <th>Teléfono</th>
+      <th>Rol</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% usuarios.forEach(u => { %>
+      <tr>
+        <td><%= u.id %></td>
+        <td><%= u.nombre %> <%= u.apellidos %></td>
+        <td><%= u.email %></td>
+        <td><%= u.telefono %></td>
+        <td><%= u.rol %></td>
+        <td>
+          <a href="/usuarios/<%= u.id %>/editar" class="btn btn-sm btn-warning"><i class='bx bx-edit'></i></a>
+          <a href="/usuarios/<%= u.id %>/cambiar-password" class="btn btn-sm btn-secondary"><i class='bx bx-key'></i></a>
+          <a href="/usuarios/<%= u.id %>/eliminar" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar?')"><i class='bx bx-trash'></i></a>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>

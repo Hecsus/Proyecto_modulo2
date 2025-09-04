@@ -1,0 +1,17 @@
+<h1>Categorías</h1>
+<a href="/categorias/nuevo" class="btn btn-success mb-2">Nuevo</a>
+<table class="table">
+  <thead><tr><th>ID</th><th>Nombre</th><th>Acciones</th></tr></thead>
+  <tbody>
+    <% categorias.forEach(c => { %>
+      <tr>
+        <td><%= c.id %></td>
+        <td><%= c.nombre %></td>
+        <td>
+          <a href="/categorias/<%= c.id %>/editar" class="btn btn-sm btn-warning"><i class='bx bx-edit'></i></a>
+          <a href="/categorias/<%= c.id %>/eliminar" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar?')"><i class='bx bx-trash'></i></a>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
