@@ -29,16 +29,17 @@ exports.passwordValidator = [
 ];
 
 // Filtros opcionales para listado
-exports.listUsuariosValidator = [
-  query('id').optional({ checkFalsy: true }).isInt().withMessage('ID inválido'),
-  query('nombre').optional({ checkFalsy: true }),
-  query('email').optional({ checkFalsy: true }).isEmail().withMessage('Email inválido'),
-  query('rol').optional({ checkFalsy: true }).custom(async value => {
-    const [rows] = await pool.query('SELECT nombre FROM roles WHERE nombre=?', [value]);
-    if (!rows.length) throw new Error('Rol inválido');
-    return true;
-  }),
-  query('telefono').optional({ checkFalsy: true }),
-  query('sortBy').optional({ checkFalsy: true }).isIn(['id', 'nombre', 'email', 'rol', 'telefono']),
-  query('sortDir').optional({ checkFalsy: true }).isIn(['asc', 'desc'])
+const SORT_BY = ['id', 'nombre', 'email', 'telefono', 'rol'];
+const SORT_DIR = ['asc', 'desc'];
+
+exports.listFilters = [
+  query('id').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt(),
+  query('nombre').optional({ checkFalsy: true }).trim().isLength({ min: 1, max: 100 }),
+  query('email').optional({ checkFalsy: true }).trim().isLength({ min: 1, max: 100 }),
+  query('telefono').optional({ checkFalsy: true }).trim().isLength({ min: 1, max: 20 }),
+  query('rol').optional({ checkFalsy: true }).trim().isLength({ min: 1, max: 50 }),
+  query('sortBy').optional({ checkFalsy: true }).isIn(SORT_BY),
+  query('sortDir').optional({ checkFalsy: true }).isIn(SORT_DIR),
+  query('page').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt(),
+  query('pageSize').optional({ checkFalsy: true }).isInt({ min: 1, max: 200 }).toInt()
 ];

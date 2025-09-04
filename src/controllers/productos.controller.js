@@ -110,58 +110,92 @@ exports.form = async (req, res) => {
     }
   }
   const title = req.params.id ? 'Editar producto' : 'Nuevo producto';
-  res.render('pages/productos/form', { title, producto, categorias, proveedores, localizaciones, errors: [] });
+  res.render('pages/productos/form', { title, producto, categorias, proveedores, localizaciones, errors: [], old: null });
 };
 
 // Crear producto
 exports.create = async (req, res) => {
   const errors = validationResult(req);
+  const [categorias] = await pool.query('SELECT * FROM categorias');
+  const [proveedores] = await pool.query('SELECT * FROM proveedores');
+  const [localizaciones] = await pool.query('SELECT * FROM localizaciones');
   if (!errors.isEmpty()) {
-    const [categorias] = await pool.query('SELECT * FROM categorias');
-    const [proveedores] = await pool.query('SELECT * FROM proveedores');
-    const [localizaciones] = await pool.query('SELECT * FROM localizaciones');
-    return res.render('pages/productos/form', { title: 'Nuevo producto', producto: null, categorias, proveedores, localizaciones, errors: errors.array() });
+    return res.render('pages/productos/form', { title: 'Nuevo producto', producto: null, categorias, proveedores, localizaciones, errors: errors.array(), old: req.body });
   }
+
   const { nombre, descripcion, precio, stock, stock_minimo, localizacion_id, categorias: cats = [], proveedores: provs = [] } = req.body;
-  const [result] = await pool.query('INSERT INTO productos (nombre, descripcion, precio, stock, stock_minimo, localizacion_id) VALUES (?,?,?,?,?,?)',
-    [nombre, descripcion, precio, stock, stock_minimo, localizacion_id]);
-  const prodId = result.insertId;
-  const arrC = Array.isArray(cats) ? cats : [cats];
-  for (const c of arrC) {
-    if (c) await pool.query('INSERT INTO producto_categoria (producto_id, categoria_id) VALUES (?,?)', [prodId, c]);
+  const categoriasArr = Array.isArray(cats) ? cats : [cats];
+  const proveedoresArr = Array.isArray(provs) ? provs : [provs];
+
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+    const [r] = await conn.execute(
+      'INSERT INTO productos (nombre, descripcion, precio, stock, stock_minimo, localizacion_id) VALUES (?,?,?,?,?,?)',
+      [nombre, descripcion, precio, stock, stock_minimo, localizacion_id]
+    );
+    const prodId = r.insertId;
+
+    if (categoriasArr.length) {
+      const values = categoriasArr.map(id => [prodId, Number(id)]);
+      await conn.query('INSERT INTO producto_categoria (producto_id, categoria_id) VALUES ?', [values]);
+    }
+    if (proveedoresArr.length) {
+      const values = proveedoresArr.map(id => [prodId, Number(id)]);
+      await conn.query('INSERT INTO producto_proveedor (producto_id, proveedor_id) VALUES ?', [values]);
+    }
+
+    await conn.commit();
+    req.session.flash = { type: 'success', message: 'Producto creado con éxito.' };
+    res.redirect('/productos');
+  } catch (e) {
+    await conn.rollback();
+    res.render('pages/productos/form', { title: 'Nuevo producto', producto: null, categorias, proveedores, localizaciones, errors: [{ msg: e.message }], old: req.body });
+  } finally {
+    conn.release();
   }
-  const arrP = Array.isArray(provs) ? provs : [provs];
-  for (const p of arrP) {
-    if (p) await pool.query('INSERT INTO producto_proveedor (producto_id, proveedor_id) VALUES (?,?)', [prodId, p]);
-  }
-  res.redirect('/productos');
 };
 
 // Editar producto
 exports.update = async (req, res) => {
   const errors = validationResult(req);
   const id = req.params.id;
+  const [categorias] = await pool.query('SELECT * FROM categorias');
+  const [proveedores] = await pool.query('SELECT * FROM proveedores');
+  const [localizaciones] = await pool.query('SELECT * FROM localizaciones');
   if (!errors.isEmpty()) {
-    const [categorias] = await pool.query('SELECT * FROM categorias');
-    const [proveedores] = await pool.query('SELECT * FROM proveedores');
-    const [localizaciones] = await pool.query('SELECT * FROM localizaciones');
     const [rows] = await pool.query('SELECT * FROM productos WHERE id=?', [id]);
-    return res.render('pages/productos/form', { title: 'Editar producto', producto: rows[0], categorias, proveedores, localizaciones, errors: errors.array() });
+    return res.render('pages/productos/form', { title: 'Editar producto', producto: rows[0], categorias, proveedores, localizaciones, errors: errors.array(), old: req.body });
   }
   const { nombre, descripcion, precio, stock, stock_minimo, localizacion_id, categorias: cats = [], proveedores: provs = [] } = req.body;
-  await pool.query('UPDATE productos SET nombre=?, descripcion=?, precio=?, stock=?, stock_minimo=?, localizacion_id=? WHERE id=?',
-    [nombre, descripcion, precio, stock, stock_minimo, localizacion_id, id]);
-  await pool.query('DELETE FROM producto_categoria WHERE producto_id=?', [id]);
-  await pool.query('DELETE FROM producto_proveedor WHERE producto_id=?', [id]);
-  const arrC = Array.isArray(cats) ? cats : [cats];
-  for (const c of arrC) {
-    if (c) await pool.query('INSERT INTO producto_categoria (producto_id, categoria_id) VALUES (?,?)', [id, c]);
+  const categoriasArr = Array.isArray(cats) ? cats : [cats];
+  const proveedoresArr = Array.isArray(provs) ? provs : [provs];
+
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+    await conn.execute('UPDATE productos SET nombre=?, descripcion=?, precio=?, stock=?, stock_minimo=?, localizacion_id=? WHERE id=?',
+      [nombre, descripcion, precio, stock, stock_minimo, localizacion_id, id]);
+    await conn.query('DELETE FROM producto_categoria WHERE producto_id=?', [id]);
+    await conn.query('DELETE FROM producto_proveedor WHERE producto_id=?', [id]);
+    if (categoriasArr.length) {
+      const values = categoriasArr.map(cid => [id, Number(cid)]);
+      await conn.query('INSERT INTO producto_categoria (producto_id, categoria_id) VALUES ?', [values]);
+    }
+    if (proveedoresArr.length) {
+      const values = proveedoresArr.map(pid => [id, Number(pid)]);
+      await conn.query('INSERT INTO producto_proveedor (producto_id, proveedor_id) VALUES ?', [values]);
+    }
+    await conn.commit();
+    req.session.flash = { type: 'success', message: 'Producto actualizado.' };
+    res.redirect('/productos');
+  } catch (e) {
+    await conn.rollback();
+    const [rows] = await pool.query('SELECT * FROM productos WHERE id=?', [id]);
+    res.render('pages/productos/form', { title: 'Editar producto', producto: rows[0], categorias, proveedores, localizaciones, errors: [{ msg: e.message }], old: req.body });
+  } finally {
+    conn.release();
   }
-  const arrP = Array.isArray(provs) ? provs : [provs];
-  for (const p of arrP) {
-    if (p) await pool.query('INSERT INTO producto_proveedor (producto_id, proveedor_id) VALUES (?,?)', [id, p]);
-  }
-  res.redirect('/productos');
 };
 
 // Eliminar producto

@@ -1,8 +1,18 @@
 const { query } = require('express-validator');
 
-exports.listCategoriasValidator = [
-  query('id').optional({ checkFalsy: true }).isInt().withMessage('ID inválido'),
-  query('nombre').optional({ checkFalsy: true }).isLength({ max: 255 }).withMessage('Nombre demasiado largo'),
-  query('sortBy').optional({ checkFalsy: true }).isIn(['id', 'nombre']),
-  query('sortDir').optional({ checkFalsy: true }).isIn(['asc', 'desc'])
+// Filtros opcionales para listado de categorías
+const SORT_BY = ['id', 'nombre'];
+const SORT_DIR = ['asc', 'desc'];
+
+exports.listFilters = [
+  // ID numérico positivo
+  query('id').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt(),
+  // Nombre parcial, máximo 100 caracteres
+  query('nombre').optional({ checkFalsy: true }).trim().isLength({ min: 1, max: 100 }),
+  // Orden y dirección
+  query('sortBy').optional({ checkFalsy: true }).isIn(SORT_BY),
+  query('sortDir').optional({ checkFalsy: true }).isIn(SORT_DIR),
+  // Paginación
+  query('page').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt(),
+  query('pageSize').optional({ checkFalsy: true }).isInt({ min: 1, max: 200 }).toInt()
 ];

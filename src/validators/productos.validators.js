@@ -6,7 +6,12 @@ exports.productValidator = [
   body('precio').isFloat({ gt: 0 }).withMessage('Precio debe ser mayor a 0'),
   body('stock').isInt({ min: 0 }).withMessage('Stock inválido'),
   body('stock_minimo').isInt({ min: 0 }).withMessage('Stock mínimo inválido'),
-  body('localizacion_id').isInt().withMessage('Seleccione una localización válida')
+  body('localizacion_id').isInt().withMessage('Seleccione una localización válida'),
+  // Arrays de IDs de categorías y proveedores, opcionales
+  body('categorias').optional({ checkFalsy: true }).isArray().withMessage('Categorías inválidas'),
+  body('categorias.*').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt(),
+  body('proveedores').optional({ checkFalsy: true }).isArray().withMessage('Proveedores inválidos'),
+  body('proveedores.*').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt()
 ];
 
 // Filtros opcionales para listados de productos

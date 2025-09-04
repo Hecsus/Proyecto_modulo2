@@ -2,37 +2,74 @@ const pool = require('../config/db');
 const bcrypt = require('bcryptjs');
 const { validationResult, matchedData } = require('express-validator');
 
-// Listar usuarios con filtros opcionales
+// Listar usuarios con filtros opcionales y paginación
 exports.list = async (req, res) => {
-  const errors = validationResult(req);                              // Resultado de validaciones
-  const data = matchedData(req, { locations: ['query'] });           // Datos saneados
+  const errors = validationResult(req);
+  const data = matchedData(req, { locations: ['query'] });
 
-  const SORTABLE = {                                                // Columnas permitidas para ORDER BY
-    id: 'u.id',
-    nombre: 'u.nombre',
-    email: 'u.email',
-    rol: 'r.nombre',
-    telefono: 'u.telefono'
-  };
-  const sortCol = SORTABLE[data.sortBy] || 'u.id';                  // Columna ordenada
-  const sortDir = (data.sortDir || 'asc').toUpperCase() === 'DESC' ? 'DESC' : 'ASC'; // Dirección
+  const [roles] = await pool.query('SELECT id, nombre FROM roles');
 
-  const clauses = [];                                               // Condiciones WHERE
-  const params = [];                                                // Valores parametrizados
+  if (!errors.isEmpty()) {
+    const [rows] = await pool.query('SELECT u.id, u.nombre, u.apellidos, u.email, u.telefono, r.nombre AS rol FROM usuarios u JOIN roles r ON u.rol_id=r.id ORDER BY u.id ASC');
+    return res.render('pages/usuarios/list', {
+      title: 'Usuarios',
+      usuarios: rows,
+      roles,
+      errors: errors.array(),
+      query: req.query,
+      page: 1,
+      totalPages: 1,
+      message: req.session.message
+    });
+  }
+
+  const page = data.page || 1;
+  const pageSize = data.pageSize || 20;
+  const offset = (page - 1) * pageSize;
+
+  const SORTABLE = { id: 'u.id', nombre: 'u.nombre', email: 'u.email', telefono: 'u.telefono', rol: 'r.nombre' };
+  const sortCol = SORTABLE[data.sortBy] || 'u.id';
+  const sortDir = (data.sortDir || 'asc').toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+
+  const clauses = [];
+  const params = [];
   if (data.id) { clauses.push('u.id = ?'); params.push(data.id); }
   if (data.nombre) { clauses.push('u.nombre LIKE ?'); params.push(`%${data.nombre}%`); }
   if (data.email) { clauses.push('u.email LIKE ?'); params.push(`%${data.email}%`); }
-  if (data.rol) { clauses.push('r.nombre = ?'); params.push(data.rol); }
   if (data.telefono) { clauses.push('u.telefono LIKE ?'); params.push(`%${data.telefono}%`); }
-
+  if (data.rol) {
+    const rolId = parseInt(data.rol);
+    if (!isNaN(rolId)) {
+      clauses.push('u.rol_id = ?');
+      params.push(rolId);
+    } else {
+      const role = roles.find(r => r.nombre === data.rol);
+      if (role) { clauses.push('u.rol_id = ?'); params.push(role.id); }
+    }
+  }
   const whereSql = clauses.length ? 'WHERE ' + clauses.join(' AND ') : '';
+
+  const baseSql = `FROM usuarios u JOIN roles r ON u.rol_id = r.id ${whereSql}`;
   const [rows] = await pool.query(
-    `SELECT u.id, u.nombre, u.apellidos, u.email, u.telefono, r.nombre AS rol FROM usuarios u JOIN roles r ON u.rol_id = r.id ${whereSql} ORDER BY ${sortCol} ${sortDir}`,
-    params
+    `SELECT u.id, u.nombre, u.apellidos, u.email, u.telefono, r.nombre AS rol ${baseSql} ORDER BY ${sortCol} ${sortDir} LIMIT ? OFFSET ?`,
+    [...params, pageSize, offset]
   );
-  const message = req.session.message;                             // Mensajes de sesión previos
-  delete req.session.message;                                      // Se muestran una sola vez
-  res.render('pages/usuarios/list', { title: 'Usuarios', usuarios: rows, message, errors: errors.array(), query: req.query });
+  const [countRows] = await pool.query(`SELECT COUNT(*) AS total ${baseSql}`, params);
+  const totalPages = Math.ceil(countRows[0].total / pageSize);
+
+  const message = req.session.message;
+  delete req.session.message;
+
+  res.render('pages/usuarios/list', {
+    title: 'Usuarios',
+    usuarios: rows,
+    roles,
+    errors: [],
+    query: req.query,
+    page,
+    totalPages,
+    message
+  });
 };
 
 // Mostrar formulario para crear o editar

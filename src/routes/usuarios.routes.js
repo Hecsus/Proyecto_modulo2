@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/usuarios.controller');
-const { createUserValidator, updateUserValidator, passwordValidator, listUsuariosValidator } = require('../validators/usuarios.validators');
+// Validadores para usuarios
+const { createUserValidator, updateUserValidator, passwordValidator, listFilters } = require('../validators/usuarios.validators');
 
 // GET /usuarios - listado de usuarios
-router.get('/', listUsuariosValidator, controller.list); // Listado
+router.get('/', listFilters, controller.list); // Listado
 
 // GET /usuarios/nuevo - formulario de creación
 router.get('/nuevo', controller.form); // Form crear

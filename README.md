@@ -39,6 +39,13 @@ Aplicación de gestión de inventario para prácticas del módulo 2. Incluye aut
 - Vistas: EJS bajo `src/views/{layouts,partials,pages}`.
 - Estáticos: `src/public` se sirve como `/resources`.
 
+## Guía de lectura del código
+- `src/app.js`: configuración del servidor Express y middlewares.
+- `src/controllers/*`: lógica de negocio para cada recurso.
+- `src/routes/*`: define los endpoints y enlaza controladores.
+- `src/validators/*`: reglas de validación con express-validator.
+- `src/views/`: plantillas EJS con layout y partials.
+
 ## Instalación y ejecución
 1. Clona el repositorio.
 2. Copia `.env.example` a `.env` y completa los valores.
@@ -99,6 +106,7 @@ En XAMPP/MAMP el usuario `root` suele ir sin contraseña → deja `DB_PASSWORD` 
 - Vista de detalle de producto muestra costo y observaciones.
 - Listado de usuarios incluye teléfono.
 - Búsquedas adicionales por ID/nombre en categorías, proveedores y localizaciones, y por múltiples campos en usuarios.
+- Formulario de productos con selección múltiple de categorías y proveedores mediante checkboxes y transacciones.
 
 ## Datos de ejemplo
 Incluye un script con usuarios, categorías, proveedores, localizaciones y más de veinte productos.
@@ -169,6 +177,7 @@ El layout define `<title><%= title ? title + ' — ' : '' %>Inventario</title>` 
 - Detalle de producto muestra costo y observaciones.
 - Listado de usuarios muestra columna Teléfono y permite filtrar por ID, nombre, email, rol y teléfono.
 - Búsquedas por ID y nombre funcionan en categorías, proveedores y localizaciones.
+- Creación y edición de productos permiten seleccionar múltiples categorías y proveedores.
 
 ## Changelog
 - Añadido SweetAlert2 y middleware flash.
@@ -176,6 +185,7 @@ El layout define `<title><%= title ? title + ' — ' : '' %>Inventario</title>` 
 - Detalle de producto ampliado con costo y observaciones.
 - Listado de usuarios ahora muestra teléfono y admite nuevos filtros.
 - Búsquedas por ID/nombre en categorías, proveedores y localizaciones.
+- Checkboxes para asignar categorías y proveedores a productos con inserciones en transacción.
 
 ## Troubleshooting
 ### “Access denied for user ''@'localhost' (using password: NO)”

@@ -1,24 +1,55 @@
 const pool = require('../config/db');
 const { validationResult, matchedData, body } = require('express-validator');
 
+// Listado de proveedores con filtros opcionales
 exports.list = async (req, res) => {
-  const errors = validationResult(req); // Validación de filtros
-  const data = matchedData(req, { locations: ['query'] }); // Datos saneados
+  const errors = validationResult(req);
+  const data = matchedData(req, { locations: ['query'] });
 
-  const SORTABLE = ['id', 'nombre'];                     // Columnas ordenables
-  const sortCol = SORTABLE.includes(data.sortBy) ? data.sortBy : 'id'; // Columna final
-  const sortDir = (data.sortDir || 'asc').toUpperCase() === 'DESC' ? 'DESC' : 'ASC'; // Dirección
+  if (!errors.isEmpty()) {
+    const [rows] = await pool.query('SELECT * FROM proveedores ORDER BY id ASC');
+    return res.render('pages/proveedores/list', {
+      title: 'Proveedores',
+      proveedores: rows,
+      errors: errors.array(),
+      query: req.query,
+      page: 1,
+      totalPages: 1
+    });
+  }
 
-  const clauses = [];                                    // Condiciones WHERE
-  const params = [];                                     // Valores parametrizados
-  if (data.id) { clauses.push('id = ?'); params.push(data.id); } // Filtro por id
-  if (data.nombre) { clauses.push('nombre LIKE ?'); params.push(`%${data.nombre}%`); } // Filtro por nombre
+  const page = data.page || 1;
+  const pageSize = data.pageSize || 20;
+  const offset = (page - 1) * pageSize;
 
-  const whereSql = clauses.length ? 'WHERE ' + clauses.join(' AND ') : ''; // Construcción WHERE
-  const [rows] = await pool.query(`SELECT * FROM proveedores ${whereSql} ORDER BY ${sortCol} ${sortDir}`, params); // Consulta
-  res.render('pages/proveedores/list', { title: 'Proveedores', proveedores: rows, errors: errors.array(), query: req.query }); // Render
+  const SORTABLE = ['id', 'nombre'];
+  const sortCol = SORTABLE.includes(data.sortBy) ? data.sortBy : 'id';
+  const sortDir = (data.sortDir || 'asc').toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+
+  const clauses = [];
+  const params = [];
+  if (data.id) { clauses.push('id = ?'); params.push(data.id); }
+  if (data.nombre) { clauses.push('nombre LIKE ?'); params.push(`%${data.nombre}%`); }
+  const whereSql = clauses.length ? 'WHERE ' + clauses.join(' AND ') : '';
+
+  const [rows] = await pool.query(
+    `SELECT * FROM proveedores ${whereSql} ORDER BY ${sortCol} ${sortDir} LIMIT ? OFFSET ?`,
+    [...params, pageSize, offset]
+  );
+  const [countRows] = await pool.query(`SELECT COUNT(*) AS total FROM proveedores ${whereSql}`, params);
+  const totalPages = Math.ceil(countRows[0].total / pageSize);
+
+  res.render('pages/proveedores/list', {
+    title: 'Proveedores',
+    proveedores: rows,
+    errors: [],
+    query: req.query,
+    page,
+    totalPages
+  });
 };
 
+// Formulario de creación/edición
 exports.form = async (req, res) => {
   let proveedor = null;
   if (req.params.id) {
@@ -29,6 +60,7 @@ exports.form = async (req, res) => {
   res.render('pages/proveedores/form', { title, proveedor, errors: [] });
 };
 
+// Crear
 exports.create = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -38,20 +70,27 @@ exports.create = async (req, res) => {
   res.redirect('/proveedores');
 };
 
+// Actualizar
 exports.update = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.render('pages/proveedores/form', { title: 'Editar proveedor', proveedor: { id: req.params.id, nombre: req.body.nombre }, errors: errors.array() });
+    return res.render('pages/proveedores/form', {
+      title: 'Editar proveedor',
+      proveedor: { id: req.params.id, nombre: req.body.nombre },
+      errors: errors.array()
+    });
   }
   await pool.query('UPDATE proveedores SET nombre=? WHERE id=?', [req.body.nombre, req.params.id]);
   res.redirect('/proveedores');
 };
 
+// Eliminar
 exports.remove = async (req, res) => {
   await pool.query('DELETE FROM proveedores WHERE id=?', [req.params.id]);
   res.redirect('/proveedores');
 };
 
+// Validator para formulario
 exports.validator = [
   body('nombre').notEmpty().withMessage('El nombre es obligatorio')
 ];

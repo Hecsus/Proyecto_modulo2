@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/proveedores.controller');
-const { listProveedoresValidator } = require('../validators/proveedores.validators');
+// Validaciones de filtros
+const { listFilters } = require('../validators/proveedores.validators');
 
-router.get('/', listProveedoresValidator, controller.list);
+// Listado con filtros
+router.get('/', listFilters, controller.list);
 router.get('/nuevo', controller.form);
 router.post('/nuevo', controller.validator, controller.create);
 router.get('/:id/editar', controller.form);
