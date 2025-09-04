@@ -8,6 +8,7 @@ Aplicación de gestión de inventario para prácticas del módulo 2. Incluye aut
 - MySQL (mysql2/promise)
 - dotenv, express-session, bcryptjs, express-validator, nodemon
 - Bootstrap 5 + Boxicons (CDN)
+- SweetAlert2 (CDN)
 
 ## Estructura de carpetas
 ```
@@ -93,6 +94,11 @@ En XAMPP/MAMP el usuario `root` suele ir sin contraseña → deja `DB_PASSWORD` 
 - Títulos dinámicos por vista.
 - Listados con filtros opcionales y panel de búsqueda plegable.
 - Navegación de detalle con parámetro `returnTo` para conservar filtros.
+- Mensajes flash con SweetAlert2 para login y acciones críticas.
+- Columnas de costo y observaciones en productos y bajo stock con tooltips.
+- Vista de detalle de producto muestra costo y observaciones.
+- Listado de usuarios incluye teléfono.
+- Búsquedas adicionales por ID/nombre en categorías, proveedores y localizaciones, y por múltiples campos en usuarios.
 
 ## Datos de ejemplo
 Incluye un script con usuarios, categorías, proveedores, localizaciones y más de veinte productos.
@@ -156,6 +162,20 @@ El layout define `<title><%= title ? title + ' — ' : '' %>Inventario</title>` 
 - Estáticos en `/resources` cargan sin 404.
 - `GET /db-health` OK.
 - CRUD principal funciona.
+
+## Pruebas manuales
+- Login correcto e incorrecto → aparece SweetAlert verde/rojo.
+- En Productos y Bajo stock se ve columna Costo y iconos con tooltip para descripción/observaciones.
+- Detalle de producto muestra costo y observaciones.
+- Listado de usuarios muestra columna Teléfono y permite filtrar por ID, nombre, email, rol y teléfono.
+- Búsquedas por ID y nombre funcionan en categorías, proveedores y localizaciones.
+
+## Changelog
+- Añadido SweetAlert2 y middleware flash.
+- Incorporados campos costo y observaciones en productos y bajo stock con tooltips.
+- Detalle de producto ampliado con costo y observaciones.
+- Listado de usuarios ahora muestra teléfono y admite nuevos filtros.
+- Búsquedas por ID/nombre en categorías, proveedores y localizaciones.
 
 ## Troubleshooting
 ### “Access denied for user ''@'localhost' (using password: NO)”

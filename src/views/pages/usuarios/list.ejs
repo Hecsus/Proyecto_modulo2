@@ -9,6 +9,7 @@
       <th>ID</th>
       <th>Nombre</th>
       <th>Email</th>
+      <th>Teléfono</th>
       <th>Rol</th>
       <th>Acciones</th>
     </tr>
@@ -19,6 +20,7 @@
         <td><%= u.id %></td>
         <td><%= u.nombre %> <%= u.apellidos %></td>
         <td><%= u.email %></td>
+        <td><%= u.telefono %></td>
         <td><%= u.rol %></td>
         <td>
           <a href="/usuarios/<%= u.id %>/editar" class="btn btn-sm btn-warning"><i class='bx bx-edit'></i></a>

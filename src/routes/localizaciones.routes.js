@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/localizaciones.controller');
+const { listLocalizacionesValidator } = require('../validators/localizaciones.validators');
 
-router.get('/', controller.list);
+router.get('/', listLocalizacionesValidator, controller.list);
 router.get('/nuevo', controller.form);
 router.post('/nuevo', controller.validator, controller.create);
 router.get('/:id/editar', controller.form);

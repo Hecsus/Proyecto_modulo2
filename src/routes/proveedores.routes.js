@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/proveedores.controller');
+const { listProveedoresValidator } = require('../validators/proveedores.validators');
 
-router.get('/', controller.list);
+router.get('/', listProveedoresValidator, controller.list);
 router.get('/nuevo', controller.form);
 router.post('/nuevo', controller.validator, controller.create);
 router.get('/:id/editar', controller.form);

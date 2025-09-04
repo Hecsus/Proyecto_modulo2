@@ -1,10 +1,23 @@
 const pool = require('../config/db');
-const { validationResult, body } = require('express-validator');
+const { validationResult, matchedData, body } = require('express-validator');
 
 // Listar categorías
 exports.list = async (req, res) => {
-  const [rows] = await pool.query('SELECT * FROM categorias');
-  res.render('pages/categorias/list', { title: 'Categorías', categorias: rows });
+  const errors = validationResult(req); // Validación de filtros
+  const data = matchedData(req, { locations: ['query'] }); // Datos saneados
+
+  const SORTABLE = ['id', 'nombre'];                     // Columnas permitidas para ordenar
+  const sortCol = SORTABLE.includes(data.sortBy) ? data.sortBy : 'id'; // Columna orden
+  const sortDir = (data.sortDir || 'asc').toUpperCase() === 'DESC' ? 'DESC' : 'ASC'; // Dirección
+
+  const clauses = [];                                    // Condiciones WHERE
+  const params = [];                                     // Valores parametrizados
+  if (data.id) { clauses.push('id = ?'); params.push(data.id); } // Filtro por id
+  if (data.nombre) { clauses.push('nombre LIKE ?'); params.push(`%${data.nombre}%`); } // Filtro por nombre
+
+  const whereSql = clauses.length ? 'WHERE ' + clauses.join(' AND ') : ''; // Construcción del WHERE
+  const [rows] = await pool.query(`SELECT * FROM categorias ${whereSql} ORDER BY ${sortCol} ${sortDir}`, params); // Consulta
+  res.render('pages/categorias/list', { title: 'Categorías', categorias: rows, errors: errors.array(), query: req.query }); // Render
 };
 
 // Mostrar formulario

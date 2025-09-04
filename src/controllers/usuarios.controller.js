@@ -1,13 +1,38 @@
 const pool = require('../config/db');
 const bcrypt = require('bcryptjs');
-const { validationResult } = require('express-validator');
+const { validationResult, matchedData } = require('express-validator');
 
-// Listar usuarios con su rol
+// Listar usuarios con filtros opcionales
 exports.list = async (req, res) => {
-  const [rows] = await pool.query('SELECT u.id, u.nombre, u.apellidos, u.email, r.nombre AS rol FROM usuarios u JOIN roles r ON u.rol_id = r.id');
-  const message = req.session.message;
-  delete req.session.message;
-  res.render('pages/usuarios/list', { title: 'Usuarios', usuarios: rows, message });
+  const errors = validationResult(req);                              // Resultado de validaciones
+  const data = matchedData(req, { locations: ['query'] });           // Datos saneados
+
+  const SORTABLE = {                                                // Columnas permitidas para ORDER BY
+    id: 'u.id',
+    nombre: 'u.nombre',
+    email: 'u.email',
+    rol: 'r.nombre',
+    telefono: 'u.telefono'
+  };
+  const sortCol = SORTABLE[data.sortBy] || 'u.id';                  // Columna ordenada
+  const sortDir = (data.sortDir || 'asc').toUpperCase() === 'DESC' ? 'DESC' : 'ASC'; // Dirección
+
+  const clauses = [];                                               // Condiciones WHERE
+  const params = [];                                                // Valores parametrizados
+  if (data.id) { clauses.push('u.id = ?'); params.push(data.id); }
+  if (data.nombre) { clauses.push('u.nombre LIKE ?'); params.push(`%${data.nombre}%`); }
+  if (data.email) { clauses.push('u.email LIKE ?'); params.push(`%${data.email}%`); }
+  if (data.rol) { clauses.push('r.nombre = ?'); params.push(data.rol); }
+  if (data.telefono) { clauses.push('u.telefono LIKE ?'); params.push(`%${data.telefono}%`); }
+
+  const whereSql = clauses.length ? 'WHERE ' + clauses.join(' AND ') : '';
+  const [rows] = await pool.query(
+    `SELECT u.id, u.nombre, u.apellidos, u.email, u.telefono, r.nombre AS rol FROM usuarios u JOIN roles r ON u.rol_id = r.id ${whereSql} ORDER BY ${sortCol} ${sortDir}`,
+    params
+  );
+  const message = req.session.message;                             // Mensajes de sesión previos
+  delete req.session.message;                                      // Se muestran una sola vez
+  res.render('pages/usuarios/list', { title: 'Usuarios', usuarios: rows, message, errors: errors.array(), query: req.query });
 };
 
 // Mostrar formulario para crear o editar

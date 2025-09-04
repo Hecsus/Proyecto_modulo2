@@ -14,5 +14,15 @@
       <%- body %>
     </main>
     <%- include('../partials/footer') %>
+    <% if (flash) { %>
+      <script>
+        Swal.fire({
+          icon: '<%= flash.type === "success" ? "success" : "error" %>',
+          title: '<%= flash.message %>',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      </script>
+    <% } %>
   </body>
 </html>
