@@ -14,7 +14,8 @@ exports.list = async (req, res) => {
       errors: errors.array(),
       query: req.query,
       page: 1,
-      totalPages: 1
+      totalPages: 1,
+      viewClass: 'view-localizaciones'
     });
   }
 
@@ -45,7 +46,8 @@ exports.list = async (req, res) => {
     errors: [],
     query: req.query,
     page,
-    totalPages
+    totalPages,
+    viewClass: 'view-localizaciones'
   });
 };
 
@@ -57,14 +59,14 @@ exports.form = async (req, res) => {
     localizacion = rows[0];
   }
   const title = req.params.id ? 'Editar localización' : 'Nueva localización';
-  res.render('pages/localizaciones/form', { title, localizacion, errors: [] });
+  res.render('pages/localizaciones/form', { title, localizacion, errors: [], viewClass: 'view-localizaciones' });
 };
 
 // Crear
 exports.create = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.render('pages/localizaciones/form', { title: 'Nueva localización', localizacion: null, errors: errors.array() });
+    return res.render('pages/localizaciones/form', { title: 'Nueva localización', localizacion: null, errors: errors.array(), viewClass: 'view-localizaciones' });
   }
   await pool.query('INSERT INTO localizaciones (nombre) VALUES (?)', [req.body.nombre]);
   res.redirect('/localizaciones');
@@ -77,7 +79,8 @@ exports.update = async (req, res) => {
     return res.render('pages/localizaciones/form', {
       title: 'Editar localización',
       localizacion: { id: req.params.id, nombre: req.body.nombre },
-      errors: errors.array()
+      errors: errors.array(),
+      viewClass: 'view-localizaciones'
     });
   }
   await pool.query('UPDATE localizaciones SET nombre=? WHERE id=?', [req.body.nombre, req.params.id]);

@@ -14,7 +14,8 @@ exports.list = async (req, res) => {
       errors: errors.array(),
       query: req.query,
       page: 1,
-      totalPages: 1
+      totalPages: 1,
+      viewClass: 'view-proveedores'
     });
   }
 
@@ -45,7 +46,8 @@ exports.list = async (req, res) => {
     errors: [],
     query: req.query,
     page,
-    totalPages
+    totalPages,
+    viewClass: 'view-proveedores'
   });
 };
 
@@ -57,14 +59,14 @@ exports.form = async (req, res) => {
     proveedor = rows[0];
   }
   const title = req.params.id ? 'Editar proveedor' : 'Nuevo proveedor';
-  res.render('pages/proveedores/form', { title, proveedor, errors: [] });
+  res.render('pages/proveedores/form', { title, proveedor, errors: [], viewClass: 'view-proveedores' });
 };
 
 // Crear
 exports.create = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.render('pages/proveedores/form', { title: 'Nuevo proveedor', proveedor: null, errors: errors.array() });
+    return res.render('pages/proveedores/form', { title: 'Nuevo proveedor', proveedor: null, errors: errors.array(), viewClass: 'view-proveedores' });
   }
   await pool.query('INSERT INTO proveedores (nombre) VALUES (?)', [req.body.nombre]);
   res.redirect('/proveedores');
@@ -77,7 +79,8 @@ exports.update = async (req, res) => {
     return res.render('pages/proveedores/form', {
       title: 'Editar proveedor',
       proveedor: { id: req.params.id, nombre: req.body.nombre },
-      errors: errors.array()
+      errors: errors.array(),
+      viewClass: 'view-proveedores'
     });
   }
   await pool.query('UPDATE proveedores SET nombre=? WHERE id=?', [req.body.nombre, req.params.id]);

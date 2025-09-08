@@ -169,6 +169,15 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 9. Badges de categoría/proveedor/localización conservan color consistente en listas y detalle.
 10. Paginación no abre automáticamente el panel de búsqueda.
 
+Al visitar `/panel`, `/productos`, `/bajo-stock`, `/usuarios`, `/categorias`, `/proveedores` y `/localizaciones` confirmar:
+- No hay errores en `layout.ejs`.
+- Cada vista aplica su fondo mediante `viewClass`.
+- Búsqueda y paginación continúan funcionando sin desplegar filtros automáticamente.
+- Persisten popups de operadores y botones Buscar/Limpiar.
+- El badge "Bajo stock" se muestra en detalles cuando corresponde.
+- No aparecen subtítulos redundantes bajo los títulos.
+- La consola del navegador no muestra warnings por imports o variables sin uso.
+
 ## Troubleshooting
 - **DB access denied**: revisa credenciales y privilegios MySQL.
 - **Módulos EJS/layouts no encontrados**: ejecuta `npm install`.
@@ -179,6 +188,10 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-09 00:30] – Fix viewClass + limpieza y guía
+- Añadido fallback seguro de viewClass en layout.ejs y paso de viewClass desde controladores.
+- Limpieza de imports/fragmentos sin uso y subtítulos redundantes en vistas.
+- Añadida guía pedagógica en docs/guia_aprendiz.txt explicando arquitectura, archivos y flujo.
 ## [2025-09-08 22:26] – UX operadores, fondos por vista, badge detalle, colores taxonomías, limpieza subtítulos
 - Limpieza de textos de ayuda y palabra "Operador" en filtros de Productos y Bajo stock; etiquetas unificadas.
 - Eliminación de subtítulos redundantes en Panel, Productos y Bajo stock.

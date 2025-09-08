@@ -63,6 +63,7 @@ app.use((req, res, next) => {                     // Middleware que expone datos
   res.locals.userName = req.session.user ? req.session.user.nombre : null; // Nombre del usuario
   res.locals.userRole = req.session.user ? req.session.user.rol : null;    // Rol del usuario logueado
   res.locals.request = req;                      // Objeto de la petición disponible en las vistas
+  res.locals.viewClass = res.locals.viewClass || ''; // Clase de fondo por vista; cadena vacía por defecto
   next();                                         // Continúa con el siguiente middleware
 });
 

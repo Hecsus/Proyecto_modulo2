@@ -14,7 +14,8 @@ exports.list = async (req, res) => {
       errors: errors.array(),
       query: req.query,
       page: 1,
-      totalPages: 1
+      totalPages: 1,
+      viewClass: 'view-categorias'
     });
   }
 
@@ -45,7 +46,8 @@ exports.list = async (req, res) => {
     errors: [],
     query: req.query,
     page,
-    totalPages
+    totalPages,
+    viewClass: 'view-categorias'
   });
 };
 
@@ -57,14 +59,14 @@ exports.form = async (req, res) => {
     categoria = rows[0];
   }
   const title = req.params.id ? 'Editar categoría' : 'Nueva categoría';
-  res.render('pages/categorias/form', { title, categoria, errors: [] });
+  res.render('pages/categorias/form', { title, categoria, errors: [], viewClass: 'view-categorias' });
 };
 
 // Crear categoría
 exports.create = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.render('pages/categorias/form', { title: 'Nueva categoría', categoria: null, errors: errors.array() });
+    return res.render('pages/categorias/form', { title: 'Nueva categoría', categoria: null, errors: errors.array(), viewClass: 'view-categorias' });
   }
   await pool.query('INSERT INTO categorias (nombre) VALUES (?)', [req.body.nombre]);
   res.redirect('/categorias');
@@ -77,7 +79,8 @@ exports.update = async (req, res) => {
     return res.render('pages/categorias/form', {
       title: 'Editar categoría',
       categoria: { id: req.params.id, nombre: req.body.nombre },
-      errors: errors.array()
+      errors: errors.array(),
+      viewClass: 'view-categorias'
     });
   }
   await pool.query('UPDATE categorias SET nombre=? WHERE id=?', [req.body.nombre, req.params.id]);

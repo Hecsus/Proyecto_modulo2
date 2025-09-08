@@ -11,7 +11,7 @@ const { validationResult } = require('express-validator'); // Manejo de validaci
  * Manejo de errores: si la vista no existe, Express arrojará un 500.
  */
 exports.showLogin = (req, res) => {
-  res.render('pages/login', { title: 'Login', errors: [] });
+  res.render('pages/login', { title: 'Login', errors: [], viewClass: '' });
 };
 
 /**
