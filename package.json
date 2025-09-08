@@ -1,0 +1,23 @@
+{
+  "name": "inventario-mod2",
+  "version": "1.0.0",
+  "description": "Inventario Módulo 2",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
+    "express": "^2.5.11",
+    "express-ejs-layouts": "^2.5.1",
+    "express-session": "^1.0.0",
+    "express-validator": "^7.0.1",
+    "mysql2": "^3.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.4.1"
+  }
+}
