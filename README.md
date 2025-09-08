@@ -90,6 +90,38 @@ DB_NAME=inventario
 ```
 En XAMPP/MAMP el usuario `root` suele ir sin contraseña → deja `DB_PASSWORD` vacío. En producción usa un usuario propio con permisos limitados y cambia `SESSION_SECRET`.
 
+## Seguridad y Dependencias
+
+### Reinstalación limpia (Windows)
+```css
+taskkill /F /IM node.exe 2>nul
+rmdir /S /Q node_modules
+del /F /Q package-lock.json
+npm install
+```
+
+### Por qué NO usar `npm audit fix --force`
+`npm audit fix --force` puede instalar versiones mayores incompatibles (p.ej. Express 2.x/5.x) y romper la aplicación.
+
+### Despliegue sin devDependencies
+```lua
+npm ci --omit=dev
+```
+
+### Auditoría sólo de producción
+```lua
+npm audit --omit=dev
+```
+
+### Overrides aplicados
+Se bloquean transitivas vulnerables: `braces`, `micromatch`, `extglob`, `nanomatch`, `cross-spawn`, `ansi-styles`, `chalk`, `debug`, `color-convert`, `color-name` y `got`.
+
+### Pasos de verificación rápida
+1. `node -v` (Node 18+ recomendado).
+2. `npm run dev` arranca sin el error `Cannot find module 'uid2'`.
+3. `npm audit --omit=dev` muestra 0 o mínimas vulnerabilidades.
+4. Las rutas `/`, `/login` y `/health` responden correctamente.
+
 ## Funcionalidades
 - Login/logout con sesiones y contraseñas hash (bcryptjs).
 - Roles de usuario (admin/operador) y autorización por middleware.
@@ -267,6 +299,12 @@ Revisa inputs de formularios con express-validator (servidor) además de validac
 - Panel de inventario con contadores.
 - Navbar responsive con saludo, enlaces activos y títulos dinámicos.
 - Script alternativo `20250903_semillas_realistas_delete.sql` sin TRUNCATE.
+
+### [2025-09-08 17:44] – Saneado de dependencias y fix 'uid2'
+- Bloqueadas transitivas vulnerables con "overrides" en package.json.
+- Fijado express-session a ^1.18.0 (evita dependencia a 'uid2'; usa 'uid-safe').
+- Restaurado Express 4.19.x y stack estable.
+- README: instrucciones de reinstalación limpia, evitar --force, despliegue sin devDependencies, auditoría prod.
 
 ### 2025-09-20
 - Icono para Proveedores en panel.

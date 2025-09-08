@@ -7,7 +7,7 @@ require('dotenv').config();               // Carga variables de entorno para con
 const path = require('path');             // Módulo nativo para resolver rutas en distintos SO
 const express = require('express');       // Framework que simplifica la creación del servidor HTTP
 const ejsLayouts = require('express-ejs-layouts'); // Permite reutilizar layouts en las vistas EJS
-const session = require('express-session'); // Gestiona sesiones de usuario mediante cookies
+const session = require('express-session'); // Middleware de sesiones; desde v1.18.0 genera IDs con 'uid-safe' (no usa el paquete vulnerable 'uid2')
 
 const requireAuth = require('./middlewares/requireAuth'); // Middleware que exige autenticación para ciertas rutas
 const requireRole = require('./middlewares/requireRole'); // Middleware que limita acceso según rol del usuario
@@ -34,11 +34,11 @@ app.use(express.urlencoded({ extended: false })); // Parseo de formularios (appl
 
 app.use(express.static(path.join(__dirname, 'public'))); // Servir archivos estáticos como /resources
 
-app.use(session({                               // Inicializa la gestión de sesiones
-  secret: process.env.SESSION_SECRET || 'secret', // Clave para firmar la cookie de sesión
-  resave: false,                                  // No regrabar sesión si no hay cambios
-  saveUninitialized: false,                       // Evita sesiones vacías
-  cookie: { httpOnly: true, sameSite: 'lax' }     // Protege contra XSS y CSRF básicas
+app.use(session({                               // Inicializa la sesión; internamente usa 'uid-safe' para generar IDs aleatorios
+  secret: process.env.SESSION_SECRET || 'secret', // Clave secreta para firmar la cookie de sesión
+  resave: false,                                  // No regraba la sesión si no hay cambios
+  saveUninitialized: false,                       // Evita almacenar sesiones sin datos
+  cookie: { httpOnly: true, sameSite: 'lax' }     // Cookie accesible solo por HTTP y con política SameSite laxa
 }));
 
 app.use((req, res, next) => {                   // Middleware que gestiona mensajes flash
