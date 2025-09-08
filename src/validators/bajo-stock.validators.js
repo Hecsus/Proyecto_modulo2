@@ -2,7 +2,7 @@ const { query } = require('express-validator');
 const { OPERATOR_KEYS } = require('../utils/sql'); // Operadores válidos para comparaciones
 
 // Filtros opcionales para listado de bajo stock
-const SORT_BY = ['id', 'nombre', 'precio', 'stock', 'stock_minimo'];
+const SORT_BY = ['id','nombre','precio','costo','stock','stock_minimo','localizacion'];
 const SORT_DIR = ['asc', 'desc'];
 const OPS = OPERATOR_KEYS; // ['eq','lte','gte']
 

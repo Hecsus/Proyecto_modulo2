@@ -1,45 +1,51 @@
 <h1 class="mb-4">Resumen</h1>
+<div class="subheader mb-3"><span class="badge badge-accent">Panel</span></div>
 <div class="row g-3">
   <div class="col-6 col-md-4 col-lg-2">
-    <div class="card text-center h-100">
+    <div class="card text-center h-100 summary-card border-brand">
       <div class="card-body">
-          <i class="tile-icon <%= icons.productos %>"></i>
+        <i class="tile-icon text-brand <%= icons.productos %>"></i>
         <p class="display-6"><%= counts.productos %></p>
         <p class="text-muted mb-0">Productos</p>
       </div>
     </div>
   </div>
   <div class="col-6 col-md-4 col-lg-2">
-    <div class="card text-center h-100">
+    <div class="card text-center h-100 summary-card border-accent">
       <div class="card-body">
-          <i class="tile-icon <%= icons.categorias %>"></i>
+        <i class="tile-icon text-accent <%= icons.categorias %>"></i>
         <p class="display-6"><%= counts.categorias %></p>
         <p class="text-muted mb-0">Categorías</p>
       </div>
     </div>
   </div>
   <div class="col-6 col-md-4 col-lg-2">
-    <div class="card text-center h-100">
+    <div class="card text-center h-100 summary-card border-muted">
       <div class="card-body">
-          <i class="tile-icon <%= icons.proveedores %>"></i>
+        <svg class="tile-icon text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="1" y="7" width="13" height="8" rx="2" ry="2"></rect>
+          <path d="M14 9h4l3 3v3h-7z"></path>
+          <circle cx="5.5" cy="18" r="1.5"></circle>
+          <circle cx="17.5" cy="18" r="1.5"></circle>
+        </svg>
         <p class="display-6"><%= counts.proveedores %></p>
         <p class="text-muted mb-0">Proveedores</p>
       </div>
     </div>
   </div>
   <div class="col-6 col-md-4 col-lg-2">
-    <div class="card text-center h-100">
+    <div class="card text-center h-100 summary-card border-success">
       <div class="card-body">
-          <i class="tile-icon <%= icons.localizaciones %>"></i>
+        <i class="tile-icon text-success <%= icons.localizaciones %>"></i>
         <p class="display-6"><%= counts.localizaciones %></p>
         <p class="text-muted mb-0">Localizaciones</p>
       </div>
     </div>
   </div>
   <div class="col-6 col-md-4 col-lg-2">
-    <div class="card text-center h-100">
+    <div class="card text-center h-100 summary-card border-warning">
       <div class="card-body">
-          <i class="tile-icon <%= icons.bajoStock %>"></i>
+        <i class="tile-icon text-warning <%= icons.bajoStock %>"></i>
         <p class="display-6"><%= counts.bajoStock %></p>
         <p class="text-muted mb-0">Bajo stock</p>
       </div>
@@ -47,18 +53,18 @@
   </div>
   <% if (isAdmin) { %>
     <div class="col-6 col-md-4 col-lg-2">
-      <div class="card text-center h-100">
+      <div class="card text-center h-100 summary-card border-brand">
         <div class="card-body">
-          <i class="tile-icon <%= icons.usuarios %>"></i>
+          <i class="tile-icon text-brand <%= icons.usuarios %>"></i>
           <p class="display-6"><%= counts.usuarios %></p>
           <p class="text-muted mb-0">Usuarios</p>
         </div>
       </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
-      <div class="card text-center h-100">
+      <div class="card text-center h-100 summary-card border-danger">
         <div class="card-body">
-          <i class="tile-icon <%= icons.admins %>"></i>
+          <i class="tile-icon text-danger <%= icons.admins %>"></i>
           <p class="display-6"><%= counts.admins %></p>
           <p class="text-muted mb-0">Admins</p>
         </div>

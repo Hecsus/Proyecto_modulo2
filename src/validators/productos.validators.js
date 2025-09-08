@@ -18,7 +18,7 @@ exports.productValidator = [
 // Filtros opcionales para listados de productos
 // Cada parámetro en la query se valida y, si no se envía, se omite.
 // El controlador aplicará '=' por defecto cuando haya valor pero falte operador.
-const SORT_BY = ['id', 'nombre', 'precio', 'stock', 'stock_minimo'];
+const SORT_BY = ['id','nombre','precio','costo','stock','stock_minimo','localizacion'];
 const SORT_DIR = ['asc', 'desc'];
 const OPS = OPERATOR_KEYS; // ['eq','lte','gte']
 

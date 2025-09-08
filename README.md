@@ -2,6 +2,15 @@
 
 Aplicación de gestión de inventario pensada para prácticas del módulo 2. Incluye login con roles, CRUDs completos y panel con métricas.
 
+## Histórico anterior (resumen)
+- Corrección de vistas EJS y layouts.
+- Reestructuración inicial del proyecto y semillas SQL.
+- Filtros y ordenación con operadores numéricos.
+- Checkboxes en nuevo producto.
+- SweetAlert2 en login.
+- Fixes de operadores y contadores del panel.
+- Navbar responsive y títulos dinámicos.
+
 ## Stack técnico
 - Node.js >=18
 - Express 4.19.x
@@ -126,6 +135,9 @@ Solo los usuarios con rol **admin** pueden crear, editar o eliminar otros usuari
 ## Stock vs Stock mínimo
 Los listados muestran badges comparando el stock actual con el mínimo definido: si el stock es menor al mínimo la etiqueta aparece en rojo, de lo contrario en verde.
 
+## Filtros y operadores
+Los formularios de búsqueda permiten elegir operadores '=', '≤' o '≥' para precio, stock y stock mínimo. Si se deja sin operador pero con valor, el backend asume '=' por defecto y se muestra un aviso informativo.
+
 ## Navegación “Volver”
 Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 
@@ -146,11 +158,11 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - [ ] Auditoría de producción sin vulnerabilidades críticas.
 
 ## Pruebas manuales sugeridas
-1. Acceder al panel y verificar contadores.
-2. Crear/editar productos y comprobar listado de **bajo stock**.
-3. Crear usuarios (solo admin) y validar teléfonos.
-4. Revisar la navbar responsive en distintos tamaños.
-5. Confirmar títulos dinámicos en varias vistas.
+1. Acceder al panel y verificar contadores e iconos.
+2. En Productos, buscar con precio/stock/mín sin operador: aparece popup informativo solo una vez; ejecutar búsqueda usa '='.
+3. En Bajo stock, repetir la prueba anterior.
+4. En cualquier listado, ordenar por Costo y comprobar el orden.
+5. Revisar navbar y subheaders en distintas vistas; títulos dinámicos.
 
 ## Troubleshooting
 - **DB access denied**: revisa credenciales y privilegios MySQL.
@@ -162,6 +174,12 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-08 19:25] – Popup de operadores, ordenar por costo, estilo visual y README restaurado
+- Añadido popup (SweetAlert2) y tooltip para operadores en productos y bajo stock; backend mantiene '=' por defecto si no se elige operador.
+- “Ordenar por…” ampliado con Costo y campos pendientes; validación/whitelist en controladores/validators.
+- Estilo visual renovado con CSS variables, cards de resumen con iconos SVG (sin binarios), navbar y subheaders diferenciados.
+- README restaurado y unificado: se recuperan/recapitulán changelogs previos y se documenta esta iteración.
+
 ### [2025-09-08 18:35] – Eliminación de nodemon y saneado de vulnerabilidades
 - Eliminado nodemon y devDependencies asociadas.
 - Estabilizado stack en Express 4.19.x + express-session ^1.18.0.

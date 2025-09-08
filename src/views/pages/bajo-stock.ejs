@@ -1,4 +1,5 @@
 <h1>Bajo stock</h1>
+<div class="subheader mb-3"><span class="badge badge-warning">Listado</span></div>
 <button class="btn btn-outline-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#searchBox">Buscar</button>
 <div id="searchBox" class="collapse"><!-- Collapse cerrado por defecto -->
   <% if (errors && errors.length) { %>
@@ -9,11 +10,12 @@
       </ul>
     </div>
   <% } %>
-  <form class="row g-3" method="get" action="<%= basePath %>">
+  <form class="row g-3" method="get" action="<%= basePath %>" data-search="bajoStock">
     <div class="col-md-3">
       <input type="text" name="qName" class="form-control" placeholder="Nombre" value="<%= query.qName || '' %>">
     </div>
     <div class="col-md-3">
+      <label class="form-label">Operador (Precio)</label>
       <div class="input-group">
         <select name="priceOp" class="form-select">
           <option value="">Operador</option>
@@ -21,11 +23,13 @@
           <option value="lte" <%= query.priceOp==='lte'?'selected':'' %>><=</option>
           <option value="gte" <%= query.priceOp==='gte'?'selected':'' %>>>=</option>
         </select>
+        <span class="input-group-text"><i class='bx bx-info-circle' data-bs-toggle="tooltip" title="Selecciona operador (=, ≤, ≥). Si no eliges ninguno, se usa '=' por defecto."></i></span>
         <input type="number" step="0.01" name="price" class="form-control" placeholder="Precio" value="<%= query.price || '' %>">
       </div>
       <div class="form-text">Selecciona operador (=, ≤, ≥). Si no eliges ninguno, se usa '=' por defecto.</div>
     </div>
     <div class="col-md-3">
+      <label class="form-label">Operador (Stock)</label>
       <div class="input-group">
         <select name="stockOp" class="form-select">
           <option value="">Operador</option>
@@ -33,11 +37,13 @@
           <option value="lte" <%= query.stockOp==='lte'?'selected':'' %>><=</option>
           <option value="gte" <%= query.stockOp==='gte'?'selected':'' %>>>=</option>
         </select>
+        <span class="input-group-text"><i class='bx bx-info-circle' data-bs-toggle="tooltip" title="Selecciona operador (=, ≤, ≥). Si no eliges ninguno, se usa '=' por defecto."></i></span>
         <input type="number" name="stock" class="form-control" placeholder="Stock" value="<%= query.stock || '' %>">
       </div>
       <div class="form-text">Selecciona operador (=, ≤, ≥). Si no eliges ninguno, se usa '=' por defecto.</div>
     </div>
     <div class="col-md-3">
+      <label class="form-label">Operador (Stock mínimo)</label>
       <div class="input-group">
         <select name="minOp" class="form-select">
           <option value="">Operador</option>
@@ -45,6 +51,7 @@
           <option value="lte" <%= query.minOp==='lte'?'selected':'' %>><=</option>
           <option value="gte" <%= query.minOp==='gte'?'selected':'' %>>>=</option>
         </select>
+        <span class="input-group-text"><i class='bx bx-info-circle' data-bs-toggle="tooltip" title="Selecciona operador (=, ≤, ≥). Si no eliges ninguno, se usa '=' por defecto."></i></span>
         <input type="number" name="min" class="form-control" placeholder="Stock mín" value="<%= query.min || '' %>">
       </div>
       <div class="form-text">Selecciona operador (=, ≤, ≥). Si no eliges ninguno, se usa '=' por defecto.</div>
@@ -78,8 +85,10 @@
         <option value="id" <%= (query.sortBy || 'id')==='id' ? 'selected' : '' %>>Ordenar por ID</option>
         <option value="nombre" <%= query.sortBy==='nombre'?'selected':'' %>>Nombre</option>
         <option value="precio" <%= query.sortBy==='precio'?'selected':'' %>>Precio</option>
+        <option value="costo" <%= query.sortBy==='costo'?'selected':'' %>>Costo</option>
         <option value="stock" <%= query.sortBy==='stock'?'selected':'' %>>Stock</option>
         <option value="stock_minimo" <%= query.sortBy==='stock_minimo'?'selected':'' %>>Stock mínimo</option>
+        <option value="localizacion" <%= query.sortBy==='localizacion'?'selected':'' %>>Localización</option>
       </select>
     </div>
     <div class="col-md-3">

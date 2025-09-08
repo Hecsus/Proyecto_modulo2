@@ -11,12 +11,14 @@ exports.list = async (req, res) => {
   const limit = 10;                           // Elementos por página
   const offset = (page - 1) * limit;          // Desplazamiento
 
-  const SORTABLE = {                          // Columnas permitidas para ordenar
+  const SORTABLE = {
     id: 'p.id',
     nombre: 'p.nombre',
     precio: 'p.precio',
+    costo: 'p.costo',
     stock: 'p.stock',
-    stock_minimo: 'p.stock_minimo'
+    stock_minimo: 'p.stock_minimo',
+    localizacion: 'l.nombre'
   };
 
   const sortCol = SORTABLE[data.sortBy] || 'p.id';
