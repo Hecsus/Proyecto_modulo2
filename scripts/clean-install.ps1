@@ -1,4 +1,4 @@
-# Script de limpieza/reinstalación para Windows
+# Limpieza e instalación limpia para Windows
 Write-Host "Cerrando procesos Node..." -ForegroundColor Cyan
 taskkill /F /IM node.exe 2>$null
 
