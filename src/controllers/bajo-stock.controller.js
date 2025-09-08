@@ -56,7 +56,7 @@ exports.list = async (req, res) => {
   const baseSql = `FROM productos p LEFT JOIN localizaciones l ON p.localizacion_id = l.id ${joinSql} ${whereSql}`;
 
   const [rows] = await pool.query(
-    `SELECT DISTINCT p.*, l.nombre AS localizacion ${baseSql} ORDER BY ${sortCol} ${sortDirSql} LIMIT ? OFFSET ?`,
+    `SELECT DISTINCT p.*, l.id AS localizacion_id, l.nombre AS localizacion ${baseSql} ORDER BY ${sortCol} ${sortDirSql} LIMIT ? OFFSET ?`,
     [...params, limit, offset]
   );
 
@@ -81,6 +81,7 @@ exports.list = async (req, res) => {
     categorias,
     proveedores,
     query: req.query,
-    errors: errors.array()
+    errors: errors.array(),
+    viewClass: 'view-bajo-stock' // Clase de fondo para la vista
   });
 };

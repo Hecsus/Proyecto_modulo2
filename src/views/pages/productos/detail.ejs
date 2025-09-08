@@ -1,10 +1,28 @@
+<% if (isBajoStock) { %>
+  <span class="badge badge-bajo-stock">Bajo stock</span>
+<% } %>
 <h1><%= producto.nombre %></h1>
 <p><strong>Descripción:</strong> <%= producto.descripcion %></p>
 <p><strong>Costo:</strong> <%= producto.costo %></p>
 <p><strong>Precio:</strong> <%= producto.precio %></p>
 <p><strong>Stock:</strong> <%= producto.stock %> / <%= producto.stock_minimo %></p>
-<p><strong>Localización:</strong> <%= producto.localizacion %></p>
-<p><strong>Categorías:</strong> <%= producto.categorias.map(c=>c.nombre).join(', ') %></p>
-<p><strong>Proveedores:</strong> <%= producto.proveedores.map(p=>p.nombre).join(', ') %></p>
+<p><strong>Localización:</strong>
+  <% if (producto.localizacion) { const bucket = producto.localizacion_id % 12; %>
+    <span class="tag tag-bucket-<%= bucket %>"><%= producto.localizacion %></span>
+  <% } else { %>-
+  <% } %>
+</p>
+<p><strong>Categorías:</strong>
+  <% if (producto.categorias.length) { producto.categorias.forEach(c => { const bucket = c.id % 12; %>
+    <span class="tag tag-bucket-<%= bucket %>"><%= c.nombre %></span>
+  <% }) } else { %>-
+  <% } %>
+</p>
+<p><strong>Proveedores:</strong>
+  <% if (producto.proveedores.length) { producto.proveedores.forEach(pv => { const bucket = pv.id % 12; %>
+    <span class="tag tag-bucket-<%= bucket %>"><%= pv.nombre %></span>
+  <% }) } else { %>-
+  <% } %>
+</p>
 <p><strong>Observaciones:</strong> <%= producto.observaciones %></p>
 <a href="<%= returnTo || '/productos' %>" class="btn btn-secondary">Volver</a>

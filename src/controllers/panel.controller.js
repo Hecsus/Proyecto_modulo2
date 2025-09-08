@@ -33,5 +33,11 @@ exports.index = async (req, res) => {
     counts.admins = adm[0].n;
   }
 
-  res.render('pages/panel', { title: 'Panel de inventario', counts, icons, isAdmin });
+  res.render('pages/panel', {
+    title: 'Panel de inventario',
+    counts,
+    icons,
+    isAdmin,
+    viewClass: 'view-panel' // Clase de fondo para la vista
+  });
 };

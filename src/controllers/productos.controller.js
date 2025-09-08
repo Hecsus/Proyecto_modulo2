@@ -59,7 +59,7 @@ exports.list = async (req, res) => {
   const baseSql = `FROM productos p LEFT JOIN localizaciones l ON p.localizacion_id = l.id ${joinSql} ${whereSql}`;
 
   const [rows] = await pool.query(
-    `SELECT DISTINCT p.*, l.nombre AS localizacion ${baseSql} ORDER BY ${sortCol} ${sortDirSql} LIMIT ? OFFSET ?`,
+    `SELECT DISTINCT p.*, l.id AS localizacion_id, l.nombre AS localizacion ${baseSql} ORDER BY ${sortCol} ${sortDirSql} LIMIT ? OFFSET ?`,
     [...params, limit, offset]
   );
 
@@ -84,7 +84,8 @@ exports.list = async (req, res) => {
     categorias,
     proveedores,
     query: req.query,             // Valores actuales de los filtros para repoblar inputs
-    errors: errors.array()        // Errores de validación a mostrar en la vista
+    errors: errors.array(),       // Errores de validación a mostrar en la vista
+    viewClass: 'view-productos'   // Clase de fondo para la vista
   });
 };
 
@@ -200,10 +201,14 @@ exports.remove = async (req, res) => {
 };
 
 // Detalle de producto
+// Propósito: mostrar ficha de producto con categorías/proveedores y estado de stock
+// Entradas: req.params.id (ID numérico del producto)
+// Salidas: renderiza vista de detalle con producto y bandera isBajoStock
+// Dependencias: pool (MySQL), tablas productos, categorias, proveedores, localizaciones
 exports.detail = async (req, res) => {
   const id = req.params.id;
   const [rows] = await pool.query(
-    `SELECT p.*, l.nombre AS localizacion FROM productos p LEFT JOIN localizaciones l ON p.localizacion_id = l.id WHERE p.id = ?`,
+    `SELECT p.*, l.id AS localizacion_id, l.nombre AS localizacion FROM productos p LEFT JOIN localizaciones l ON p.localizacion_id = l.id WHERE p.id = ?`,
     [id]
   );
   if (!rows.length) return res.redirect('/productos');
@@ -218,5 +223,12 @@ exports.detail = async (req, res) => {
   );
   producto.categorias = cats;
   producto.proveedores = provs;
-  res.render('pages/productos/detail', { title: 'Detalle de producto', producto, returnTo: req.query.returnTo });
+  const isBajoStock = producto.stock < producto.stock_minimo; // Calcula si está por debajo del mínimo
+  res.render('pages/productos/detail', {
+    title: 'Detalle de producto',
+    producto,
+    returnTo: req.query.returnTo,
+    isBajoStock,
+    viewClass: 'view-productos'
+  });
 };

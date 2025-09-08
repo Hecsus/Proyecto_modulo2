@@ -163,6 +163,11 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 3. En Bajo stock, repetir la prueba anterior.
 4. En cualquier listado, ordenar por Costo y comprobar el orden.
 5. Revisar navbar y subheaders en distintas vistas; títulos dinámicos.
+6. Fondos por vista: panel, productos y bajo stock muestran colores suaves distintos.
+7. Formularios de búsqueda: etiquetas "Precio", "Stock" y "Stock mín." sin textos de ayuda redundantes; el popup aparece si falta operador.
+8. Detalle de producto muestra badge "Bajo stock" si el stock es menor al mínimo.
+9. Badges de categoría/proveedor/localización conservan color consistente en listas y detalle.
+10. Paginación no abre automáticamente el panel de búsqueda.
 
 ## Troubleshooting
 - **DB access denied**: revisa credenciales y privilegios MySQL.
@@ -174,6 +179,12 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-08 22:26] – UX operadores, fondos por vista, badge detalle, colores taxonomías, limpieza subtítulos
+- Limpieza de textos de ayuda y palabra "Operador" en filtros de Productos y Bajo stock; etiquetas unificadas.
+- Eliminación de subtítulos redundantes en Panel, Productos y Bajo stock.
+- Nuevos fondos por vista mediante variables CSS.
+- Badge reutilizable de "Bajo stock" y colores determinísticos por categoría/proveedor/localización.
+- README ampliado con pruebas manuales actualizadas.
 ## [2025-09-08 19:25] – Popup de operadores, ordenar por costo, estilo visual y README restaurado
 - Añadido popup (SweetAlert2) y tooltip para operadores en productos y bajo stock; backend mantiene '=' por defecto si no se elige operador.
 - “Ordenar por…” ampliado con Costo y campos pendientes; validación/whitelist en controladores/validators.

@@ -1,5 +1,4 @@
 <h1>Bajo stock</h1>
-<div class="subheader mb-3"><span class="badge badge-warning">Listado</span></div>
 <button class="btn btn-outline-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#searchBox">Buscar</button>
 <div id="searchBox" class="collapse"><!-- Collapse cerrado por defecto -->
   <% if (errors && errors.length) { %>
@@ -15,10 +14,10 @@
       <input type="text" name="qName" class="form-control" placeholder="Nombre" value="<%= query.qName || '' %>">
     </div>
     <div class="col-md-3">
-      <label class="form-label">Operador (Precio)</label>
+      <label class="form-label">Precio</label>
       <div class="input-group">
         <select name="priceOp" class="form-select">
-          <option value="">Operador</option>
+          <option value=""></option>
           <option value="eq" <%= query.priceOp==='eq'?'selected':'' %>>=</option>
           <option value="lte" <%= query.priceOp==='lte'?'selected':'' %>><=</option>
           <option value="gte" <%= query.priceOp==='gte'?'selected':'' %>>>=</option>
@@ -26,13 +25,12 @@
         <span class="input-group-text"><i class='bx bx-info-circle' data-bs-toggle="tooltip" title="Selecciona operador (=, ≤, ≥). Si no eliges ninguno, se usa '=' por defecto."></i></span>
         <input type="number" step="0.01" name="price" class="form-control" placeholder="Precio" value="<%= query.price || '' %>">
       </div>
-      <div class="form-text">Selecciona operador (=, ≤, ≥). Si no eliges ninguno, se usa '=' por defecto.</div>
     </div>
     <div class="col-md-3">
-      <label class="form-label">Operador (Stock)</label>
+      <label class="form-label">Stock</label>
       <div class="input-group">
         <select name="stockOp" class="form-select">
-          <option value="">Operador</option>
+          <option value=""></option>
           <option value="eq" <%= query.stockOp==='eq'?'selected':'' %>>=</option>
           <option value="lte" <%= query.stockOp==='lte'?'selected':'' %>><=</option>
           <option value="gte" <%= query.stockOp==='gte'?'selected':'' %>>>=</option>
@@ -40,13 +38,12 @@
         <span class="input-group-text"><i class='bx bx-info-circle' data-bs-toggle="tooltip" title="Selecciona operador (=, ≤, ≥). Si no eliges ninguno, se usa '=' por defecto."></i></span>
         <input type="number" name="stock" class="form-control" placeholder="Stock" value="<%= query.stock || '' %>">
       </div>
-      <div class="form-text">Selecciona operador (=, ≤, ≥). Si no eliges ninguno, se usa '=' por defecto.</div>
     </div>
     <div class="col-md-3">
-      <label class="form-label">Operador (Stock mínimo)</label>
+      <label class="form-label">Stock mín.</label>
       <div class="input-group">
         <select name="minOp" class="form-select">
-          <option value="">Operador</option>
+          <option value=""></option>
           <option value="eq" <%= query.minOp==='eq'?'selected':'' %>>=</option>
           <option value="lte" <%= query.minOp==='lte'?'selected':'' %>><=</option>
           <option value="gte" <%= query.minOp==='gte'?'selected':'' %>>>=</option>
@@ -54,7 +51,6 @@
         <span class="input-group-text"><i class='bx bx-info-circle' data-bs-toggle="tooltip" title="Selecciona operador (=, ≤, ≥). Si no eliges ninguno, se usa '=' por defecto."></i></span>
         <input type="number" name="min" class="form-control" placeholder="Stock mín" value="<%= query.min || '' %>">
       </div>
-      <div class="form-text">Selecciona operador (=, ≤, ≥). Si no eliges ninguno, se usa '=' por defecto.</div>
     </div>
     <div class="col-md-3">
       <select name="localizacionId" class="form-select">
@@ -137,7 +133,11 @@
             <i class='bx bx-info-circle' data-bs-toggle="tooltip" title="<%= p.observaciones %>"></i>
           <% } %>
         </td>
-        <td><%= p.localizacion %></td>
+        <td>
+          <% if (p.localizacion) { const bucket = p.localizacion_id % 12; %>
+            <span class="tag tag-bucket-<%= bucket %>"><%= p.localizacion %></span>
+          <% } %>
+        </td>
         <td>
           <a href="/productos/<%= p.id %>?returnTo=<%= encodeURIComponent(request.originalUrl) %>" class="btn btn-sm btn-primary"><i class='bx bx-show'></i></a>
         </td>
