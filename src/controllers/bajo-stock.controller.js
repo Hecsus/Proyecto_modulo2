@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 const { validationResult, matchedData } = require('express-validator');
+const { addNumericFilter } = require('../utils/sql'); // Helper para condiciones numéricas
 
 // Listado de productos con stock por debajo del mínimo
 exports.list = async (req, res) => {
@@ -10,14 +11,13 @@ exports.list = async (req, res) => {
   const limit = 10;                           // Elementos por página
   const offset = (page - 1) * limit;          // Desplazamiento
 
-  const SORTABLE = {                          // Map de columnas ordenables
+  const SORTABLE = {                          // Columnas permitidas para ordenar
     id: 'p.id',
     nombre: 'p.nombre',
     precio: 'p.precio',
     stock: 'p.stock',
     stock_minimo: 'p.stock_minimo'
   };
-  const OP_MAP = { eq: '=', lte: '<=', gte: '>=' }; // Operadores permitidos
 
   const sortCol = SORTABLE[data.sortBy] || 'p.id';
   const sortDirSql = (data.sortDir || 'asc').toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
@@ -30,18 +30,10 @@ exports.list = async (req, res) => {
     where.push('p.nombre LIKE ?');
     params.push(`%${data.qName}%`);
   }
-  if (data.price != null && data.priceOp && OP_MAP[data.priceOp]) {
-    where.push(`p.precio ${OP_MAP[data.priceOp]} ?`);
-    params.push(data.price);
-  }
-  if (data.stock != null && data.stockOp && OP_MAP[data.stockOp]) {
-    where.push(`p.stock ${OP_MAP[data.stockOp]} ?`);
-    params.push(data.stock);
-  }
-  if (data.min != null && data.minOp && OP_MAP[data.minOp]) {
-    where.push(`p.stock_minimo ${OP_MAP[data.minOp]} ?`);
-    params.push(data.min);
-  }
+  // Comparaciones numéricas con '=' por defecto si falta operador
+  addNumericFilter(where, params, 'p.precio', data.price, data.priceOp);
+  addNumericFilter(where, params, 'p.stock', data.stock, data.stockOp);
+  addNumericFilter(where, params, 'p.stock_minimo', data.min, data.minOp);
   if (data.localizacionId) {
     where.push('p.localizacion_id = ?');
     params.push(data.localizacionId);
@@ -78,8 +70,9 @@ exports.list = async (req, res) => {
   const [proveedores] = await pool.query('SELECT id, nombre FROM proveedores');
 
   res.render('pages/bajo-stock', {
-    title: 'Bajo stock',
-    productos: rows,
+    title: 'Bajo stock',         // Título de la página
+    basePath: '/inventario/bajo-stock', // Ruta base para Limpiar/paginación
+    productos: rows,             // Resultado de la consulta
     page,
     totalPages,
     localizaciones,

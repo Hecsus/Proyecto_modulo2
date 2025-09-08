@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 const { validationResult, matchedData } = require('express-validator');
+const { addNumericFilter } = require('../utils/sql'); // Helper para construir comparaciones numéricas seguras
 
 // Listar productos con filtros, ordenación y paginación
 exports.list = async (req, res) => {
@@ -16,8 +17,7 @@ exports.list = async (req, res) => {
     precio: 'p.precio',
     stock: 'p.stock',
     stock_minimo: 'p.stock_minimo'
-  };
-  const OP_MAP = { eq: '=', lte: '<=', gte: '>=' }; // Operadores permitidos
+  }; // Cualquier otra columna queda descartada
 
   const sortCol = SORTABLE[data.sortBy] || 'p.id';
   const sortDirSql = (data.sortDir || 'asc').toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
@@ -30,18 +30,10 @@ exports.list = async (req, res) => {
     clauses.push('p.nombre LIKE ?');
     params.push(`%${data.qName}%`);
   }
-  if (data.price != null && data.priceOp && OP_MAP[data.priceOp]) {
-    clauses.push(`p.precio ${OP_MAP[data.priceOp]} ?`);
-    params.push(data.price);
-  }
-  if (data.stock != null && data.stockOp && OP_MAP[data.stockOp]) {
-    clauses.push(`p.stock ${OP_MAP[data.stockOp]} ?`);
-    params.push(data.stock);
-  }
-  if (data.min != null && data.minOp && OP_MAP[data.minOp]) {
-    clauses.push(`p.stock_minimo ${OP_MAP[data.minOp]} ?`);
-    params.push(data.min);
-  }
+  // Comparaciones numéricas: si hay valor y falta operador se asume '='
+  addNumericFilter(clauses, params, 'p.precio', data.price, data.priceOp);
+  addNumericFilter(clauses, params, 'p.stock', data.stock, data.stockOp);
+  addNumericFilter(clauses, params, 'p.stock_minimo', data.min, data.minOp);
   if (data.localizacionId) {
     clauses.push('p.localizacion_id = ?');
     params.push(data.localizacionId);
@@ -81,15 +73,16 @@ exports.list = async (req, res) => {
   const [proveedores] = await pool.query('SELECT id, nombre FROM proveedores');
 
   res.render('pages/productos/list', {
-    title: 'Productos',
-    productos: rows,
+    title: 'Productos',            // Se usa en el <title> y encabezado
+    basePath: '/productos',        // Ruta base para "Limpiar" y paginación
+    productos: rows,              // Resultado de la consulta
     page,
     totalPages,
     localizaciones,
     categorias,
     proveedores,
-    query: req.query,
-    errors: errors.array()
+    query: req.query,             // Valores actuales de los filtros para repoblar inputs
+    errors: errors.array()        // Errores de validación a mostrar en la vista
   });
 };
 

@@ -99,7 +99,7 @@ En XAMPP/MAMP el usuario `root` suele ir sin contraseña → deja `DB_PASSWORD` 
 - Panel de inventario con contadores.
 - Navbar responsive con saludo y enlaces activos.
 - Títulos dinámicos por vista.
-- Listados con filtros opcionales y panel de búsqueda plegable.
+- Panel de búsqueda plegable con botón **Buscar** que abre/cierra manualmente y acción **Limpiar** para reiniciar filtros.
 - Navegación de detalle con parámetro `returnTo` para conservar filtros.
 - Mensajes flash con SweetAlert2 para login y acciones críticas.
 - Columnas de costo y observaciones en productos y bajo stock con tooltips.
@@ -140,6 +140,7 @@ Los enlaces de **Detalles** agregan `returnTo=<URL>` y el botón **Volver** en e
 
 ## Filtros y ordenación
 `GET /productos` y `GET /inventario/bajo-stock` aceptan filtros por nombre (`qName`), comparadores `priceOp`/`price`, `stockOp`/`stock`, `minOp`/`min`, relaciones (`localizacionId`, `categoriaId`, `proveedorId`), ordenación (`sortBy`, `sortDir`) y el flag `low=1` en productos.
+  - Si se envía un valor numérico sin operador, el backend asume `=` por defecto.
 
 ## Títulos dinámicos
 El layout define `<title><%= title ? title + ' — ' : '' %>Inventario</title>` para que cada vista establezca su propio título.
@@ -178,8 +179,13 @@ El layout define `<title><%= title ? title + ' — ' : '' %>Inventario</title>` 
 - Listado de usuarios muestra columna Teléfono y permite filtrar por ID, nombre, email, rol y teléfono.
 - Búsquedas por ID y nombre funcionan en categorías, proveedores y localizaciones.
 - Creación y edición de productos permiten seleccionar múltiples categorías y proveedores.
+- Productos: abrir **Buscar**, aplicar varios filtros y luego pulsar **Limpiar** para volver a la ruta base sin query.
+- Con filtros activos, cambiar a otra página de resultados y comprobar que el panel de búsqueda permanece cerrado.
+- Ingresar precio/stock/stock mín con valor pero sin operador → el filtrado usa `=` por defecto.
+- Bajo stock: repetir las mismas pruebas que en Productos.
 
 ## Changelog
+- Botón **Limpiar** en búsquedas, collapse cerrado por defecto y operadores numéricos con `=` por defecto.
 - Añadido SweetAlert2 y middleware flash.
 - Incorporados campos costo y observaciones en productos y bajo stock con tooltips.
 - Detalle de producto ampliado con costo y observaciones.
@@ -272,3 +278,7 @@ Revisa inputs de formularios con express-validator (servidor) además de validac
 - Panel de búsqueda plegable con filtros opcionales y validación amigable en Productos y Bajo stock.
 - Icono de Proveedores corregido y estilos unificados de iconos.
 - `returnTo` preserva filtros al navegar al detalle.
+
+### 2025-10-05
+- Botón **Limpiar** en paneles de búsqueda y collapse cerrado por defecto.
+- Operadores de precio/stock usan `=` si no se selecciona ninguno.
