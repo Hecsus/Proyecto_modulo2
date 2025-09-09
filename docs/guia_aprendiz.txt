@@ -100,3 +100,12 @@ Con esta guía deberías seguir el flujo de ruta → validador → controlador �
 - En el formulario de producto, categorías y proveedores se presentan en un grid de varias columnas con un buscador en vivo. Para más columnas, ajusta las clases `row-cols-*` en la vista.
 - El script `public/js/main.js` inicializa tooltips, popovers, filtrado en vivo y confirma las eliminaciones.
 - En el panel de resumen, cada tarjeta es un enlace completo gracias a `a.stretched-link`.
+
+7. Cambios recientes (panel, login, procedencia)
+-----------------------------------------------
+- La tarjeta "Bajo stock" del panel incluye un `a.stretched-link` hacia `/bajo-stock`, haciendo toda la card clicable para mejor UX.
+- El formulario de login usa `oldInput` y `errors` para persistir el email tras fallos y lista mensajes de `express-validator`.
+- Un botón accesible permite mostrar u ocultar la contraseña sin recargar la página.
+- Se eliminó la sección "Procedencia" del detalle de producto porque ya se muestran categorías y proveedores directamente.
+- Comentarios clave están repartidos en `routes/`, `controllers/`, `validators/`, `middlewares/`, `views/` y `public/` para facilitar el aprendizaje.
+# [checklist] guía actualizada

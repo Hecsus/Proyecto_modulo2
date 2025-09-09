@@ -4,51 +4,67 @@ const { validationResult } = require('express-validator'); // Manejo de validaci
 
 /**
  * Muestra el formulario de login.
- * Propósito: enviar la vista con el formulario vacío.
+ * Propósito: enviar la vista limpia sin datos previos.
  * Entradas: req/res de Express.
- * Salidas: render de `pages/login` con array de errores vacío.
+ * Salidas: render de `pages/login` con `errors:null` y `oldInput:{}`.
  * Validaciones: ninguna.
- * Manejo de errores: si la vista no existe, Express arrojará un 500.
+ * Manejo de errores: si la vista no existe, Express responderá 500.
  */
 exports.showLogin = (req, res) => {
-  res.render('pages/login', { title: 'Login', errors: [], viewClass: '' });
+  res.render('pages/login', { title: 'Login', errors: null, oldInput: {}, viewClass: '' });
 };
 
 /**
  * Procesa las credenciales de login y crea la sesión.
- * Entradas: `email` y `password` desde el cuerpo del formulario.
- * Salidas: redirección a `/panel` o render de `login` con mensajes de error.
- * Validaciones: usa `validationResult` para recoger errores de `loginValidator`.
- * Manejo de errores: credenciales inválidas devuelven mensaje, errores de DB se propagan.
+ * Entradas: `email` y `password` en `req.body`.
+ * Salidas: redirección a `/panel` o render de `login` con errores y datos previos.
+ * Validaciones: `validationResult` recoge errores de `loginValidator`.
+ * Manejo de errores: credenciales inválidas se informan sin exponer la contraseña; errores de DB muestran mensaje genérico.
  */
 exports.login = async (req, res) => {
-  const errors = validationResult(req); // Captura errores de validación
-  if (!errors.isEmpty()) {              // Si hay errores en los campos
-    req.session.flash = { type: 'error', message: 'Datos inválidos' }; // Prepara mensaje de error
-    return res.redirect('/login');      // Redirige para mostrar el mensaje con SweetAlert
+  const errors = validationResult(req);            // Captura errores de validación
+  const { email, password } = req.body;            // Extrae datos del formulario
+  if (!errors.isEmpty()) {                         // Si hay fallos de validación
+    return res.status(400).render('pages/login', {
+      title: 'Login',
+      errors: errors.mapped(),
+      oldInput: { email },                        // No reenviamos la contraseña
+      viewClass: ''
+    });
   }
-  const { email, password } = req.body; // Extrae credenciales
   try {
-    const [rows] = await pool.query(    // Busca usuario por email
-      `SELECT u.*, r.nombre AS rol_nombre FROM usuarios u JOIN roles r ON u.rol_id = r.id WHERE email = ?`,
+    const [rows] = await pool.query(              // Busca usuario por email
+      'SELECT u.*, r.nombre AS rol_nombre FROM usuarios u JOIN roles r ON u.rol_id = r.id WHERE email = ?',
       [email]
     );
-    if (!rows.length) {                // Si el email no existe
-      req.session.flash = { type: 'error', message: 'Credenciales inválidas' }; // Mensaje de error
-      return res.redirect('/login');   // Redirige a login
+    if (!rows.length) {                           // Email no encontrado
+      return res.status(400).render('pages/login', {
+        title: 'Login',
+        errors: { auth: { msg: 'Credenciales inválidas' } },
+        oldInput: { email },
+        viewClass: ''
+      });
     }
     const user = rows[0];
     const match = await bcrypt.compare(password, user.password); // Compara hash
-    if (!match) {                      // Contraseña incorrecta
-      req.session.flash = { type: 'error', message: 'Credenciales inválidas' }; // Mensaje de error
-      return res.redirect('/login');   // Redirige a login
+    if (!match) {                               // Contraseña incorrecta
+      return res.status(400).render('pages/login', {
+        title: 'Login',
+        errors: { auth: { msg: 'Credenciales inválidas' } },
+        oldInput: { email },
+        viewClass: ''
+      });
     }
     req.session.user = { id: user.id, nombre: user.nombre, rol: user.rol_nombre }; // Guarda datos mínimos en sesión
-    req.session.flash = { type: 'success', message: 'Bienvenido' }; // Mensaje de éxito
-    res.redirect('/panel');            // Redirige al panel
+    req.session.flash = { type: 'success', message: 'Bienvenido' };                 // Mensaje de bienvenida
+    res.redirect('/panel');                                                        // Redirige al panel
   } catch (err) {
-    req.session.flash = { type: 'error', message: 'Error inesperado' }; // Mensaje de excepción
-    res.redirect('/login');            // Redirige a login
+    return res.status(500).render('pages/login', {
+      title: 'Login',
+      errors: { server: { msg: 'Error inesperado' } },
+      oldInput: { email },
+      viewClass: ''
+    });
   }
 };
 
@@ -64,3 +80,4 @@ exports.logout = (req, res) => {
     res.redirect('/login');            // Redirige al formulario de login
   });
 };
+// [checklist] login controller retorna errores y no expone contraseña

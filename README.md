@@ -177,6 +177,13 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-09 17:33] – Panel bajo stock navegable + Login persistente/mostrar contraseña + Limpieza “Procedencia” + Comentarios
+- Panel: la tarjeta “Bajo stock” ahora enlaza correctamente a /bajo-stock (stretched-link).
+- Login: se preserva el email tras error; botón para mostrar/ocultar contraseña (no se repuebla la contraseña por seguridad).
+- Detalle de producto: se elimina “Procedencia” (evitamos duplicar categorías y proveedores).
+- Revisión y comentarios en todo el código; limpieza de restos no usados.
+- Nota: la vista de login reside en `src/views/pages/login.ejs`.
+
 ## [2025-09-09 16:21] – Columna “Procedencia”, formulario multicolumna con buscador y limpieza de shapes/colores
 - Se elimina la representación por formas/colores (triángulos/círculos/cuadrados) y la leyenda asociada.
 - Se añade la columna “Procedencia” (categorías + proveedores) con popover en Productos y Bajo stock.
@@ -231,3 +238,4 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - Fijado Express 4.19.x y express-session ^1.18.0.
 - Añadidos "overrides" para transitivas vulnerables (braces, micromatch, cross-spawn, debug, color-convert, color-name, got...).
 - README: guía de reinstalación, auditoría prod y despliegue sin devDeps.
+<!-- [checklist] README changelog actualizado -->

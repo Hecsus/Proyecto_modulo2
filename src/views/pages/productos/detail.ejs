@@ -1,4 +1,4 @@
-<%# Detalle de producto sin formas ni leyenda. Incluye sección "Procedencia" %>
+<%# Detalle de producto sin procedencia duplicada %>
 <div class="d-flex align-items-center gap-2 mb-3">
   <h1 class="mb-0"><%= producto.nombre %></h1>
   <% if (isBajoStock) { %><span class="badge badge-bajo-stock">Bajo stock</span><% } %>
@@ -10,16 +10,12 @@
 <p><strong>Stock mín.:</strong> <%= producto.stock_minimo %></p>
 <% const cats = producto.categorias.length ? producto.categorias.map(c=>c.nombre).join(', ') : '—';
    const provs = producto.proveedores.length ? producto.proveedores.map(p=>p.nombre).join(', ') : '—'; %>
-<div class="mb-3">
-  <h2 class="h5 d-flex align-items-center gap-2">Procedencia
-    <button type="button" class="btn btn-sm btn-outline-secondary procedencia-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="left" data-bs-html="true" title="Procedencia" data-bs-content="<strong>Categorías:</strong> <%= cats %><br><strong>Proveedores:</strong> <%= provs %>">
-      <i class="bx bx-info-circle" aria-hidden="true"></i><span class="visualmente-hidden">Ver procedencia</span>
-    </button>
-  </h2>
-  <p><strong>Categorías:</strong> <%= cats %><br><strong>Proveedores:</strong> <%= provs %></p>
-</div>
+<!-- Procedencia eliminada: ya se muestran categorías y proveedores -->
+<p><strong>Categorías:</strong> <%= cats %></p>
+<p><strong>Proveedores:</strong> <%= provs %></p>
 <p><strong>Localización:</strong> <%= producto.localizacion || '-' %></p>
 <% if (producto.observaciones) { %>
   <p><strong>Observaciones:</strong> <%= producto.observaciones %></p>
 <% } %>
 <a href="<%= returnTo || '/productos' %>" class="btn btn-secondary">Volver</a>
+<!-- [checklist] sin procedencia; categorías y proveedores visibles -->

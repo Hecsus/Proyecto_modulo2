@@ -1,7 +1,7 @@
 // Lógica global del frontend
 
 /* Inicialización de tooltips y popovers.
-   Propósito: mostrar ayudas en operadores numéricos y procedencia de productos.
+   Propósito: mostrar ayudas en operadores numéricos u otros elementos.
    Entradas: elementos con data-bs-toggle="tooltip" o data-bs-toggle="popover".
    Salidas: tooltips/popovers visibles.
    Dependencias: Bootstrap 5. */
@@ -85,3 +85,19 @@ const mkFilter = (inputSelector, gridSelector) => {
 };
 mkFilter('[data-filter="categorias"]',  '[data-options="categorias"]');
 mkFilter('[data-filter="proveedores"]', '[data-options="proveedores"]');
+
+// [login] Toggle mostrar/ocultar contraseña (accesible)
+(() => {
+  const btn = document.getElementById('togglePwd');
+  const input = document.getElementById('password');
+  if (!btn || !input) return;
+  btn.addEventListener('click', () => {
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.setAttribute('aria-pressed', String(show));
+    const icon = btn.querySelector('i');
+    if (icon) icon.className = show ? 'bx bx-hide' : 'bx bx-show';
+    btn.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
+  });
+})();
+// [checklist] main.js toggle presente

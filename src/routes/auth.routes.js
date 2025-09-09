@@ -17,7 +17,7 @@ router.get('/login', controller.showLogin);
  * POST /auth/login
  * Propósito: autenticar al usuario y crear la sesión.
  * Entradas: `email` y `password` en `req.body`.
- * Salidas: redirección a `/` o render de `/login` con errores.
+ * Salidas: redirección a `/` o render de `/login` con errores y datos previos.
  * Validaciones: `loginValidator` verifica formato de campos.
  * Manejo de errores: errores de validación o credenciales inválidas se devuelven como mensajes.
  */
@@ -34,3 +34,4 @@ router.post('/auth/login', loginValidator, controller.login);
 router.get('/auth/logout', controller.logout);
 
 module.exports = router;
+// [checklist] rutas de auth comentadas

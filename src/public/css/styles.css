@@ -69,3 +69,7 @@ body {
   display:flex;
   align-items:center;
 }
+
+/* [login] Ajuste para el botón del toggle de contraseña */
+.input-group .btn{min-width:2.5rem;}
+/* [checklist] estilos login ajustados */
