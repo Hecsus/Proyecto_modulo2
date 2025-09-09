@@ -38,13 +38,13 @@
 <table class="table table-striped">
   <thead><tr><th>ID</th><th>Nombre</th><th>Acciones</th></tr></thead>
   <tbody>
-    <% localizaciones.forEach(l => { %>
-      <tr>
+    <% localizaciones.forEach(l => { const bucket = l.id % 12; %>
+      <tr class="row-bucket-<%= bucket %>">
         <td><%= l.id %></td>
         <td><%= l.nombre %></td>
         <td>
           <a href="/localizaciones/<%= l.id %>/editar" class="btn btn-sm btn-warning"><i class='bx bx-edit'></i></a>
-          <a href="/localizaciones/<%= l.id %>/eliminar" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar?')"><i class='bx bx-trash'></i></a>
+          <a href="/localizaciones/<%= l.id %>/eliminar" class="btn btn-sm btn-danger btn-delete"><i class='bx bx-trash'></i></a>
         </td>
       </tr>
     <% }) %>

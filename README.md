@@ -158,25 +158,12 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - [ ] Auditoría de producción sin vulnerabilidades críticas.
 
 ## Pruebas manuales sugeridas
-1. Acceder al panel y verificar contadores e iconos.
-2. En Productos, buscar con precio/stock/mín sin operador: aparece popup informativo solo una vez; ejecutar búsqueda usa '='.
-3. En Bajo stock, repetir la prueba anterior.
-4. En cualquier listado, ordenar por Costo y comprobar el orden.
-5. Revisar navbar y subheaders en distintas vistas; títulos dinámicos.
-6. Fondos por vista: panel, productos y bajo stock muestran colores suaves distintos.
-7. Formularios de búsqueda: etiquetas "Precio", "Stock" y "Stock mín." sin textos de ayuda redundantes; el popup aparece si falta operador.
-8. Detalle de producto muestra badge "Bajo stock" si el stock es menor al mínimo.
-9. Badges de categoría/proveedor/localización conservan color consistente en listas y detalle.
-10. Paginación no abre automáticamente el panel de búsqueda.
-
-Al visitar `/panel`, `/productos`, `/bajo-stock`, `/usuarios`, `/categorias`, `/proveedores` y `/localizaciones` confirmar:
-- No hay errores en `layout.ejs`.
-- Cada vista aplica su fondo mediante `viewClass`.
-- Búsqueda y paginación continúan funcionando sin desplegar filtros automáticamente.
-- Persisten popups de operadores y botones Buscar/Limpiar.
-- El badge "Bajo stock" se muestra en detalles cuando corresponde.
-- No aparecen subtítulos redundantes bajo los títulos.
-- La consola del navegador no muestra warnings por imports o variables sin uso.
+- Productos y Bajo stock → panel de búsqueda: sin títulos extra, placeholders correctos y "num" en inputs; popup de ayuda sigue funcionando.
+- Fondos por vista ya no se aplican.
+- Tablas de categorías/proveedores/localizaciones → filas con colores suaves y consistentes.
+- Productos (lista/detalle) → círculos de colores: arriba categorías, abajo proveedores; tooltip con nombres; localización coloreada.
+- Al eliminar cualquier registro → SweetAlert2 de confirmación; solo borra si confirmo.
+- Sin errores en consola; sin estilos "huérfanos".
 
 ## Troubleshooting
 - **DB access denied**: revisa credenciales y privilegios MySQL.
@@ -188,6 +175,13 @@ Al visitar `/panel`, `/productos`, `/bajo-stock`, `/usuarios`, `/categorias`, `/
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-09 01:00] – Búsqueda minimalista, colores por fila, círculos por taxonomía y confirmación de borrado
+- Simplificado panel de búsqueda (sin títulos/ayudas en operadores; placeholders “Precio/Stock/Stock mín.” y “num”).
+- Eliminados fondos por vista (fondo neutro).
+- Filas con color único en categorías/proveedores/localizaciones (bucket id%12).
+- Círculos de color junto al nombre del producto: arriba categorías, abajo proveedores; tooltip con nombre; localización con color propio.
+- Confirmación SweetAlert2 en todas las acciones de eliminar.
+- Limpieza de código redundante y comentarios añadidos.
 ## [2025-09-09 00:30] – Fix viewClass + limpieza y guía
 - Añadido fallback seguro de viewClass en layout.ejs y paso de viewClass desde controladores.
 - Limpieza de imports/fragmentos sin uso y subtítulos redundantes en vistas.

@@ -60,6 +60,31 @@ exports.list = async (req, res) => {
     [...params, limit, offset]
   );
 
+  // Enlaza categorías y proveedores para cada producto del listado (colores deterministas)
+  const ids = rows.map(r => r.id);
+  const catsByProd = {};
+  const provsByProd = {};
+  if (ids.length) {
+    const [catRows] = await pool.query(
+      'SELECT pc.producto_id, c.id, c.nombre FROM producto_categoria pc JOIN categorias c ON c.id = pc.categoria_id WHERE pc.producto_id IN (?)',
+      [ids]
+    );
+    catRows.forEach(r => {
+      (catsByProd[r.producto_id] ||= []).push({ id: r.id, nombre: r.nombre });
+    });
+    const [provRows] = await pool.query(
+      'SELECT pp.producto_id, pr.id, pr.nombre FROM producto_proveedor pp JOIN proveedores pr ON pr.id = pp.proveedor_id WHERE pp.producto_id IN (?)',
+      [ids]
+    );
+    provRows.forEach(r => {
+      (provsByProd[r.producto_id] ||= []).push({ id: r.id, nombre: r.nombre });
+    });
+  }
+  rows.forEach(p => {
+    p.categorias = catsByProd[p.id] || [];
+    p.proveedores = provsByProd[p.id] || [];
+  });
+
   const [countRows] = await pool.query(
     `SELECT COUNT(DISTINCT p.id) AS total ${baseSql}`,
     params
