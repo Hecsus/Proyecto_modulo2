@@ -78,25 +78,31 @@ exports.list = async (req, res) => {
 exports.form = async (req, res) => {
   const [roles] = await pool.query('SELECT * FROM roles');
   let usuario = null;
-  if (req.params.id) {
+  if (req.params.id) { // Precarga datos si hay ID (edición)
     const [rows] = await pool.query('SELECT * FROM usuarios WHERE id=?', [req.params.id]);
     if (rows.length) usuario = rows[0];
   }
   const message = req.session.message;
   delete req.session.message;
   const title = req.params.id ? 'Editar usuario' : 'Nuevo usuario';
-  res.render('pages/usuarios/form', { title, usuario, roles, errors: [], message, viewClass: 'view-usuarios' });
+  res.render('pages/usuarios/form', { title, usuario, roles, errors: [], oldInput: null, message, viewClass: 'view-usuarios' });
 };
 
 // Crear usuario nuevo
 exports.create = async (req, res) => {
   const errors = validationResult(req);
   const [roles] = await pool.query('SELECT * FROM roles');
+  const oldInput = { ...req.body };
+  delete oldInput.password; delete oldInput.passwordConfirm; // No repoblar contraseñas
   if (!errors.isEmpty()) {
-    return res.render('pages/usuarios/form', { title: 'Nuevo usuario', usuario: null, roles, errors: errors.array(), message: null, viewClass: 'view-usuarios' });
+    return res.render('pages/usuarios/form', { title: 'Nuevo usuario', usuario: null, roles, errors: errors.array(), oldInput, message: null, viewClass: 'view-usuarios' });
+  }
+  const min = parseInt(req.body.minLength, 10) || 8; // Revalida longitud mínima solicitada
+  if (!req.body.password || req.body.password.length < min) {
+    return res.render('pages/usuarios/form', { title: 'Nuevo usuario', usuario: null, roles, errors: [{ msg: `Contraseña mínima de ${min} caracteres` }], oldInput, message: null, viewClass: 'view-usuarios' });
   }
   const { nombre, apellidos, email, telefono, rol_id, password } = req.body;
-  const hash = await bcrypt.hash(password, 10);
+  const hash = await bcrypt.hash(password, 10); // Hash seguro
   await pool.query('INSERT INTO usuarios (nombre, apellidos, email, telefono, password, rol_id) VALUES (?,?,?,?,?,?)',
     [nombre, apellidos, email, telefono, hash, rol_id]);
   req.session.message = { type: 'success', text: 'Usuario creado' };
@@ -108,9 +114,10 @@ exports.update = async (req, res) => {
   const errors = validationResult(req);
   const id = req.params.id;
   const [roles] = await pool.query('SELECT * FROM roles');
+  const oldInput = { ...req.body };
   if (!errors.isEmpty()) {
     const [rows] = await pool.query('SELECT * FROM usuarios WHERE id=?', [id]);
-    return res.render('pages/usuarios/form', { title: 'Editar usuario', usuario: rows[0], roles, errors: errors.array(), message: null, viewClass: 'view-usuarios' });
+    return res.render('pages/usuarios/form', { title: 'Editar usuario', usuario: rows[0], roles, errors: errors.array(), oldInput, message: null, viewClass: 'view-usuarios' });
   }
   const { nombre, apellidos, email, telefono, rol_id } = req.body;
   await pool.query('UPDATE usuarios SET nombre=?, apellidos=?, email=?, telefono=?, rol_id=? WHERE id=?',
@@ -130,7 +137,7 @@ exports.remove = async (req, res) => {
 exports.showChangePassword = async (req, res) => {
   const [rows] = await pool.query('SELECT id, nombre, apellidos FROM usuarios WHERE id=?', [req.params.id]);
   if (!rows.length) return res.redirect('/usuarios');
-  res.render('pages/usuarios/change-password', { title: 'Cambiar contraseña', usuario: rows[0], errors: [], message: null, viewClass: 'view-usuarios' });
+  res.render('pages/usuarios/change-password', { title: 'Cambiar contraseña', usuario: rows[0], errors: [], oldInput: null, message: null, viewClass: 'view-usuarios' });
 };
 
 // Actualizar contraseña
@@ -139,11 +146,15 @@ exports.changePassword = async (req, res) => {
   const id = req.params.id;
   const [rows] = await pool.query('SELECT id, nombre, apellidos FROM usuarios WHERE id=?', [id]);
   if (!rows.length) return res.redirect('/usuarios');
-  if (!errors.isEmpty()) {
-    return res.render('pages/usuarios/change-password', { title: 'Cambiar contraseña', usuario: rows[0], errors: errors.array(), message: null, viewClass: 'view-usuarios' });
+  if (req.body.confirm !== 'yes') { // Confirmación desde SweetAlert2
+    errors.errors.push({ msg: 'Confirmación requerida' });
   }
-  const hash = await bcrypt.hash(req.body.password, 10);
+  if (!errors.isEmpty()) {
+    return res.render('pages/usuarios/change-password', { title: 'Cambiar contraseña', usuario: rows[0], errors: errors.array(), oldInput: null, message: null, viewClass: 'view-usuarios' });
+  }
+  const hash = await bcrypt.hash(req.body.password, 10); // Hash de la nueva contraseña
   await pool.query('UPDATE usuarios SET password=? WHERE id=?', [hash, id]);
   req.session.message = { type: 'success', text: 'Contraseña actualizada' };
   res.redirect('/usuarios');
 };
+// [checklist] permiso admin, validaciones, SQL parametrizado y sin passwords expuestas

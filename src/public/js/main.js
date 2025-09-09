@@ -86,18 +86,44 @@ const mkFilter = (inputSelector, gridSelector) => {
 mkFilter('[data-filter="categorias"]',  '[data-options="categorias"]');
 mkFilter('[data-filter="proveedores"]', '[data-options="proveedores"]');
 
-// [login] Toggle mostrar/ocultar contraseña (accesible)
-(() => {
-  const btn = document.getElementById('togglePwd');
-  const input = document.getElementById('password');
-  if (!btn || !input) return;
+/* Toggle mostrar/ocultar contraseña reutilizable.
+   Propósito: permitir ver el texto de cualquier campo de contraseña.
+   Entradas: botones con data-toggle="password" y atributo data-target con selector del input.
+   Salidas: alterna type entre password/text y cambia icono/aria-label.
+   Dependencias: DOM nativo. */
+document.querySelectorAll('[data-toggle="password"]').forEach(btn => {
+  const target = document.querySelector(btn.dataset.target);
+  if (!target) return; // Sin input destino
   btn.addEventListener('click', () => {
-    const show = input.type === 'password';
-    input.type = show ? 'text' : 'password';
+    const show = target.type === 'password';
+    target.type = show ? 'text' : 'password';
     btn.setAttribute('aria-pressed', String(show));
     const icon = btn.querySelector('i');
     if (icon) icon.className = show ? 'bx bx-hide' : 'bx bx-show';
     btn.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
   });
-})();
-// [checklist] main.js toggle presente
+});
+
+/* Confirmación de cambio de contraseña.
+   Propósito: evitar modificaciones accidentales.
+   Entradas: formularios con data-confirm="password".
+   Salidas: envía el formulario sólo tras confirmación y marca hidden confirm=yes.
+   Dependencias: SweetAlert2. */
+document.querySelectorAll('form[data-confirm="password"]').forEach(form => {
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const res = await Swal.fire({
+      icon: 'warning',
+      title: '¿Seguro que quieres cambiar la contraseña?',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cambiar',
+      cancelButtonText: 'Cancelar'
+    });
+    if (res.isConfirmed) {
+      const hidden = form.querySelector('input[name="confirm"]');
+      if (hidden) hidden.value = 'yes';
+      form.submit();
+    }
+  });
+});
+// [checklist] validaciones, comentarios y sin código muerto

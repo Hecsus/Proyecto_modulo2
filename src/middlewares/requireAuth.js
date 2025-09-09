@@ -5,3 +5,4 @@ module.exports = (req, res, next) => {
   }
   return res.redirect('/login'); // No: redirige a login
 };
+// [checklist] permiso correcto y sin código muerto

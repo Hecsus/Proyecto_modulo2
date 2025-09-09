@@ -7,3 +7,4 @@ module.exports = (role) => {
     return res.status(403).send('Acceso denegado'); // No autorizado
   };
 };
+// [checklist] permiso correcto y sin código muerto

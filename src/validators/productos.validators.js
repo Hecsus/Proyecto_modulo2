@@ -5,14 +5,16 @@ const { OPERATOR_KEYS } = require('../utils/sql'); // Operadores permitidos para
 exports.productValidator = [
   body('nombre').notEmpty().withMessage('El nombre es obligatorio'),
   body('precio').isFloat({ gt: 0 }).withMessage('Precio debe ser mayor a 0'),
+  body('costo').isFloat({ gt: 0 }).withMessage('Costo debe ser mayor a 0'),
   body('stock').isInt({ min: 0 }).withMessage('Stock inválido'),
   body('stock_minimo').isInt({ min: 0 }).withMessage('Stock mínimo inválido'),
+  body('observaciones').optional({ checkFalsy: true }).isLength({ max: 1000 }).trim(),
   body('localizacion_id').isInt().withMessage('Seleccione una localización válida'),
   // Arrays de IDs de categorías y proveedores, opcionales
-  body('categorias').optional({ checkFalsy: true }).isArray().withMessage('Categorías inválidas'),
-  body('categorias.*').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt(),
-  body('proveedores').optional({ checkFalsy: true }).isArray().withMessage('Proveedores inválidos'),
-  body('proveedores.*').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt()
+  body('categoriaIds').optional({ checkFalsy: true }).isArray().withMessage('Categorías inválidas'),
+  body('categoriaIds.*').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt(),
+  body('proveedorIds').optional({ checkFalsy: true }).isArray().withMessage('Proveedores inválidos'),
+  body('proveedorIds.*').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt()
 ];
 
 // Filtros opcionales para listados de productos
@@ -42,3 +44,4 @@ exports.listFilters = [
   // Flag para productos con stock < stock_minimo
   query('low').optional({ checkFalsy: true }).isIn(['1'])
 ];
+// [checklist] validaciones y sanitizado

@@ -193,6 +193,13 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-09 18:56] – Permisos de operador, Observaciones en producto, Procedencia persistente, Alta/Password de usuarios con doble validación y toggle
+- Operador puede gestionar inventario (productos, categorías, proveedores, localizaciones); solo admin gestiona usuarios/roles.
+- Productos: campo Observaciones añadido en alta/edición y visible en detalle/lista.
+- Productos: guardado correcto de categorías y proveedores en crear y editar (transacción en update, tablas puente).
+- Usuarios: alta con longitud mínima configurable, doble validación email/contraseña y toggles de visibilidad.
+- Cambio de contraseña con doble validación, confirmación y toggle.
+- Limpieza de código y comentarios añadidos; SQL parametrizado y validaciones reforzadas.
 ## [2025-09-10 12:00] – Seguridad reforzada y bajo stock integrado
 - Tarjeta “Bajo stock” del panel enlaza a `/productos/bajo-stock`.
 - Sesiones con cookies seguras y variables de entorno obligatorias.

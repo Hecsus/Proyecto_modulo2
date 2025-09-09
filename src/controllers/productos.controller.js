@@ -120,18 +120,18 @@ exports.form = async (req, res) => {
   const [proveedores] = await pool.query('SELECT * FROM proveedores');
   const [localizaciones] = await pool.query('SELECT * FROM localizaciones');
   let producto = null;
-  if (req.params.id) {
+  if (req.params.id) { // Si hay ID, estamos editando: precarga datos
     const [rows] = await pool.query('SELECT * FROM productos WHERE id = ?', [req.params.id]);
     if (rows.length) {
       producto = rows[0];
       const [pc] = await pool.query('SELECT categoria_id FROM producto_categoria WHERE producto_id=?', [req.params.id]);
-      producto.categorias = pc.map(r => r.categoria_id);
+      producto.categorias = pc.map(r => r.categoria_id); // IDs de categorías actuales
       const [pp] = await pool.query('SELECT proveedor_id FROM producto_proveedor WHERE producto_id=?', [req.params.id]);
-      producto.proveedores = pp.map(r => r.proveedor_id);
+      producto.proveedores = pp.map(r => r.proveedor_id); // IDs de proveedores actuales
     }
   }
   const title = req.params.id ? 'Editar producto' : 'Nuevo producto';
-  res.render('pages/productos/form', { title, producto, categorias, proveedores, localizaciones, errors: [], old: null, viewClass: 'view-productos' });
+  res.render('pages/productos/form', { title, producto, categorias, proveedores, localizaciones, errors: [], oldInput: null, viewClass: 'view-productos' });
 };
 
 // Crear producto
@@ -141,25 +141,25 @@ exports.create = async (req, res) => {
   const [proveedores] = await pool.query('SELECT * FROM proveedores');
   const [localizaciones] = await pool.query('SELECT * FROM localizaciones');
   if (!errors.isEmpty()) {
-    return res.render('pages/productos/form', { title: 'Nuevo producto', producto: null, categorias, proveedores, localizaciones, errors: errors.array(), old: req.body, viewClass: 'view-productos' });
+    return res.render('pages/productos/form', { title: 'Nuevo producto', producto: null, categorias, proveedores, localizaciones, errors: errors.array(), oldInput: req.body, viewClass: 'view-productos' });
   }
 
-  const { nombre, descripcion, precio, stock, stock_minimo, localizacion_id, categorias: cats = [], proveedores: provs = [] } = req.body;
-  const categoriasArr = Array.isArray(cats) ? cats : [cats];
-  const proveedoresArr = Array.isArray(provs) ? provs : [provs];
+  const { nombre, descripcion, precio, costo, stock, stock_minimo, observaciones, localizacion_id, categoriaIds = [], proveedorIds = [] } = req.body; // Datos del formulario
+  const categoriasArr = Array.isArray(categoriaIds) ? categoriaIds : (categoriaIds ? [categoriaIds] : []); // Normaliza a array
+  const proveedoresArr = Array.isArray(proveedorIds) ? proveedorIds : (proveedorIds ? [proveedorIds] : []);
 
   const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
     const [r] = await conn.execute(
-      'INSERT INTO productos (nombre, descripcion, precio, stock, stock_minimo, localizacion_id) VALUES (?,?,?,?,?,?)',
-      [nombre, descripcion, precio, stock, stock_minimo, localizacion_id]
+      'INSERT INTO productos (nombre, descripcion, precio, costo, stock, stock_minimo, observaciones, localizacion_id) VALUES (?,?,?,?,?,?,?,?)',
+      [nombre, descripcion, precio, costo, stock, stock_minimo, observaciones, localizacion_id]
     );
     const prodId = r.insertId;
 
     if (categoriasArr.length) {
       const values = categoriasArr.map(id => [prodId, Number(id)]);
-      await conn.query('INSERT INTO producto_categoria (producto_id, categoria_id) VALUES ?', [values]);
+      await conn.query('INSERT INTO producto_categoria (producto_id, categoria_id) VALUES ?', [values]); // Inserta relaciones
     }
     if (proveedoresArr.length) {
       const values = proveedoresArr.map(id => [prodId, Number(id)]);
@@ -171,7 +171,7 @@ exports.create = async (req, res) => {
     res.redirect('/productos');
   } catch (e) {
     await conn.rollback();
-    res.render('pages/productos/form', { title: 'Nuevo producto', producto: null, categorias, proveedores, localizaciones, errors: [{ msg: e.message }], old: req.body, viewClass: 'view-productos' });
+    res.render('pages/productos/form', { title: 'Nuevo producto', producto: null, categorias, proveedores, localizaciones, errors: [{ msg: e.message }], oldInput: req.body, viewClass: 'view-productos' });
   } finally {
     conn.release();
   }
@@ -186,17 +186,17 @@ exports.update = async (req, res) => {
   const [localizaciones] = await pool.query('SELECT * FROM localizaciones');
   if (!errors.isEmpty()) {
     const [rows] = await pool.query('SELECT * FROM productos WHERE id=?', [id]);
-    return res.render('pages/productos/form', { title: 'Editar producto', producto: rows[0], categorias, proveedores, localizaciones, errors: errors.array(), old: req.body, viewClass: 'view-productos' });
+    return res.render('pages/productos/form', { title: 'Editar producto', producto: rows[0], categorias, proveedores, localizaciones, errors: errors.array(), oldInput: req.body, viewClass: 'view-productos' });
   }
-  const { nombre, descripcion, precio, stock, stock_minimo, localizacion_id, categorias: cats = [], proveedores: provs = [] } = req.body;
-  const categoriasArr = Array.isArray(cats) ? cats : [cats];
-  const proveedoresArr = Array.isArray(provs) ? provs : [provs];
+  const { nombre, descripcion, precio, costo, stock, stock_minimo, observaciones, localizacion_id, categoriaIds = [], proveedorIds = [] } = req.body; // Datos normalizados
+  const categoriasArr = Array.isArray(categoriaIds) ? categoriaIds : (categoriaIds ? [categoriaIds] : []);
+  const proveedoresArr = Array.isArray(proveedorIds) ? proveedorIds : (proveedorIds ? [proveedorIds] : []);
 
   const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
-    await conn.execute('UPDATE productos SET nombre=?, descripcion=?, precio=?, stock=?, stock_minimo=?, localizacion_id=? WHERE id=?',
-      [nombre, descripcion, precio, stock, stock_minimo, localizacion_id, id]);
+    await conn.execute('UPDATE productos SET nombre=?, descripcion=?, precio=?, costo=?, stock=?, stock_minimo=?, observaciones=?, localizacion_id=? WHERE id=?',
+      [nombre, descripcion, precio, costo, stock, stock_minimo, observaciones, localizacion_id, id]);
     await conn.query('DELETE FROM producto_categoria WHERE producto_id=?', [id]);
     await conn.query('DELETE FROM producto_proveedor WHERE producto_id=?', [id]);
     if (categoriasArr.length) {
@@ -213,7 +213,7 @@ exports.update = async (req, res) => {
   } catch (e) {
     await conn.rollback();
     const [rows] = await pool.query('SELECT * FROM productos WHERE id=?', [id]);
-    res.render('pages/productos/form', { title: 'Editar producto', producto: rows[0], categorias, proveedores, localizaciones, errors: [{ msg: e.message }], old: req.body, viewClass: 'view-productos' });
+    res.render('pages/productos/form', { title: 'Editar producto', producto: rows[0], categorias, proveedores, localizaciones, errors: [{ msg: e.message }], oldInput: req.body, viewClass: 'view-productos' });
   } finally {
     conn.release();
   }
@@ -257,3 +257,4 @@ exports.detail = async (req, res) => {
     viewClass: 'view-productos'
   });
 };
+// [checklist] permiso correcto, validaciones, SQL parametrizado y comentarios

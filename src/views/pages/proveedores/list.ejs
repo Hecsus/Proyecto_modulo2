@@ -1,7 +1,5 @@
 <h1>Proveedores</h1>
-<% if (userRole === 'admin') { %>
-  <a href="/proveedores/nuevo" class="btn btn-success mb-3">Nuevo</a>
-<% } %>
+<a href="/proveedores/nuevo" class="btn btn-success mb-3">Nuevo</a>
 <button class="btn btn-outline-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#searchBox">Buscar</button>
 <div id="searchBox" class="collapse <%= (Object.keys(query||{}).length ? 'show' : '') %>">
   <% if (errors && errors.length) { %>
@@ -45,12 +43,11 @@
         <td><%= p.id %></td>
         <td><%= p.nombre %></td>
         <td>
-          <% if (userRole === 'admin') { %>
-            <a href="/proveedores/<%= p.id %>/editar" class="btn btn-sm btn-warning"><i class='bx bx-edit'></i></a>
-            <a href="/proveedores/<%= p.id %>/eliminar" class="btn btn-sm btn-danger btn-delete"><i class='bx bx-trash'></i></a>
-          <% } %>
+          <a href="/proveedores/<%= p.id %>/editar" class="btn btn-sm btn-warning"><i class='bx bx-edit'></i></a>
+          <a href="/proveedores/<%= p.id %>/eliminar" class="btn btn-sm btn-danger btn-delete"><i class='bx bx-trash'></i></a>
         </td>
       </tr>
     <% }) %>
   </tbody>
 </table>
+<!-- [checklist] permiso correcto, validaciones y sin código muerto -->

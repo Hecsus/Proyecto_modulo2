@@ -1,0 +1,55 @@
+Guía de aprendizaje del flujo y archivos principales
+===================================================
+
+Rutas
+-----
+- **src/routes/productos.routes.js**: define las rutas CRUD de productos. Cada ruta exige `requireAuth` para que cualquier operador autenticado pueda gestionar inventario. Se delega la lógica al controlador y se aplican validadores.
+- **src/routes/categorias.routes.js**, **proveedores.routes.js**, **localizaciones.routes.js**: mismas pautas que productos; protegidas solo con `requireAuth`.
+- **src/routes/usuarios.routes.js**: todas las rutas se protegen con `requireAuth` + `requireRole('admin')` para que solo el administrador gestione usuarios y contraseñas.
+- **src/routes/bajo-stock.routes.js**: listado de productos por debajo del stock mínimo, también protegido con `requireAuth`.
+
+Controladores
+-------------
+- **src/controllers/productos.controller.js**: maneja la lógica de productos. En `create` y `update` inserta/actualiza el producto y guarda las asociaciones N:N en las tablas puente `producto_categoria` y `producto_proveedor` (transacción en update). `detail` y `list` obtienen las categorías y proveedores vinculados para mostrar la procedencia.
+- **src/controllers/usuarios.controller.js**: gestiona usuarios. `create` valida de nuevo la longitud mínima indicada por el formulario, hashea con `bcryptjs` y no repuebla las contraseñas en caso de error. `changePassword` exige confirmación (SweetAlert2) y vuelve a validar antes de guardar el hash.
+
+Validadores
+-----------
+- **src/validators/productos.validators.js**: comprueba nombre, precio, costo, stock, stock mínimo, observaciones y que `categoriaIds[]` y `proveedorIds[]` sean arrays numéricos.
+- **src/validators/usuarios.validators.js**: valida nombre, apellidos, email único, teléfono y rol. `newUserPasswordRules` lee `minLength` del formulario para exigir contraseñas con esa longitud mínima y confirmación idéntica. `changePasswordRules` reutiliza la lógica con un mínimo por defecto de 8.
+
+Middlewares
+-----------
+- **src/middlewares/requireAuth.js**: redirige a `/login` si no hay usuario en sesión.
+- **src/middlewares/requireRole.js**: verifica que el rol de la sesión coincide con el requerido.
+
+Vistas
+------
+- **src/views/pages/productos/form.ejs**: formulario de productos con textarea de observaciones, checkboxes de categorías y proveedores y repoblado de campos mediante `oldInput`.
+- **src/views/pages/productos/list.ejs** y **detail.ejs**: muestran observaciones, categorías y proveedores guardados.
+- **src/views/pages/usuarios/form.ejs**: alta/edición de usuarios con selector de longitud mínima y campos de contraseña + confirmación con botones para mostrar/ocultar.
+- **src/views/pages/usuarios/change-password.ejs**: formulario de cambio de contraseña que incluye confirmación SweetAlert2 y toggles de visibilidad.
+
+Flujo de datos
+--------------
+1. `req` entra por la ruta correspondiente y pasa por `requireAuth` (y `requireRole` en usuarios).
+2. Los validadores de `express-validator` sanitizan y validan los datos; cualquier error se recoge con `validationResult`.
+3. El controlador procesa: inserta/actualiza en la DB mediante consultas parametrizadas (`? + array`) y maneja transacciones cuando es necesario.
+4. Los resultados se envían a la vista EJS, que escapa valores con `<%= %>`.
+
+Tablas puente y transacción en update
+-------------------------------------
+El update de productos abre una transacción: actualiza la fila principal, borra asociaciones previas en `producto_categoria` y `producto_proveedor` y reinserta las seleccionadas. Si algo falla se hace `rollback`.
+
+Doble validación y toggles de contraseña
+----------------------------------------
+Los formularios de usuario piden la longitud mínima deseada; el servidor revalida antes de hashear con `bcryptjs`. Los botones con `data-toggle="password"` permiten ver/ocultar la contraseña en cualquier formulario.
+
+Seguridad
+---------
+- Las consultas SQL usan parámetros.
+- No se repoblan contraseñas tras error.
+- SweetAlert2 confirma cambios de contraseña y borrados.
+- Los logs son discretos.
+
+<!-- [checklist] documentación actualizada -->

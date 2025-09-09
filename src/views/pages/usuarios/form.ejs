@@ -3,36 +3,50 @@
   <div class="row">
     <div class="col-md-6 mb-3">
       <label class="form-label">Nombre</label>
-      <input type="text" name="nombre" class="form-control" value="<%= usuario ? usuario.nombre : '' %>">
+      <input type="text" name="nombre" class="form-control" value="<%= oldInput?.nombre || usuario?.nombre || '' %>">
     </div>
     <div class="col-md-6 mb-3">
       <label class="form-label">Apellidos</label>
-      <input type="text" name="apellidos" class="form-control" value="<%= usuario ? usuario.apellidos : '' %>">
+      <input type="text" name="apellidos" class="form-control" value="<%= oldInput?.apellidos || usuario?.apellidos || '' %>">
     </div>
   </div>
   <div class="row">
     <div class="col-md-6 mb-3">
       <label class="form-label">Email</label>
-      <input type="email" name="email" class="form-control" value="<%= usuario ? usuario.email : '' %>">
+      <input type="email" name="email" class="form-control" value="<%= oldInput?.email || usuario?.email || '' %>">
     </div>
     <div class="col-md-6 mb-3">
       <label class="form-label">Teléfono</label>
-      <input type="text" name="telefono" class="form-control" value="<%= usuario ? usuario.telefono : '' %>">
+      <input type="text" name="telefono" class="form-control" value="<%= oldInput?.telefono || usuario?.telefono || '' %>">
     </div>
   </div>
   <div class="row">
-    <div class="col-md-6 mb-3">
+    <div class="col-md-4 mb-3">
       <label class="form-label">Rol</label>
       <select name="rol_id" class="form-select">
         <% roles.forEach(r => { %>
-          <option value="<%= r.id %>" <%= usuario && usuario.rol_id == r.id ? 'selected' : '' %>><%= r.nombre %></option>
+          <option value="<%= r.id %>" <%= (oldInput?.rol_id || usuario?.rol_id) == r.id ? 'selected' : '' %>><%= r.nombre %></option>
         <% }) %>
       </select>
     </div>
     <% if (!usuario) { %>
-    <div class="col-md-6 mb-3">
+    <div class="col-md-4 mb-3">
+      <label class="form-label">Longitud mínima</label>
+      <input type="number" name="minLength" class="form-control" value="<%= oldInput?.minLength || 8 %>">
+    </div>
+    <div class="col-md-4 mb-3">
       <label class="form-label">Contraseña</label>
-      <input type="password" name="password" class="form-control">
+      <div class="input-group">
+        <input type="password" name="password" id="pwd" class="form-control">
+        <button type="button" class="btn btn-outline-secondary" data-toggle="password" data-target="#pwd"><i class="bx bx-show"></i></button>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <label class="form-label">Confirmar</label>
+      <div class="input-group">
+        <input type="password" name="passwordConfirm" id="pwd2" class="form-control">
+        <button type="button" class="btn btn-outline-secondary" data-toggle="password" data-target="#pwd2"><i class="bx bx-show"></i></button>
+      </div>
     </div>
     <% } %>
   </div>
@@ -45,3 +59,4 @@
   <% } %>
   <button class="btn btn-primary">Guardar</button>
 </form>
+<!-- [checklist] permiso admin, validaciones y sin código muerto -->
