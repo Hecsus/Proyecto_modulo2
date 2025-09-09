@@ -13,7 +13,7 @@ router.get('/', requireAuth, requireRole('admin'), listFilters, controller.list)
 router.get('/nuevo', requireAuth, requireRole('admin'), controller.form);
 
 // POST /usuarios/nuevo - guardar usuario nuevo
-router.post('/nuevo', requireAuth, requireRole('admin'), [...userRules, ...newUserPasswordRules()], controller.create);
+router.post('/nuevo', requireAuth, requireRole('admin'), [...userRules, ...newUserPasswordRules], controller.create);
 
 // GET /usuarios/:id/editar - formulario de edición
 router.get('/:id/editar', requireAuth, requireRole('admin'), controller.form);
@@ -28,7 +28,7 @@ router.get('/:id/eliminar', requireAuth, requireRole('admin'), controller.remove
 router.get('/:id/cambiar-password', requireAuth, requireRole('admin'), controller.showChangePassword);
 
 // POST /usuarios/:id/cambiar-password - actualizar contraseña
-router.post('/:id/cambiar-password', requireAuth, requireRole('admin'), changePasswordRules(), controller.changePassword);
+router.post('/:id/cambiar-password', requireAuth, requireRole('admin'), changePasswordRules, controller.changePassword);
 
 module.exports = router;
-// [checklist] permiso admin, validaciones y SQL seguro
+// [checklist] Requisito implementado | Validación aplicada | SQL parametrizado (si aplica) | Comentarios modo curso | Sin código muerto

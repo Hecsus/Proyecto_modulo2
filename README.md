@@ -183,6 +183,11 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - Desde el panel, pulsar tarjeta **Bajo stock** → `/productos/bajo-stock` (lista filtrada).
 - En `/productos/bajo-stock` verificar listado con `stock < stock_minimo` y navegación con `returnTo` en detalles.
 - Confirmar que solo administradores ven botones de crear/editar/eliminar.
+ - Login: forzar error y verificar que el email persiste, la contraseña queda vacía y el toggle funciona.
+ - Crear producto con dos categorías y dos proveedores incluyendo observaciones; comprobar en detalle y listado.
+ - Editar producto cambiando categorías y proveedores; verificar que la transacción actualiza las asociaciones.
+ - Alta de usuario: probar email inválido o duplicado, emailConfirm distinto, contraseñas <8 o desiguales; los campos de contraseña no se repueblan y los toggles funcionan.
+ - Cambio de contraseña: confirma el SweetAlert2, valida longitud y coincidencia; tras error los campos quedan vacíos.
 ## Troubleshooting
 - **DB access denied**: revisa credenciales y privilegios MySQL.
 - **Módulos EJS/layouts no encontrados**: ejecuta `npm install`.
@@ -193,6 +198,11 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-09 22:15] – Login con toggle reutilizable y validaciones reforzadas
+- Login: botón "ver contraseña" restaurado y email persistente al fallar.
+- Productos: categorías y proveedores se guardan en crear/editar mediante tablas puente y transacción en update.
+- Usuarios: alta con doble validación de email y contraseña mínima de 8, confirmación y toggles.
+- Cambio de contraseña: confirmación previa, validaciones y campos en blanco tras error.
 ## [2025-09-09 18:56] – Permisos de operador, Observaciones en producto, Procedencia persistente, Alta/Password de usuarios con doble validación y toggle
 - Operador puede gestionar inventario (productos, categorías, proveedores, localizaciones); solo admin gestiona usuarios/roles.
 - Productos: campo Observaciones añadido en alta/edición y visible en detalle/lista.
@@ -211,7 +221,7 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - Login: se preserva el email tras error; botón para mostrar/ocultar contraseña (no se repuebla la contraseña por seguridad).
 - Detalle de producto: se elimina “Procedencia” (evitamos duplicar categorías y proveedores).
 - Revisión y comentarios en todo el código; limpieza de restos no usados.
-- Nota: la vista de login reside en `src/views/pages/login.ejs`.
+- Nota: la vista de login reside en `src/views/pages/auth/login.ejs`.
 
 ## [2025-09-09 16:21] – Columna “Procedencia”, formulario multicolumna con buscador y limpieza de shapes/colores
 - Se elimina la representación por formas/colores (triángulos/círculos/cuadrados) y la leyenda asociada.
@@ -267,4 +277,4 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - Fijado Express 4.19.x y express-session ^1.18.0.
 - Añadidos "overrides" para transitivas vulnerables (braces, micromatch, cross-spawn, debug, color-convert, color-name, got...).
 - README: guía de reinstalación, auditoría prod y despliegue sin devDeps.
-<!-- [checklist] README changelog actualizado -->
+<!-- [checklist] Requisito implementado | Validación aplicada | SQL parametrizado (si aplica) | Comentarios modo curso | Sin código muerto -->

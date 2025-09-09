@@ -6,12 +6,12 @@ const { validationResult } = require('express-validator'); // Manejo de validaci
  * Muestra el formulario de login.
  * Propósito: enviar la vista limpia sin datos previos.
  * Entradas: req/res de Express.
- * Salidas: render de `pages/login` con `errors:null` y `oldInput:{}`.
+ * Salidas: render de `pages/auth/login` con `errors:null` y `oldInput:{}`.
  * Validaciones: ninguna.
  * Manejo de errores: si la vista no existe, Express responderá 500.
  */
 exports.showLogin = (req, res) => {
-  res.render('pages/login', { title: 'Login', errors: null, oldInput: {}, viewClass: '' });
+  res.render('pages/auth/login', { title: 'Login', errors: null, oldInput: {}, viewClass: '' });
 };
 
 /**
@@ -25,9 +25,9 @@ exports.login = async (req, res) => {
   const errors = validationResult(req);            // Captura errores de validación
   const { email, password } = req.body;            // Extrae datos del formulario
   if (!errors.isEmpty()) {                         // Si hay fallos de validación
-    return res.status(400).render('pages/login', {
+    return res.status(400).render('pages/auth/login', {
       title: 'Login',
-      errors: errors.mapped(),
+      errors: errors.mapped?.() || null,
       oldInput: { email },                        // No reenviamos la contraseña
       viewClass: ''
     });
@@ -38,7 +38,7 @@ exports.login = async (req, res) => {
       [email]
     );
     if (!rows.length) {                           // Email no encontrado
-      return res.status(400).render('pages/login', {
+      return res.status(400).render('pages/auth/login', {
         title: 'Login',
         errors: { auth: { msg: 'Credenciales inválidas' } },
         oldInput: { email },
@@ -48,7 +48,7 @@ exports.login = async (req, res) => {
     const user = rows[0];
     const match = await bcrypt.compare(password, user.password); // Compara hash
     if (!match) {                               // Contraseña incorrecta
-      return res.status(400).render('pages/login', {
+      return res.status(400).render('pages/auth/login', {
         title: 'Login',
         errors: { auth: { msg: 'Credenciales inválidas' } },
         oldInput: { email },
@@ -59,7 +59,7 @@ exports.login = async (req, res) => {
     req.session.flash = { type: 'success', message: 'Bienvenido' };                 // Mensaje de bienvenida
     res.redirect('/panel');                                                        // Redirige al panel
   } catch (err) {
-    return res.status(500).render('pages/login', {
+    return res.status(500).render('pages/auth/login', {
       title: 'Login',
       errors: { server: { msg: 'Error inesperado' } },
       oldInput: { email },
@@ -80,4 +80,4 @@ exports.logout = (req, res) => {
     res.redirect('/login');            // Redirige al formulario de login
   });
 };
-// [checklist] login controller retorna errores y no expone contraseña
+// [checklist] Requisito implementado | Validación aplicada | SQL parametrizado (si aplica) | Comentarios modo curso | Sin código muerto

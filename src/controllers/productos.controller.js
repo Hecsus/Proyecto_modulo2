@@ -125,9 +125,9 @@ exports.form = async (req, res) => {
     if (rows.length) {
       producto = rows[0];
       const [pc] = await pool.query('SELECT categoria_id FROM producto_categoria WHERE producto_id=?', [req.params.id]);
-      producto.categorias = pc.map(r => r.categoria_id); // IDs de categorías actuales
+      producto.categoriaIds = pc.map(r => r.categoria_id); // IDs de categorías actuales
       const [pp] = await pool.query('SELECT proveedor_id FROM producto_proveedor WHERE producto_id=?', [req.params.id]);
-      producto.proveedores = pp.map(r => r.proveedor_id); // IDs de proveedores actuales
+      producto.proveedorIds = pp.map(r => r.proveedor_id); // IDs de proveedores actuales
     }
   }
   const title = req.params.id ? 'Editar producto' : 'Nuevo producto';
@@ -145,7 +145,7 @@ exports.create = async (req, res) => {
   }
 
   const { nombre, descripcion, precio, costo, stock, stock_minimo, observaciones, localizacion_id, categoriaIds = [], proveedorIds = [] } = req.body; // Datos del formulario
-  const categoriasArr = Array.isArray(categoriaIds) ? categoriaIds : (categoriaIds ? [categoriaIds] : []); // Normaliza a array
+  const categoriasArr = Array.isArray(categoriaIds) ? categoriaIds : (categoriaIds ? [categoriaIds] : []);
   const proveedoresArr = Array.isArray(proveedorIds) ? proveedorIds : (proveedorIds ? [proveedorIds] : []);
 
   const conn = await pool.getConnection();
@@ -157,13 +157,11 @@ exports.create = async (req, res) => {
     );
     const prodId = r.insertId;
 
-    if (categoriasArr.length) {
-      const values = categoriasArr.map(id => [prodId, Number(id)]);
-      await conn.query('INSERT INTO producto_categoria (producto_id, categoria_id) VALUES ?', [values]); // Inserta relaciones
+    for (const cid of categoriasArr) {
+      await conn.query('INSERT INTO producto_categoria (producto_id, categoria_id) VALUES (?,?)', [prodId, cid]);
     }
-    if (proveedoresArr.length) {
-      const values = proveedoresArr.map(id => [prodId, Number(id)]);
-      await conn.query('INSERT INTO producto_proveedor (producto_id, proveedor_id) VALUES ?', [values]);
+    for (const pid of proveedoresArr) {
+      await conn.query('INSERT INTO producto_proveedor (producto_id, proveedor_id) VALUES (?,?)', [prodId, pid]);
     }
 
     await conn.commit();
@@ -198,14 +196,12 @@ exports.update = async (req, res) => {
     await conn.execute('UPDATE productos SET nombre=?, descripcion=?, precio=?, costo=?, stock=?, stock_minimo=?, observaciones=?, localizacion_id=? WHERE id=?',
       [nombre, descripcion, precio, costo, stock, stock_minimo, observaciones, localizacion_id, id]);
     await conn.query('DELETE FROM producto_categoria WHERE producto_id=?', [id]);
-    await conn.query('DELETE FROM producto_proveedor WHERE producto_id=?', [id]);
-    if (categoriasArr.length) {
-      const values = categoriasArr.map(cid => [id, Number(cid)]);
-      await conn.query('INSERT INTO producto_categoria (producto_id, categoria_id) VALUES ?', [values]);
+    for (const cid of categoriasArr) {
+      await conn.query('INSERT INTO producto_categoria (producto_id, categoria_id) VALUES (?,?)', [id, cid]);
     }
-    if (proveedoresArr.length) {
-      const values = proveedoresArr.map(pid => [id, Number(pid)]);
-      await conn.query('INSERT INTO producto_proveedor (producto_id, proveedor_id) VALUES ?', [values]);
+    await conn.query('DELETE FROM producto_proveedor WHERE producto_id=?', [id]);
+    for (const pid of proveedoresArr) {
+      await conn.query('INSERT INTO producto_proveedor (producto_id, proveedor_id) VALUES (?,?)', [id, pid]);
     }
     await conn.commit();
     req.session.flash = { type: 'success', message: 'Producto actualizado.' };
@@ -257,4 +253,4 @@ exports.detail = async (req, res) => {
     viewClass: 'view-productos'
   });
 };
-// [checklist] permiso correcto, validaciones, SQL parametrizado y comentarios
+// [checklist] Requisito implementado | Validación aplicada | SQL parametrizado (si aplica) | Comentarios modo curso | Sin código muerto

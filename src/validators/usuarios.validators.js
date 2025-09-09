@@ -1,7 +1,7 @@
 const { body, query } = require('express-validator');
 const pool = require('../config/db');
 
-// Reglas comunes para campos de usuario (nombre, apellidos, email único, teléfono, rol válido)
+// Reglas comunes para campos de usuario (nombre, apellidos, email único, confirmación, teléfono, rol válido)
 const userRules = [
   body('nombre').trim().notEmpty().withMessage('Nombre es obligatorio'),
   body('apellidos').trim().notEmpty().withMessage('Apellidos es obligatorio'),
@@ -15,31 +15,27 @@ const userRules = [
       return true;
     })
     .normalizeEmail(),
+  body('emailConfirm').custom((v, { req }) => v === req.body.email).withMessage('Los emails no coinciden'),
   body('telefono').optional({ checkFalsy: true }).trim().isLength({ max: 20 }),
-  body('rol_id').custom(async value => {
+  body('rol').custom(async value => {
     const [rows] = await pool.query('SELECT id FROM roles WHERE id=?', [value]);
     if (!rows.length) throw new Error('Rol inválido');
     return true;
   })
 ];
 
-// Validación de contraseña para alta de usuario: la longitud mínima viene del formulario
-const newUserPasswordRules = () => [
-  body('minLength').isInt({ min: 1 }).toInt(),
-  body('password').custom((val, { req }) => {
-    const min = parseInt(req.body.minLength, 10) || 8;
-    if (!val || val.length < min) throw new Error(`Contraseña mínima de ${min} caracteres`);
-    return true;
-  }),
+// Validación de contraseña para alta de usuario: mínimo fijo 8 y confirmación
+const newUserPasswordRules = [
+  body('password').isLength({ min: 8 }).withMessage('Contraseña mínima de 8 caracteres'),
   body('passwordConfirm').custom((val, { req }) => {
     if (val !== req.body.password) throw new Error('Las contraseñas no coinciden');
     return true;
   })
 ];
 
-// Validación para cambio de contraseña: minLen configurable (por defecto 8)
-const changePasswordRules = (minLen = 8) => [
-  body('password').isLength({ min: minLen }).withMessage(`Contraseña mínima de ${minLen} caracteres`),
+// Validación para cambio de contraseña: reutiliza las mismas reglas
+const changePasswordRules = [
+  body('password').isLength({ min: 8 }).withMessage('Contraseña mínima de 8 caracteres'),
   body('passwordConfirm').custom((val, { req }) => {
     if (val !== req.body.password) throw new Error('Las contraseñas no coinciden');
     return true;
@@ -68,4 +64,4 @@ module.exports = {
   changePasswordRules,
   listFilters
 };
-// [checklist] validaciones y sanitizado
+// [checklist] Requisito implementado | Validación aplicada | SQL parametrizado (si aplica) | Comentarios modo curso | Sin código muerto

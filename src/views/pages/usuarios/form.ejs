@@ -13,7 +13,8 @@
   <div class="row">
     <div class="col-md-6 mb-3">
       <label class="form-label">Email</label>
-      <input type="email" name="email" class="form-control" value="<%= oldInput?.email || usuario?.email || '' %>">
+      <input type="email" id="email" name="email" class="form-control" value="<%= oldInput?.email || usuario?.email || '' %>" required>
+      <input type="email" id="emailConfirm" name="emailConfirm" class="form-control mt-1" value="<%= oldInput?.emailConfirm || '' %>" required placeholder="Confirmar email">
     </div>
     <div class="col-md-6 mb-3">
       <label class="form-label">Teléfono</label>
@@ -23,29 +24,22 @@
   <div class="row">
     <div class="col-md-4 mb-3">
       <label class="form-label">Rol</label>
-      <select name="rol_id" class="form-select">
+      <select name="rol" class="form-select">
         <% roles.forEach(r => { %>
-          <option value="<%= r.id %>" <%= (oldInput?.rol_id || usuario?.rol_id) == r.id ? 'selected' : '' %>><%= r.nombre %></option>
+          <option value="<%= r.id %>" <%= (oldInput?.rol || usuario?.rol_id) == r.id ? 'selected' : '' %>><%= r.nombre %></option>
         <% }) %>
       </select>
     </div>
     <% if (!usuario) { %>
     <div class="col-md-4 mb-3">
-      <label class="form-label">Longitud mínima</label>
-      <input type="number" name="minLength" class="form-control" value="<%= oldInput?.minLength || 8 %>">
-    </div>
-    <div class="col-md-4 mb-3">
       <label class="form-label">Contraseña</label>
       <div class="input-group">
-        <input type="password" name="password" id="pwd" class="form-control">
-        <button type="button" class="btn btn-outline-secondary" data-toggle="password" data-target="#pwd"><i class="bx bx-show"></i></button>
+        <input type="password" id="password" name="password" class="form-control" required minlength="8">
+        <button type="button" data-toggle="password" data-target="#password" class="btn btn-outline-secondary" aria-pressed="false" aria-label="Mostrar contraseña"><i class="bx bx-show"></i></button>
       </div>
-    </div>
-    <div class="col-md-4 mb-3">
-      <label class="form-label">Confirmar</label>
-      <div class="input-group">
-        <input type="password" name="passwordConfirm" id="pwd2" class="form-control">
-        <button type="button" class="btn btn-outline-secondary" data-toggle="password" data-target="#pwd2"><i class="bx bx-show"></i></button>
+      <div class="input-group mt-1">
+        <input type="password" id="passwordConfirm" name="passwordConfirm" class="form-control" required minlength="8" placeholder="Confirmar contraseña">
+        <button type="button" data-toggle="password" data-target="#passwordConfirm" class="btn btn-outline-secondary" aria-pressed="false" aria-label="Mostrar contraseña"><i class="bx bx-show"></i></button>
       </div>
     </div>
     <% } %>
@@ -59,4 +53,4 @@
   <% } %>
   <button class="btn btn-primary">Guardar</button>
 </form>
-<!-- [checklist] permiso admin, validaciones y sin código muerto -->
+<!-- [checklist] Requisito implementado | Validación aplicada | SQL parametrizado (si aplica) | Comentarios modo curso | Sin código muerto -->

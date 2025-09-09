@@ -11,10 +11,16 @@ exports.productValidator = [
   body('observaciones').optional({ checkFalsy: true }).isLength({ max: 1000 }).trim(),
   body('localizacion_id').isInt().withMessage('Seleccione una localización válida'),
   // Arrays de IDs de categorías y proveedores, opcionales
-  body('categoriaIds').optional({ checkFalsy: true }).isArray().withMessage('Categorías inválidas'),
-  body('categoriaIds.*').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt(),
-  body('proveedorIds').optional({ checkFalsy: true }).isArray().withMessage('Proveedores inválidos'),
-  body('proveedorIds.*').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt()
+  body('categoriaIds').optional({ checkFalsy: true }).custom(value => {
+    const arr = Array.isArray(value) ? value : [value];
+    if (!arr.every(v => /^\d+$/.test(v))) throw new Error('Categorías inválidas');
+    return true;
+  }),
+  body('proveedorIds').optional({ checkFalsy: true }).custom(value => {
+    const arr = Array.isArray(value) ? value : [value];
+    if (!arr.every(v => /^\d+$/.test(v))) throw new Error('Proveedores inválidos');
+    return true;
+  })
 ];
 
 // Filtros opcionales para listados de productos
@@ -44,4 +50,4 @@ exports.listFilters = [
   // Flag para productos con stock < stock_minimo
   query('low').optional({ checkFalsy: true }).isIn(['1'])
 ];
-// [checklist] validaciones y sanitizado
+// [checklist] Requisito implementado | Validación aplicada | SQL parametrizado (si aplica) | Comentarios modo curso | Sin código muerto

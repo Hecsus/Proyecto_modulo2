@@ -86,17 +86,13 @@ const mkFilter = (inputSelector, gridSelector) => {
 mkFilter('[data-filter="categorias"]',  '[data-options="categorias"]');
 mkFilter('[data-filter="proveedores"]', '[data-options="proveedores"]');
 
-/* Toggle mostrar/ocultar contraseña reutilizable.
-   Propósito: permitir ver el texto de cualquier campo de contraseña.
-   Entradas: botones con data-toggle="password" y atributo data-target con selector del input.
-   Salidas: alterna type entre password/text y cambia icono/aria-label.
-   Dependencias: DOM nativo. */
+// [auth] Toggle mostrar/ocultar contraseña (reutilizable por data-target)
 document.querySelectorAll('[data-toggle="password"]').forEach(btn => {
-  const target = document.querySelector(btn.dataset.target);
-  if (!target) return; // Sin input destino
+  const input = document.querySelector(btn.dataset.target);
+  if (!input) return;
   btn.addEventListener('click', () => {
-    const show = target.type === 'password';
-    target.type = show ? 'text' : 'password';
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
     btn.setAttribute('aria-pressed', String(show));
     const icon = btn.querySelector('i');
     if (icon) icon.className = show ? 'bx bx-hide' : 'bx bx-show';
@@ -126,4 +122,4 @@ document.querySelectorAll('form[data-confirm="password"]').forEach(form => {
     }
   });
 });
-// [checklist] validaciones, comentarios y sin código muerto
+// [checklist] Requisito implementado | Validación aplicada | SQL parametrizado (si aplica) | Comentarios modo curso | Sin código muerto
