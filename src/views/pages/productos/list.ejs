@@ -17,7 +17,7 @@
     </div>
     <div class="col-md-3">
       <div class="d-flex gap-2">
-        <select name="priceOp" class="form-select">
+        <select name="priceOp" class="form-select" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Selecciona operador (=, ≤, ≥). Si no eliges ninguno, se usa '=' por defecto.">
           <option value="">Precio</option>
           <option value="eq" <%= query.priceOp==='eq'?'selected':'' %>>=</option>
           <option value="lte" <%= query.priceOp==='lte'?'selected':'' %>>&le;</option>
@@ -28,7 +28,7 @@
     </div>
     <div class="col-md-3">
       <div class="d-flex gap-2">
-        <select name="stockOp" class="form-select">
+        <select name="stockOp" class="form-select" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Selecciona operador (=, ≤, ≥). Si no eliges ninguno, se usa '=' por defecto.">
           <option value="">Stock</option>
           <option value="eq" <%= query.stockOp==='eq'?'selected':'' %>>=</option>
           <option value="lte" <%= query.stockOp==='lte'?'selected':'' %>>&le;</option>
@@ -39,7 +39,7 @@
     </div>
     <div class="col-md-3">
       <div class="d-flex gap-2">
-        <select name="minOp" class="form-select">
+        <select name="minOp" class="form-select" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Selecciona operador (=, ≤, ≥). Si no eliges ninguno, se usa '=' por defecto.">
           <option value="">Stock mín.</option>
           <option value="eq" <%= query.minOp==='eq'?'selected':'' %>>=</option>
           <option value="lte" <%= query.minOp==='lte'?'selected':'' %>>&le;</option>
@@ -102,6 +102,7 @@
     </div>
   </form>
 </div>
+<%- include('../../partials/legend-shapes') %><!-- Leyenda de formas -->
 <table class="table table-striped">
   <thead>
     <tr>
@@ -121,23 +122,33 @@
     <% productos.forEach(p => { %>
       <tr class="<%= p.stock < p.stock_minimo ? 'table-warning' : '' %>">
         <td><%= p.id %></td>
-        <td class="name-cell">
-          <span><%= p.nombre %></span>
-          <div class="shape-group">
-            <% if (p.categorias.length) { %>
-              <div class="shape-row">
-                <% p.categorias.forEach(c => { const bucket = c.id % 12; %>
-                  <span class="shape shape-circle shape-bucket-<%= bucket %>" data-bs-toggle="tooltip" title="Categoría: <%= c.nombre %>"></span>
-                <% }) %>
-              </div>
-            <% } %>
-            <% if (p.proveedores.length) { %>
-              <div class="shape-row">
-                <% p.proveedores.forEach(pr => { const bucket = pr.id % 12; %>
-                  <span class="shape shape-square shape-bucket-<%= bucket %>" data-bs-toggle="tooltip" title="Proveedor: <%= pr.nombre %>"></span>
-                <% }) %>
-              </div>
-            <% } %>
+        <td>
+          <!-- Nombre y símbolos: categorías (círculos), proveedores (cuadrados) y localización (triángulo) -->
+          <div class="product-name-row">
+            <div class="product-name-text"><%= p.nombre %></div>
+            <div class="d-flex align-items-center">
+              <% if (p.categorias.length || p.proveedores.length) { %>
+                <div class="shape-stack">
+                  <% if (p.categorias.length) { %>
+                    <div class="shape-row">
+                      <% p.categorias.forEach(c => { const bucket = c.id % 12; %>
+                        <span class="shape shape-circle shape-bucket-<%= bucket %>" data-bs-toggle="tooltip" title="Categoría: <%= c.nombre %>"></span>
+                      <% }) %>
+                    </div>
+                  <% } %>
+                  <% if (p.proveedores.length) { %>
+                    <div class="shape-row">
+                      <% p.proveedores.forEach(pr => { const bucket = pr.id % 12; %>
+                        <span class="shape shape-square shape-bucket-<%= bucket %>" data-bs-toggle="tooltip" title="Proveedor: <%= pr.nombre %>"></span>
+                      <% }) %>
+                    </div>
+                  <% } %>
+                </div>
+              <% } %>
+              <% if (p.localizacion) { const bucket = p.localizacion_id % 12; %>
+                <span class="shape shape-triangle shape-bucket-<%= bucket %>" data-bs-toggle="tooltip" title="Localización: <%= p.localizacion %>"></span>
+              <% } %>
+            </div>
           </div>
         </td>
         <td><%= p.precio %></td>

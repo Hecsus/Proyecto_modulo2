@@ -1,12 +1,14 @@
 // Lógica global del frontend
 
-/* Inicialización global de tooltips y popovers.
-   Propósito: activar ayudas visuales de Bootstrap.
-   Entradas: elementos con data-bs-toggle="tooltip" o "popover".
+/* Inicialización de tooltips y popovers.
+   Propósito: mostrar ayudas en formas y operadores.
+   Entradas: elementos con data-bs-toggle="tooltip" y selects priceOp|stockOp|minOp.
    Salidas: tooltips/popovers visibles.
    Dependencias: Bootstrap 5. */
 document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
-document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => new bootstrap.Popover(el, { trigger: 'hover', html: true }));
+document.querySelectorAll('select[name="priceOp"],select[name="stockOp"],select[name="minOp"]').forEach(el =>
+  new bootstrap.Popover(el, { trigger: 'hover focus' })
+);
 
 /* Popup informativo para operadores numéricos.
    Propósito: avisar cuando se ingresa un número sin operador.

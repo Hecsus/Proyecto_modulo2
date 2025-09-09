@@ -177,6 +177,13 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-09 03:40] – Detalle con símbolos, triángulo en localización, alineado/espaciado, popover de operadores al pasar y leyenda
+- Detalle de producto con todos los datos y símbolos junto a cada dato; badge Bajo stock conservado.
+- Localizaciones representadas con triángulos coherentes en todas las vistas.
+- Alineado/espaciado mejorado para evitar solapes de iconos y descentrados.
+- Popover de ayuda en operadores (hover) en paneles de búsqueda.
+- Leyenda reutilizable (círculo=Categoría, cuadrado=Proveedor, triángulo=Localización) incluida en vistas necesarias.
+- Limpieza de código y comentarios añadidos.
 ## [2025-09-09 02:30] – Popup operadores + orden invertido + formas y colores vivos + iconos a la derecha + panel clicable
 - Se restaura el popup de ayuda en operadores (=, ≤, ≥) para precio/stock/stock mín.; backend sigue usando '=' por defecto si no se elige.
 - Se invierte el orden de campos: operador a la izquierda, número a la derecha; placeholders claros ('Precio/Stock/Stock mín.' y 'num').
