@@ -89,3 +89,16 @@ public/css/styles.css
 `npm audit --omit=dev`Audita dependencias de producción.
 
 Con esta guía deberías seguir el flujo de ruta → validador → controlador → SQL → vista y entender cómo se pasan datos a las plantillas.
+
+6. Extras visuales y ayuda
+--------------------------
+- En formularios de Productos y Bajo stock, si escribes un número sin elegir operador aparece un aviso de SweetAlert2. Solo se muestra una vez por campo y la búsqueda sigue usando '=' por defecto.
+- Los campos numéricos muestran primero el operador (select) y luego el número. Placeholders: "Precio/Stock/Stock mín." y "num".
+- Colores y formas:
+  * Categorías → círculo.
+  * Proveedores → cuadrado.
+  * Localizaciones → triángulo.
+  Cada id usa `id % 12` para asignar color (`shape-bucket-*`) con tooltip que muestra el nombre.
+- Las filas de categorías/proveedores/localizaciones usan `row-bucket-*` para colorear el fondo suavemente.
+- En el panel de resumen, cada tarjeta es un enlace completo gracias a `a.stretched-link`.
+- Todo esto se activa en `public/js/main.js`: inicializa los tooltips, muestra el popup de operadores y confirma las eliminaciones.

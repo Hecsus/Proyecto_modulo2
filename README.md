@@ -119,7 +119,9 @@ DB_NAME=inventario
 - Columnas de costo/observaciones con tooltip y detalle extendido.
 - Usuarios con teléfono y búsquedas en categorías/proveedores/localizaciones/usuarios.
 - Icono de proveedores correcto en el panel de inventario.
-- Búsquedas con filtros y ordenación; operadores `=` por defecto si no se elige otro.
+- Formas y colores vivos por entidad: círculo=categoría, cuadrado=proveedor, triángulo=localización con tooltip.
+- Tarjetas del panel clicables (stretched-link) hacia sus vistas.
+- Búsquedas con filtros y ordenación; operadores `=` por defecto si no se elige otro (popup informativo una vez por campo).
 - Badges que comparan **stock** vs **stock mínimo** para resaltar faltantes.
 
 ## Datos de ejemplo
@@ -136,8 +138,8 @@ Solo los usuarios con rol **admin** pueden crear, editar o eliminar otros usuari
 Los listados muestran badges comparando el stock actual con el mínimo definido: si el stock es menor al mínimo la etiqueta aparece en rojo, de lo contrario en verde.
 
 ## Filtros y operadores
-Los formularios de búsqueda permiten elegir operadores '=', '≤' o '≥' para precio, stock y stock mínimo. Si se deja sin operador pero con valor, el backend asume '=' por defecto y se muestra un aviso informativo.
-
+Los formularios de búsqueda permiten elegir operadores '=', '≤' o '≥' para precio, stock y stock mínimo. Si se deja sin operador
+ pero con valor, el backend asume '=' por defecto y se muestra un aviso informativo una sola vez por campo.
 ## Navegación “Volver”
 Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 
@@ -158,13 +160,13 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - [ ] Auditoría de producción sin vulnerabilidades críticas.
 
 ## Pruebas manuales sugeridas
-- Productos y Bajo stock → panel de búsqueda: sin títulos extra, placeholders correctos y "num" en inputs; popup de ayuda sigue funcionando.
+- Productos/Bajo stock: operador a la izquierda, número a la derecha; si hay valor sin operador aparece una vez el popup informativo y la búsqueda continúa (usa '=' por defecto).
 - Fondos por vista ya no se aplican.
 - Tablas de categorías/proveedores/localizaciones → filas con colores suaves y consistentes.
-- Productos (lista/detalle) → círculos de colores: arriba categorías, abajo proveedores; tooltip con nombres; localización coloreada.
+- Productos (lista/detalle) → formas a la derecha del nombre: círculo=categoría, cuadrado=proveedor; triángulo de localización en su columna con tooltip y colores vivos.
+- Panel de resumen: cada tarjeta es clicable y lleva a su vista.
 - Al eliminar cualquier registro → SweetAlert2 de confirmación; solo borra si confirmo.
 - Sin errores en consola; sin estilos "huérfanos".
-
 ## Troubleshooting
 - **DB access denied**: revisa credenciales y privilegios MySQL.
 - **Módulos EJS/layouts no encontrados**: ejecuta `npm install`.
@@ -175,11 +177,18 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-09 02:30] – Popup operadores + orden invertido + formas y colores vivos + iconos a la derecha + panel clicable
+- Se restaura el popup de ayuda en operadores (=, ≤, ≥) para precio/stock/stock mín.; backend sigue usando '=' por defecto si no se elige.
+- Se invierte el orden de campos: operador a la izquierda, número a la derecha; placeholders claros ('Precio/Stock/Stock mín.' y 'num').
+- Se añaden formas por entidad: círculo (categoría), cuadrado (proveedor), triángulo (localización) con colores más vivos por bucket id%12 y tooltips.
+- En productos, las formas se muestran a la derecha del nombre; localización con triángulo coherente.
+- Las tarjetas del panel ahora son clicables y llevan a sus vistas.
+- Revisión y comentarios añadidos; limpieza de restos si los hubiera.
 ## [2025-09-09 01:00] – Búsqueda minimalista, colores por fila, círculos por taxonomía y confirmación de borrado
 - Simplificado panel de búsqueda (sin títulos/ayudas en operadores; placeholders “Precio/Stock/Stock mín.” y “num”).
 - Eliminados fondos por vista (fondo neutro).
 - Filas con color único en categorías/proveedores/localizaciones (bucket id%12).
-- Círculos de color junto al nombre del producto: arriba categorías, abajo proveedores; tooltip con nombre; localización con color propio.
+- Formas y colores vivos junto al nombre del producto: círculo=categoría, cuadrado=proveedor; triángulo de localización en su columna con tooltip.
 - Confirmación SweetAlert2 en todas las acciones de eliminar.
 - Limpieza de código redundante y comentarios añadidos.
 ## [2025-09-09 00:30] – Fix viewClass + limpieza y guía

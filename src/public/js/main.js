@@ -1,33 +1,52 @@
 // Lógica global del frontend
 
-// Inicializa tooltips y popovers declarados en el HTML (incluye chips de colores)
+/* Inicialización global de tooltips y popovers.
+   Propósito: activar ayudas visuales de Bootstrap.
+   Entradas: elementos con data-bs-toggle="tooltip" o "popover".
+   Salidas: tooltips/popovers visibles.
+   Dependencias: Bootstrap 5. */
 document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
 document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => new bootstrap.Popover(el, { trigger: 'hover', html: true }));
 
-// Aviso informativo: cuando se ingresa un número sin operador, recuerda que '=' es el predeterminado
+/* Popup informativo para operadores numéricos.
+   Propósito: avisar cuando se ingresa un número sin operador.
+   Entradas: price|stock|min y sus selects asociados.
+   Salidas: SweetAlert2 informativo (no bloquea el envío).
+   Dependencias: SweetAlert2 y sessionStorage. */
 document.querySelectorAll('form[data-search]').forEach(form => {
   form.addEventListener('submit', () => {
-    const key = `swalHint-${form.getAttribute('data-search')}`; // Solo una vez por sesión y vista
-    const priceVal = form.querySelector('[name="price"]').value;
-    const priceOp = form.querySelector('[name="priceOp"]').value;
-    const stockVal = form.querySelector('[name="stock"]').value;
-    const stockOp = form.querySelector('[name="stockOp"]').value;
-    const minVal = form.querySelector('[name="min"]').value;
-    const minOp = form.querySelector('[name="minOp"]').value;
-    if (!sessionStorage.getItem(key) && ((priceVal && !priceOp) || (stockVal && !stockOp) || (minVal && !minOp))) {
+    const view = form.getAttribute('data-search');
+    const fields = [
+      { value: 'price', op: 'priceOp' },
+      { value: 'stock', op: 'stockOp' },
+      { value: 'min', op: 'minOp' }
+    ];
+    let shouldAlert = false;
+    fields.forEach(f => {
+      const val = form.querySelector(`[name="${f.value}"]`).value;
+      const op = form.querySelector(`[name="${f.op}"]`).value;
+      const key = `swalHint-${view}-${f.value}`; // una vez por vista y campo
+      if (val && !op && !sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, '1');
+        shouldAlert = true;
+      }
+    });
+    if (shouldAlert) {
       Swal.fire({
         icon: 'info',
         title: 'Operador por defecto',
         text: "Selecciona operador (=, ≤, ≥). Si no eliges ninguno, se usa '=' por defecto.",
         confirmButtonText: 'Entendido'
       });
-      sessionStorage.setItem(key, '1');
     }
   });
 });
 
-// Confirmación genérica para enlaces/botones de eliminación
-// Usa delegación para cubrir elementos añadidos dinámicamente
+/* Confirmación de eliminación con SweetAlert2.
+   Propósito: evitar borrados accidentales.
+   Entradas: click en elementos .btn-delete o [data-action="delete"].
+   Salidas: eliminación solo si el usuario confirma.
+   Dependencias: SweetAlert2. */
 document.addEventListener('click', async e => {
   const btn = e.target.closest('.btn-delete,[data-action="delete"]');
   if (!btn) return; // No es un botón de eliminar
