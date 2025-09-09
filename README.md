@@ -174,6 +174,10 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - [ ] Auditoría de producción sin vulnerabilidades críticas.
 
 ## Pruebas manuales sugeridas
+- Login: el botón ojo alterna visibilidad; tras error el email persiste y la contraseña queda vacía.
+- Productos: en la página 3 con filtros, usar Detalles/Editar/Eliminar y comprobar que al volver o tras guardar se mantiene la misma vista gracias a returnTo.
+- Bajo stock: desde el listado, entrar a Detalles y volver conservando filtros y paginación.
+- Esquema: ejecutar `db/migrations/20250910_ajuste_esquema.sql` y crear/editar productos verificando campos costo y observaciones.
 - `npm install`
 - `npm start`
 - Abrir [http://localhost:3000/](http://localhost:3000/) → redirige a `/login` si no hay sesión.
@@ -183,8 +187,7 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - Desde el panel, pulsar tarjeta **Bajo stock** → `/productos/bajo-stock` (lista filtrada).
 - En `/productos/bajo-stock` verificar listado con `stock < stock_minimo` y navegación con `returnTo` en detalles.
 - Confirmar que solo administradores ven botones de crear/editar/eliminar.
- - Login: forzar error y verificar que el email persiste, la contraseña queda vacía y el toggle funciona.
- - Crear producto con dos categorías y dos proveedores incluyendo observaciones; comprobar en detalle y listado.
+- Crear producto con dos categorías y dos proveedores incluyendo observaciones; comprobar en detalle y listado.
  - Editar producto cambiando categorías y proveedores; verificar que la transacción actualiza las asociaciones.
  - Alta de usuario: probar email inválido o duplicado, emailConfirm distinto, contraseñas <8 o desiguales; los campos de contraseña no se repueblan y los toggles funcionan.
  - Cambio de contraseña: confirma el SweetAlert2, valida longitud y coincidencia; tras error los campos quedan vacíos.
@@ -198,6 +201,10 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-10 23:59] – Ajustes de esquema y navegación
+- Verificación/ajuste de esquema sin romper nada.
+- Login: toggle ver/ocultar contraseña restaurado.
+- ‘Volver’ mantiene página/filtros con returnTo.
 ## [2025-09-09 22:15] – Login con toggle reutilizable y validaciones reforzadas
 - Login: botón "ver contraseña" restaurado y email persistente al fallar.
 - Productos: categorías y proveedores se guardan en crear/editar mediante tablas puente y transacción en update.

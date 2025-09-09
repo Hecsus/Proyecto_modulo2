@@ -86,8 +86,8 @@ const mkFilter = (inputSelector, gridSelector) => {
 mkFilter('[data-filter="categorias"]',  '[data-options="categorias"]');
 mkFilter('[data-filter="proveedores"]', '[data-options="proveedores"]');
 
-// [auth] Toggle mostrar/ocultar contraseña (reutilizable por data-target)
-document.querySelectorAll('[data-toggle="password"]').forEach(btn => {
+// [auth] Toggle mostrar/ocultar contraseña (reutilizable mediante data-target)
+document.querySelectorAll('[data-toggle="password"]').forEach((btn) => {
   const input = document.querySelector(btn.dataset.target);
   if (!input) return;
   btn.addEventListener('click', () => {

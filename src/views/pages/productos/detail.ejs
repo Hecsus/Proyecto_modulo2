@@ -17,5 +17,6 @@
 <% if (producto.observaciones) { %>
   <p><strong>Observaciones:</strong> <%= producto.observaciones %></p>
 <% } %>
+<!-- Botón 'Volver' usa returnTo si llega -->
 <a href="<%= returnTo || '/productos' %>" class="btn btn-secondary">Volver</a>
 <!-- [checklist] Requisito implementado | Validación aplicada | SQL parametrizado (si aplica) | Comentarios modo curso | Sin código muerto -->

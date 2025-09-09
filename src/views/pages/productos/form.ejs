@@ -1,6 +1,8 @@
 <%# Formulario de producto con checkboxes multicolumna y buscador en categorías/proveedores %>
 <h1><%= producto ? 'Editar' : 'Nuevo' %> producto</h1>
 <form action="<%= producto ? '/productos/' + producto.id + '/editar' : '/productos/nuevo' %>" method="POST">
+  <!-- returnTo permite volver a la lista original tras guardar -->
+  <input type="hidden" name="returnTo" value="<%= returnTo || '' %>">
   <div class="mb-3">
     <label class="form-label">Nombre</label>
     <input type="text" name="nombre" class="form-control" value="<%= oldInput?.nombre || producto?.nombre || '' %>">

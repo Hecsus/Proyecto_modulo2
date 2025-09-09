@@ -4,9 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= title ? title + ' — ' : '' %>Inventario</title>
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-      <%- include('../partials/head') %>
-      <link rel="stylesheet" href="/css/styles.css">
+    <!-- Bootstrap 5 (CSS) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Librerías compartidas (iconos y SweetAlert2) -->
+    <%- include('../partials/head') %>
+    <!-- Estilos propios -->
+    <link rel="stylesheet" href="/resources/css/styles.css">
   </head>
   <body>
     <%- include('../partials/header') %>
@@ -15,6 +18,7 @@
     </main>
     <%- include('../partials/footer') %>
     <% if (flash) { %>
+      <!-- Mensaje flash con SweetAlert2 -->
       <script>
         Swal.fire({
           icon: '<%= flash.type === "success" ? "success" : "error" %>',
@@ -24,5 +28,8 @@
         });
       </script>
     <% } %>
+    <!-- Bootstrap JS y lógica global -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/resources/js/main.js"></script>
   </body>
 </html>

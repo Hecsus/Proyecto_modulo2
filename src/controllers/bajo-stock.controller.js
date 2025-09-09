@@ -107,6 +107,7 @@ exports.list = async (req, res) => {
     proveedores,
     query: req.query,
     errors: errors.array(),
+    reqUrl: req.originalUrl,
     viewClass: 'view-bajo-stock' // Clase de fondo para la vista
   });
 };

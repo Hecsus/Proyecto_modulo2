@@ -27,7 +27,7 @@ exports.login = async (req, res) => {
   if (!errors.isEmpty()) {                         // Si hay fallos de validación
     return res.status(400).render('pages/auth/login', {
       title: 'Login',
-      errors: errors.mapped?.() || null,
+      errors: errors.mapped() || null,
       oldInput: { email },                        // No reenviamos la contraseña
       viewClass: ''
     });

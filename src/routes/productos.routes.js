@@ -15,7 +15,7 @@ router.get('/:id/editar', requireAuth, controller.form);
 // Actualizar producto
 router.post('/:id/editar', requireAuth, productValidator, controller.update);
 // Eliminar producto
-router.get('/:id/eliminar', requireAuth, controller.remove);
+router.post('/:id/eliminar', requireAuth, controller.remove);
 // Detalle de producto
 router.get('/:id', requireAuth, controller.detail);
 
