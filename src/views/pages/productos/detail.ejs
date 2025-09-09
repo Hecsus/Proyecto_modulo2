@@ -1,0 +1,31 @@
+<% if (isBajoStock) { %>
+  <span class="badge badge-bajo-stock">Bajo stock</span>
+<% } %>
+<h1><%= producto.nombre %></h1>
+<% if (producto.categorias.length) { %>
+  <div class="dot-row">
+    <% producto.categorias.forEach(c => { const bucket = c.id % 12; %>
+      <span class="dot dot-bucket-<%= bucket %>" data-bs-toggle="tooltip" title="Categoría: <%= c.nombre %>"></span>
+    <% }) %>
+  </div>
+<% } %>
+<% if (producto.proveedores.length) { %>
+  <div class="dot-row">
+    <% producto.proveedores.forEach(pv => { const bucket = pv.id % 12; %>
+      <span class="dot dot-bucket-<%= bucket %>" data-bs-toggle="tooltip" title="Proveedor: <%= pv.nombre %>"></span>
+    <% }) %>
+  </div>
+<% } %>
+<p><strong>Descripción:</strong> <%= producto.descripcion %></p>
+<p><strong>Costo:</strong> <%= producto.costo %></p>
+<p><strong>Precio:</strong> <%= producto.precio %></p>
+<p><strong>Stock:</strong> <%= producto.stock %> / <%= producto.stock_minimo %></p>
+<p><strong>Localización:</strong>
+  <% if (producto.localizacion) { const bucket = producto.localizacion_id % 12; %>
+    <span class="dot dot-loc dot-bucket-<%= bucket %>" data-bs-toggle="tooltip" title="Localización: <%= producto.localizacion %>"></span>
+    <%= producto.localizacion %>
+  <% } else { %>-
+  <% } %>
+</p>
+<p><strong>Observaciones:</strong> <%= producto.observaciones %></p>
+<a href="<%= returnTo || '/productos' %>" class="btn btn-secondary">Volver</a>

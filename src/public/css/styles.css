@@ -1,0 +1,99 @@
+/* Variables de tema y colores principales */
+:root {
+  --brand:#2563eb; --accent:#10b981; --muted:#64748b;
+  --success:#22c55e; --warning:#f59e0b; --danger:#ef4444;
+  --card-bg:#ffffff; --card-border:#e5e7eb; --page-bg:#f8fafc;
+}
+
+/* Ajustes generales */
+body {
+  padding-top:60px;
+  background-color: var(--page-bg);
+}
+
+/* Navbar con enlaces activos y separación sutil */
+.navbar-identity {
+  color:#fff;
+  padding:.5rem 1rem;
+  background-color:rgba(255,255,255,0.1);
+  border-radius:.25rem;
+}
+.nav-link.active {
+  font-weight:500;
+  border-bottom:2px solid var(--brand);
+  border-radius:.25rem;
+  color:var(--brand)!important;
+}
+.nav-link:hover { color:var(--brand); }
+.nav-separated .nav-link + .nav-link { border-left:1px solid rgba(0,0,0,.1); }
+
+/* Tarjetas del panel/resumen */
+.summary-card {
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  box-shadow:0 .125rem .25rem rgba(0,0,0,.05);
+  border-left:4px solid transparent;
+}
+.border-brand{border-left-color:var(--brand)!important;}
+.border-accent{border-left-color:var(--accent)!important;}
+.border-muted{border-left-color:var(--muted)!important;}
+.border-success{border-left-color:var(--success)!important;}
+.border-warning{border-left-color:var(--warning)!important;}
+.border-danger{border-left-color:var(--danger)!important;}
+.tile-icon{
+  font-size:1.75rem;
+  width:1.75rem;
+  height:1.75rem;
+}
+.text-brand{color:var(--brand)!important;}
+.text-accent{color:var(--accent)!important;}
+.text-muted{color:var(--muted)!important;}
+.text-success{color:var(--success)!important;}
+.text-warning{color:var(--warning)!important;}
+.text-danger{color:var(--danger)!important;}
+
+/* Eliminadas clases de subheaders y badges no utilizadas */
+
+/* Fondos por vista eliminados: se deja fondo neutro */
+
+/* Badge "Bajo stock" consistente */
+.badge-bajo-stock{
+  background:#ffe2e1;
+  color:#b42318;
+  border:1px solid #ffcbc7;
+  font-weight:600;
+}
+
+/* Paleta de 12 buckets para asignar colores deterministas */
+/* id % 12 → bucket → color */
+.dot-bucket-0{background:#e3f2fd;border-color:#cde6fb;}
+.dot-bucket-1{background:#e8f5e9;border-color:#d4edd6;}
+.dot-bucket-2{background:#fff3e0;border-color:#ffe2bd;}
+.dot-bucket-3{background:#fce4ec;border-color:#f7c7da;}
+.dot-bucket-4{background:#ede7f6;border-color:#dccff2;}
+.dot-bucket-5{background:#e0f7fa;border-color:#caf2f6;}
+.dot-bucket-6{background:#f9fbe7;border-color:#eef3c4;}
+.dot-bucket-7{background:#efebe9;border-color:#e3d6d0;}
+.dot-bucket-8{background:#f3e5f5;border-color:#e7cdf0;}
+.dot-bucket-9{background:#e1f5fe;border-color:#cbeefe;}
+.dot-bucket-10{background:#fbe9e7;border-color:#f7d2cb;}
+.dot-bucket-11{background:#fffde7;border-color:#fff7b3;}
+
+/* Chips circulares para categorías/proveedores/localizaciones */
+.dot{width:.75rem;height:.75rem;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.1);margin-right:.25rem;vertical-align:middle;}
+.dot-row{display:flex;gap:.25rem;flex-wrap:wrap;margin-top:.25rem;}
+.dot-loc{border-style:dashed;} /* Localización se distingue con borde punteado */
+
+/* Filas de tablas coloreadas según bucket calculado por id%12 */
+.row-bucket-0 > td{background:#f7fbff;}
+.row-bucket-1 > td{background:#f7fdf8;}
+.row-bucket-2 > td{background:#fff9f0;}
+.row-bucket-3 > td{background:#fef6f9;}
+.row-bucket-4 > td{background:#f8f6fe;}
+.row-bucket-5 > td{background:#f2fdff;}
+.row-bucket-6 > td{background:#fbfdf3;}
+.row-bucket-7 > td{background:#fbf8f7;}
+.row-bucket-8 > td{background:#fbf6fe;}
+.row-bucket-9 > td{background:#f3faff;}
+.row-bucket-10 > td{background:#fff6f3;}
+.row-bucket-11 > td{background:#fffee9;}
