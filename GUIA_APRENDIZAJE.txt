@@ -83,7 +83,16 @@ public/css/styles.css
 - bcryptjs: hash de contraseñas.
 - Bootstrap 5, SweetAlert2 y Boxicons via CDN en las vistas.
 
-5. Comandos básicos
+5. Seguridad aplicada
+---------------------
+- Variables de entorno cargadas con **dotenv** y validadas al inicio.
+- Contraseñas cifradas con **bcryptjs** y comparación vía `bcrypt.compare`.
+- Sesiones seguras con **express-session**: `httpOnly`, `sameSite:'lax'`, `secure` en producción y `maxAge` limitado.
+- Consultas SQL siempre parametrizadas usando `mysql2/promise`.
+- Vistas EJS escapadas con `<%= %>` para evitar XSS.
+- Middlewares `requireAuth` y `requireRole('admin')` protegen rutas y enlaces de administración.
+
+6. Comandos básicos
 -------------------
 `npm install`         Instala dependencias.
 `npm run dev`         Arranca el servidor en desarrollo.
@@ -92,7 +101,7 @@ public/css/styles.css
 
 Con esta guía deberías seguir el flujo de ruta → validador → controlador → SQL → vista y entender cómo se pasan datos a las plantillas.
 
-6. Extras visuales y ayuda
+7. Extras visuales y ayuda
 --------------------------
 - En formularios de Productos y Bajo stock, si escribes un número sin elegir operador aparece un aviso de SweetAlert2. Solo se muestra una vez por campo y la búsqueda sigue usando '=' por defecto.
 - Los campos numéricos muestran primero el operador (select) y luego el número. Placeholders: "Precio/Stock/Stock mín." y "num".
@@ -101,9 +110,9 @@ Con esta guía deberías seguir el flujo de ruta → validador → controlador �
 - El script `public/js/main.js` inicializa tooltips, popovers, filtrado en vivo y confirma las eliminaciones.
 - En el panel de resumen, cada tarjeta es un enlace completo gracias a `a.stretched-link`.
 
-7. Cambios recientes (panel, login, procedencia)
+8. Cambios recientes (panel, login, procedencia)
 -----------------------------------------------
-- La tarjeta "Bajo stock" del panel incluye un `a.stretched-link` hacia `/bajo-stock`, haciendo toda la card clicable para mejor UX.
+- La tarjeta "Bajo stock" del panel ahora enlaza a `/productos/bajo-stock` y hace toda la card clicable.
 - El formulario de login usa `oldInput` y `errors` para persistir el email tras fallos y lista mensajes de `express-validator`.
 - Un botón accesible permite mostrar u ocultar la contraseña sin recargar la página.
 - Se eliminó la sección "Procedencia" del detalle de producto porque ya se muestran categorías y proveedores directamente.

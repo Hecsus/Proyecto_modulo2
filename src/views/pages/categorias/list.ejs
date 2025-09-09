@@ -1,5 +1,7 @@
 <h1>Categorías</h1>
-<a href="/categorias/nuevo" class="btn btn-success mb-3">Nuevo</a>
+<% if (userRole === 'admin') { %>
+  <a href="/categorias/nuevo" class="btn btn-success mb-3">Nuevo</a>
+<% } %>
 <button class="btn btn-outline-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#searchBox">Buscar</button>
 <div id="searchBox" class="collapse <%= (Object.keys(query||{}).length ? 'show' : '') %>">
   <% if (errors && errors.length) { %>
@@ -43,8 +45,10 @@
         <td><%= c.id %></td>
         <td><%= c.nombre %></td>
         <td>
-          <a href="/categorias/<%= c.id %>/editar" class="btn btn-sm btn-warning"><i class='bx bx-edit'></i></a>
-          <a href="/categorias/<%= c.id %>/eliminar" class="btn btn-sm btn-danger btn-delete"><i class='bx bx-trash'></i></a>
+          <% if (userRole === 'admin') { %>
+            <a href="/categorias/<%= c.id %>/editar" class="btn btn-sm btn-warning"><i class='bx bx-edit'></i></a>
+            <a href="/categorias/<%= c.id %>/eliminar" class="btn btn-sm btn-danger btn-delete"><i class='bx bx-trash'></i></a>
+          <% } %>
         </td>
       </tr>
     <% }) %>

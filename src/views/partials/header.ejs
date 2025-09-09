@@ -14,7 +14,7 @@
               <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= currentPath.startsWith('/categorias') ? 'active' : '' %>" href="/categorias">Categorías</a></li>
               <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= currentPath.startsWith('/proveedores') ? 'active' : '' %>" href="/proveedores">Proveedores</a></li>
               <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= currentPath.startsWith('/localizaciones') ? 'active' : '' %>" href="/localizaciones">Localizaciones</a></li>
-              <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= currentPath.startsWith('/inventario/bajo-stock') ? 'active' : '' %>" href="/inventario/bajo-stock">Bajo stock</a></li>
+              <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= currentPath.startsWith('/productos/bajo-stock') ? 'active' : '' %>" href="/productos/bajo-stock">Bajo stock</a></li>
             <% if (userRole === 'admin') { %>
                 <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= currentPath.startsWith('/usuarios') ? 'active' : '' %>" href="/usuarios">Usuarios</a></li>
             <% } %>

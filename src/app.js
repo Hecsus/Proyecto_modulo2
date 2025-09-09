@@ -3,7 +3,17 @@
  * Cada línea describe qué hace y por qué se incluye.
  */
 
-require('dotenv').config();               // Carga variables de entorno para configurar la app sin hardcodear datos sensibles
+require('dotenv').config();               // Carga variables de entorno desde .env
+
+// Verifica que las variables críticas estén presentes; si falta alguna se aborta el arranque
+const REQUIRED_ENV = ['PORT', 'SESSION_SECRET', 'DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'];
+for (const k of REQUIRED_ENV) {
+  if (process.env[k] === undefined) {        // Permite cadenas vacías (ej: DB_PASSWORD '')
+    console.error(`[App] Falta variable de entorno: ${k}`);
+    process.exit(1); // Evita continuar con configuración incompleta
+  }
+}
+
 const path = require('path');             // Módulo nativo para resolver rutas en distintos SO
 const express = require('express');       // Framework que simplifica la creación del servidor HTTP
 const ejsLayouts = require('express-ejs-layouts'); // Permite reutilizar layouts en las vistas EJS
@@ -23,7 +33,8 @@ const usuariosRoutes = require('./routes/usuarios.routes');     // Conjunto de r
 const db = require('./config/db');                                // Pool de conexiones MySQL reutilizable
 
 const app = express();                           // Crea la instancia de Express
-const PORT = process.env.PORT || 3000;           // Define el puerto; usa env o 3000 por defecto
+app.disable('x-powered-by');                     // Oculta cabecera que delata Express
+const PORT = Number(process.env.PORT);           // Puerto tomado de .env; validado arriba
 
 app.set('view engine', 'ejs');                   // Configura EJS como motor de plantillas
 app.set('views', path.join(__dirname, 'views')); // Establece la carpeta de vistas
@@ -44,10 +55,15 @@ app.use(express.static(path.join(__dirname, 'public'))); // Servir archivos est�
  * - cookie: ajustes seguros básicos.
  */
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'secret',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { httpOnly: true, sameSite: 'lax' }
+  secret: process.env.SESSION_SECRET,             // Clave para firmar la cookie; viene de .env
+  resave: false,                                 // No fuerza resalvado si no hay cambios
+  saveUninitialized: false,                      // No guarda sesiones vacías
+  cookie: {
+    httpOnly: true,                              // Evita acceso desde JS del cliente
+    sameSite: 'lax',                             // Mitiga CSRF básico permitiendo navegación propia
+    secure: process.env.NODE_ENV === 'production', // Requiere HTTPS en producción
+    maxAge: 1000 * 60 * 60                       // Expira en una hora
+  }
 }));
 
 app.use((req, res, next) => {                   // Middleware que gestiona mensajes flash
@@ -87,7 +103,7 @@ app.get('/db-health', async (req, res) => {       // Verifica conexión con la b
 app.use('/', authRoutes);                         // Monta rutas de login/logout
 app.use('/panel', requireAuth, panelRoutes);      // Panel de inventario con métricas
 app.use('/productos', requireAuth, productosRoutes);       // CRUD de productos (protección por login)
-app.use('/inventario/bajo-stock', requireAuth, bajoStockRoutes); // Listado de productos con bajo stock
+app.use('/productos/bajo-stock', requireAuth, bajoStockRoutes); // Listado de productos con bajo stock
 app.use('/categorias', requireAuth, categoriasRoutes);    // CRUD de categorías (protección por login)
 app.use('/proveedores', requireAuth, proveedoresRoutes);  // CRUD de proveedores (protección por login)
 app.use('/localizaciones', requireAuth, localizacionesRoutes); // CRUD de localizaciones (protección por login)

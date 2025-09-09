@@ -1,6 +1,8 @@
 <%# Listado de productos sin formas ni leyenda. Incluye columna "Procedencia" con popover de categorías y proveedores %>
 <h1>Productos</h1>
-<a href="/productos/nuevo" class="btn btn-success mb-3">Nuevo</a>
+<% if (userRole === 'admin') { %>
+  <a href="/productos/nuevo" class="btn btn-success mb-3">Nuevo</a>
+<% } %>
 <button class="btn btn-outline-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#searchBox">Buscar</button>
 <div id="searchBox" class="collapse"><!-- Siempre cerrado; se abre solo al pulsar "Buscar" -->
   <% if (errors && errors.length) { %>
@@ -148,8 +150,10 @@
         <td><%= p.localizacion || '-' %></td>
         <td>
           <a href="/productos/<%= p.id %>?returnTo=<%= encodeURIComponent(request.originalUrl) %>" class="btn btn-sm btn-primary"><i class='bx bx-show'></i></a>
-          <a href="/productos/<%= p.id %>/editar" class="btn btn-sm btn-warning"><i class='bx bx-edit'></i></a>
-          <a href="/productos/<%= p.id %>/eliminar" class="btn btn-sm btn-danger btn-delete"><i class='bx bx-trash'></i></a>
+          <% if (userRole === 'admin') { %>
+            <a href="/productos/<%= p.id %>/editar" class="btn btn-sm btn-warning"><i class='bx bx-edit'></i></a>
+            <a href="/productos/<%= p.id %>/eliminar" class="btn btn-sm btn-danger btn-delete"><i class='bx bx-trash'></i></a>
+          <% } %>
         </td>
       </tr>
     <% }) %>

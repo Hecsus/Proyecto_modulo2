@@ -45,7 +45,7 @@ Aplicación de gestión de inventario pensada para prácticas del módulo 2. Inc
 ```
 
 ## Convenciones
-- Rutas: **kebab-case** (`/bajo-stock`)
+- Rutas: **kebab-case** (`/productos/bajo-stock`)
 - Controladores: **camelCase**
 - Vistas: EJS bajo `layouts/`, `partials/` y `pages/`
 - Archivos estáticos servidos desde `/resources` (`src/public`)
@@ -86,9 +86,11 @@ DB_NAME=inventario
 > Si usas XAMPP, el usuario suele ser `root` sin contraseña.
 
 ## Rutas rápidas de verificación
-- `/panel`
+- `/` → redirige al panel (requiere sesión)
 - `/login`
 - `/health`
+- `/productos`
+- `/productos/bajo-stock`
 - `/db-health`
 - `/resources` para archivos estáticos
 
@@ -125,6 +127,14 @@ DB_NAME=inventario
 - Búsquedas con filtros y ordenación; operadores `=` por defecto si no se elige otro (popup informativo una vez por campo).
 - Badges que comparan **stock** vs **stock mínimo** para resaltar faltantes.
 
+## Seguridad aplicada
+- Variables de entorno cargadas con **dotenv** y verificadas al inicio.
+- Contraseñas protegidas con **bcryptjs** (hash y `compare`).
+- Sesiones con **express-session** configuradas `httpOnly`, `sameSite:'lax'`, `secure` en producción y `maxAge` de 1 h.
+- Validación de formularios vía **express-validator**.
+- Consultas MySQL siempre parametrizadas (`?`) usando **mysql2/promise**.
+- Vistas EJS escapadas con `<%= %>` y enlaces condicionados por rol (`requireRole`).
+
 ## Datos de ejemplo
 Importa las semillas SQL:
 ```bash
@@ -154,19 +164,25 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - No añadir dependencias innecesarias.
 
 ## Criterios de aceptación mínimos y Checklist de regresión
-- [ ] `npm run dev` arranca sin errores.
-- [ ] Login y panel funcionan.
-- [ ] CRUDs principales operan correctamente.
+- [ ] `npm start` arranca sin errores.
+- [ ] GET `/` redirige a `/panel` cuando hay sesión.
+- [ ] GET `/login` responde 200 y valida con bcrypt.
+- [ ] GET `/health` responde `{status:"ok"}`.
+- [ ] Tarjeta “Bajo stock” en el panel lleva a `/productos/bajo-stock`.
+- [ ] CRUDs principales operan correctamente (rutas protegidas por rol).
 - [ ] Sin referencias a `nodemon` ni `uid2`.
 - [ ] Auditoría de producción sin vulnerabilidades críticas.
 
 ## Pruebas manuales sugeridas
-- Productos y Bajo stock: aparece la columna “Procedencia”; el popover muestra categorías y proveedores o “—” si faltan.
-- Detalle de producto: sección “Procedencia” con texto claro y popover opcional.
-- Formulario de producto: categorías y proveedores en grid multicolumna; el buscador oculta/muestra opciones sin perder selección.
-- No quedan formas, leyenda ni filas coloreadas; panel y navegaciones siguen operativos.
-- Al eliminar registros se confirma con SweetAlert2.
-- Sin errores en consola ni rutas rotas.
+- `npm install`
+- `npm start`
+- Abrir [http://localhost:3000/](http://localhost:3000/) → redirige a `/login` si no hay sesión.
+- Abrir [http://localhost:3000/login](http://localhost:3000/login) y probar credenciales válidas/invalidas.
+- Abrir [http://localhost:3000/health](http://localhost:3000/health) → `{status:"ok"}`.
+- Desde el panel, pulsar tarjeta **Productos** → `/productos`.
+- Desde el panel, pulsar tarjeta **Bajo stock** → `/productos/bajo-stock` (lista filtrada).
+- En `/productos/bajo-stock` verificar listado con `stock < stock_minimo` y navegación con `returnTo` en detalles.
+- Confirmar que solo administradores ven botones de crear/editar/eliminar.
 ## Troubleshooting
 - **DB access denied**: revisa credenciales y privilegios MySQL.
 - **Módulos EJS/layouts no encontrados**: ejecuta `npm install`.
@@ -177,6 +193,12 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-10 12:00] – Seguridad reforzada y bajo stock integrado
+- Tarjeta “Bajo stock” del panel enlaza a `/productos/bajo-stock`.
+- Sesiones con cookies seguras y variables de entorno obligatorias.
+- Rutas de escritura protegidas con `requireRole('admin')` y enlaces ocultos según rol.
+- Documentación y guía de aprendizaje actualizadas.
+
 ## [2025-09-09 17:33] – Panel bajo stock navegable + Login persistente/mostrar contraseña + Limpieza “Procedencia” + Comentarios
 - Panel: la tarjeta “Bajo stock” ahora enlaza correctamente a /bajo-stock (stretched-link).
 - Login: se preserva el email tras error; botón para mostrar/ocultar contraseña (no se repuebla la contraseña por seguridad).

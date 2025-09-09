@@ -98,7 +98,7 @@ exports.list = async (req, res) => {
 
   res.render('pages/bajo-stock', {
     title: 'Bajo stock',         // Título de la página
-    basePath: '/inventario/bajo-stock', // Ruta base para Limpiar/paginación
+    basePath: '/productos/bajo-stock', // Ruta base para Limpiar/paginación
     productos: rows,             // Resultado de la consulta
     page,
     totalPages,
