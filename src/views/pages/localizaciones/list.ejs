@@ -19,14 +19,14 @@
     </div>
     <div class="col-md-3">
       <select name="sortBy" class="form-select">
-        <option value="id" <%= (query.sortBy || 'id')==='id' ? 'selected':'' %>>Ordenar por ID</option>
-        <option value="nombre" <%= query.sortBy==='nombre' ? 'selected':'' %>>Nombre</option>
+        <option value="id" <%= (query.sortBy || 'id') === 'id' ? 'selected' : '' %>>Ordenar por ID</option>
+        <option value="nombre" <%= query.sortBy === 'nombre' ? 'selected' : '' %>>Nombre</option>
       </select>
     </div>
     <div class="col-md-3">
       <select name="sortDir" class="form-select">
-        <option value="asc" <%= (query.sortDir || 'asc')==='asc' ? 'selected':'' %>>Asc</option>
-        <option value="desc" <%= (query.sortDir || 'asc')==='desc' ? 'selected':'' %>>Desc</option>
+        <option value="asc" <%= (query.sortDir || 'asc') === 'asc' ? 'selected' : '' %>>Asc</option>
+        <option value="desc" <%= (query.sortDir || 'asc') === 'desc' ? 'selected' : '' %>>Desc</option>
       </select>
     </div>
     <div class="col-12">
@@ -38,8 +38,8 @@
 <table class="table table-striped">
   <thead><tr><th>ID</th><th>Nombre</th><th>Acciones</th></tr></thead>
   <tbody>
-    <% localizaciones.forEach(l => { const bucket = l.id % 12; %>
-      <tr class="row-bucket-<%= bucket %>">
+    <% localizaciones.forEach(l => { %>
+      <tr>
         <td><%= l.id %></td>
         <td><%= l.nombre %></td>
         <td>

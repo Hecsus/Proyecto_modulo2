@@ -60,40 +60,12 @@ body {
   font-weight:600;
 }
 
-/* shapes (circle/square/triangle) y layout del nombre */
-.product-name-row{display:flex;justify-content:space-between;align-items:center;gap:.5rem;}
-.shape-stack{display:flex;flex-direction:column;align-items:flex-end;gap:.15rem;}
-.shape-row{display:flex;gap:.35rem;flex-wrap:wrap;justify-content:flex-end;}
-.shape{display:inline-block;width:.85rem;height:.85rem;margin-left:.35rem;vertical-align:middle;box-shadow:0 0 0 1px rgba(0,0,0,.15);}
-.shape-circle{border-radius:50%;}
-.shape-square{border-radius:.15rem;}
-.shape-triangle{width:0;height:0;border-left:.45rem solid transparent;border-right:.45rem solid transparent;border-bottom:.85rem solid currentColor;margin-left:.35rem;filter:drop-shadow(0 0 1px rgba(0,0,0,.15));}
-/* mapeo buckets vivos (colores accesibles) */
-.shape-bucket-0{background:#3b82f6;color:#3b82f6;border:1px solid #1d4ed8;}
-.shape-bucket-1{background:#10b981;color:#10b981;border:1px solid #047857;}
-.shape-bucket-2{background:#f59e0b;color:#f59e0b;border:1px solid #b45309;}
-.shape-bucket-3{background:#ef4444;color:#ef4444;border:1px solid #b91c1c;}
-.shape-bucket-4{background:#8b5cf6;color:#8b5cf6;border:1px solid #6d28d9;}
-.shape-bucket-5{background:#06b6d4;color:#06b6d4;border:1px solid #0e7490;}
-.shape-bucket-6{background:#84cc16;color:#84cc16;border:1px solid #4d7c0f;}
-.shape-bucket-7{background:#f97316;color:#f97316;border:1px solid #c2410c;}
-.shape-bucket-8{background:#e11d48;color:#e11d48;border:1px solid #9f1239;}
-.shape-bucket-9{background:#0ea5e9;color:#0ea5e9;border:1px solid #0369a1;}
-.shape-bucket-10{background:#22c55e;color:#22c55e;border:1px solid #15803d;}
-.shape-bucket-11{background:#a855f7;color:#a855f7;border:1px solid #7e22ce;}
-/* filas coloreadas (fondos suaves para lectura) */
-.row-bucket-0  > td{background:#eef3ff;}
-.row-bucket-1  > td{background:#e6fbf3;}
-.row-bucket-2  > td{background:#fff1da;}
-.row-bucket-3  > td{background:#ffe9e9;}
-.row-bucket-4  > td{background:#f1ecff;}
-.row-bucket-5  > td{background:#e9fbff;}
-.row-bucket-6  > td{background:#f2ffe6;}
-.row-bucket-7  > td{background:#ffefdf;}
-.row-bucket-8  > td{background:#ffe6ee;}
-.row-bucket-9  > td{background:#e6f6ff;}
-.row-bucket-10 > td{background:#eafff0;}
-.row-bucket-11 > td{background:#f5e9ff;}
-/* Leyenda compacta (círculo=Categoría, cuadrado=Proveedor, triángulo=Localización) */
-.legend-shapes{display:flex;align-items:center;gap:.5rem;font-size:.875rem;}
-.legend-shapes .shape{margin-left:0;}
+/* Columna Procedencia: alinea el botón/ícono al centro */
+.procedencia-cell{text-align:center;}
+
+/* Grids multicolumna de checkboxes (categorías/proveedores)
+   Ajusta las clases row-cols-* en la vista para cambiar columnas */
+.options-grid .form-check{
+  display:flex;
+  align-items:center;
+}

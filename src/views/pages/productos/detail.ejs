@@ -1,62 +1,25 @@
-<!-- Detalle de producto con shapes por taxonomía -->
-<div class="product-name-row mb-3">
-  <div class="product-name-text d-flex align-items-center gap-2">
-    <h1 class="mb-0"><%= producto.nombre %></h1>
-    <% if (isBajoStock) { %><span class="badge badge-bajo-stock">Bajo stock</span><% } %>
-  </div>
-  <div class="d-flex align-items-center">
-    <% if (producto.categorias.length || producto.proveedores.length) { %>
-      <div class="shape-stack">
-        <% if (producto.categorias.length) { %>
-          <div class="shape-row">
-            <% producto.categorias.forEach(c => { const bucket = c.id % 12; %>
-              <span class="shape shape-circle shape-bucket-<%= bucket %>" data-bs-toggle="tooltip" title="Categoría: <%= c.nombre %>"></span>
-            <% }) %>
-          </div>
-        <% } %>
-        <% if (producto.proveedores.length) { %>
-          <div class="shape-row">
-            <% producto.proveedores.forEach(pv => { const bucket = pv.id % 12; %>
-              <span class="shape shape-square shape-bucket-<%= bucket %>" data-bs-toggle="tooltip" title="Proveedor: <%= pv.nombre %>"></span>
-            <% }) %>
-          </div>
-        <% } %>
-      </div>
-    <% } %>
-    <% if (producto.localizacion) { const bucket = producto.localizacion_id % 12; %>
-      <span class="shape shape-triangle shape-bucket-<%= bucket %>" data-bs-toggle="tooltip" title="Localización: <%= producto.localizacion %>"></span>
-    <% } %>
-  </div>
+<%# Detalle de producto sin formas ni leyenda. Incluye sección "Procedencia" %>
+<div class="d-flex align-items-center gap-2 mb-3">
+  <h1 class="mb-0"><%= producto.nombre %></h1>
+  <% if (isBajoStock) { %><span class="badge badge-bajo-stock">Bajo stock</span><% } %>
 </div>
 <p><strong>Descripción:</strong> <%= producto.descripcion || '-' %></p>
 <p><strong>Precio:</strong> <%= producto.precio %></p>
 <p><strong>Costo:</strong> <%= producto.costo %></p>
 <p><strong>Stock:</strong> <%= producto.stock %></p>
 <p><strong>Stock mín.:</strong> <%= producto.stock_minimo %></p>
-<p><strong>Categorías:</strong>
-  <% if (producto.categorias.length) { %>
-    <% producto.categorias.forEach((c,i) => { const bucket = c.id % 12; %>
-      <span class="shape shape-circle shape-bucket-<%= bucket %>" data-bs-toggle="tooltip" title="Categoría: <%= c.nombre %>"></span>
-      <%= c.nombre %><%= i < producto.categorias.length - 1 ? ', ' : '' %>
-    <% }) %>
-  <% } else { %>-<% } %>
-</p>
-<p><strong>Proveedores:</strong>
-  <% if (producto.proveedores.length) { %>
-    <% producto.proveedores.forEach((pr,i) => { const bucket = pr.id % 12; %>
-      <span class="shape shape-square shape-bucket-<%= bucket %>" data-bs-toggle="tooltip" title="Proveedor: <%= pr.nombre %>"></span>
-      <%= pr.nombre %><%= i < producto.proveedores.length - 1 ? ', ' : '' %>
-    <% }) %>
-  <% } else { %>-<% } %>
-</p>
-<p><strong>Localización:</strong>
-  <% if (producto.localizacion) { const bucket = producto.localizacion_id % 12; %>
-    <span class="shape shape-triangle shape-bucket-<%= bucket %>" data-bs-toggle="tooltip" title="Localización: <%= producto.localizacion %>"></span>
-    <%= producto.localizacion %>
-  <% } else { %>-<% } %>
-</p>
+<% const cats = producto.categorias.length ? producto.categorias.map(c=>c.nombre).join(', ') : '—';
+   const provs = producto.proveedores.length ? producto.proveedores.map(p=>p.nombre).join(', ') : '—'; %>
+<div class="mb-3">
+  <h2 class="h5 d-flex align-items-center gap-2">Procedencia
+    <button type="button" class="btn btn-sm btn-outline-secondary procedencia-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="left" data-bs-html="true" title="Procedencia" data-bs-content="<strong>Categorías:</strong> <%= cats %><br><strong>Proveedores:</strong> <%= provs %>">
+      <i class="bx bx-info-circle" aria-hidden="true"></i><span class="visualmente-hidden">Ver procedencia</span>
+    </button>
+  </h2>
+  <p><strong>Categorías:</strong> <%= cats %><br><strong>Proveedores:</strong> <%= provs %></p>
+</div>
+<p><strong>Localización:</strong> <%= producto.localizacion || '-' %></p>
 <% if (producto.observaciones) { %>
   <p><strong>Observaciones:</strong> <%= producto.observaciones %></p>
 <% } %>
-<%- include('../../partials/legend-shapes') %><!-- Leyenda de formas -->
 <a href="<%= returnTo || '/productos' %>" class="btn btn-secondary">Volver</a>

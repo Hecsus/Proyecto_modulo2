@@ -1,14 +1,12 @@
 // Lógica global del frontend
 
 /* Inicialización de tooltips y popovers.
-   Propósito: mostrar ayudas en formas y operadores.
-   Entradas: elementos con data-bs-toggle="tooltip" y selects priceOp|stockOp|minOp.
+   Propósito: mostrar ayudas en operadores numéricos y procedencia de productos.
+   Entradas: elementos con data-bs-toggle="tooltip" o data-bs-toggle="popover".
    Salidas: tooltips/popovers visibles.
    Dependencias: Bootstrap 5. */
 document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
-document.querySelectorAll('select[name="priceOp"],select[name="stockOp"],select[name="minOp"]').forEach(el =>
-  new bootstrap.Popover(el, { trigger: 'hover focus' })
-);
+document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => new bootstrap.Popover(el));
 
 /* Popup informativo para operadores numéricos.
    Propósito: avisar cuando se ingresa un número sin operador.
@@ -67,3 +65,23 @@ document.addEventListener('click', async e => {
     else if (href) window.location.href = href;
   }
 });
+
+/* Filtros en vivo para categorías y proveedores.
+   Propósito: permitir búsqueda instantánea en checkboxes del formulario de producto.
+   Entradas: inputs con data-filter="categorias"/"proveedores" y grids con data-options correspondientes.
+   Salidas: muestra/oculta opciones según coincidencia.
+   Dependencias: DOM nativo. */
+const mkFilter = (inputSelector, gridSelector) => {
+  const input = document.querySelector(inputSelector);
+  const grid  = document.querySelector(gridSelector);
+  if (!input || !grid) return;
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    grid.querySelectorAll('.form-check').forEach(node => {
+      const label = node.querySelector('.form-check-label')?.textContent?.toLowerCase() || '';
+      node.closest('.col').style.display = label.includes(q) ? '' : 'none';
+    });
+  });
+};
+mkFilter('[data-filter="categorias"]',  '[data-options="categorias"]');
+mkFilter('[data-filter="proveedores"]', '[data-options="proveedores"]');

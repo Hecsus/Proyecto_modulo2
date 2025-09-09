@@ -42,7 +42,7 @@ exports.list = async (req, res) => {
 
   res.render('pages/localizaciones/list', {
     title: 'Localizaciones',
-    localizaciones: rows, // cada registro incluye su id para colorear filas en la vista
+    localizaciones: rows,
     errors: [],
     query: req.query,
     page,

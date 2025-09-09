@@ -38,8 +38,8 @@
 <table class="table table-striped">
   <thead><tr><th>ID</th><th>Nombre</th><th>Acciones</th></tr></thead>
   <tbody>
-    <% categorias.forEach(c => { const bucket = c.id % 12; %>
-      <tr class="row-bucket-<%= bucket %>">
+    <% categorias.forEach(c => { %>
+      <tr>
         <td><%= c.id %></td>
         <td><%= c.nombre %></td>
         <td>

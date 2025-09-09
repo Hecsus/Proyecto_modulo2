@@ -119,7 +119,8 @@ DB_NAME=inventario
 - Columnas de costo/observaciones con tooltip y detalle extendido.
 - Usuarios con teléfono y búsquedas en categorías/proveedores/localizaciones/usuarios.
 - Icono de proveedores correcto en el panel de inventario.
-- Formas y colores vivos por entidad: círculo=categoría, cuadrado=proveedor, triángulo=localización con tooltip.
+- Columna "Procedencia" con popover de categorías y proveedores en listados y detalle.
+- Formulario de producto con categorías y proveedores en varias columnas y buscador en vivo.
 - Tarjetas del panel clicables (stretched-link) hacia sus vistas.
 - Búsquedas con filtros y ordenación; operadores `=` por defecto si no se elige otro (popup informativo una vez por campo).
 - Badges que comparan **stock** vs **stock mínimo** para resaltar faltantes.
@@ -160,13 +161,12 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - [ ] Auditoría de producción sin vulnerabilidades críticas.
 
 ## Pruebas manuales sugeridas
-- Productos/Bajo stock: operador a la izquierda, número a la derecha; si hay valor sin operador aparece una vez el popup informativo y la búsqueda continúa (usa '=' por defecto).
-- Fondos por vista ya no se aplican.
-- Tablas de categorías/proveedores/localizaciones → filas con colores suaves y consistentes.
-- Productos (lista/detalle) → formas a la derecha del nombre: círculo=categoría, cuadrado=proveedor; triángulo de localización en su columna con tooltip y colores vivos.
-- Panel de resumen: cada tarjeta es clicable y lleva a su vista.
-- Al eliminar cualquier registro → SweetAlert2 de confirmación; solo borra si confirmo.
-- Sin errores en consola; sin estilos "huérfanos".
+- Productos y Bajo stock: aparece la columna “Procedencia”; el popover muestra categorías y proveedores o “—” si faltan.
+- Detalle de producto: sección “Procedencia” con texto claro y popover opcional.
+- Formulario de producto: categorías y proveedores en grid multicolumna; el buscador oculta/muestra opciones sin perder selección.
+- No quedan formas, leyenda ni filas coloreadas; panel y navegaciones siguen operativos.
+- Al eliminar registros se confirma con SweetAlert2.
+- Sin errores en consola ni rutas rotas.
 ## Troubleshooting
 - **DB access denied**: revisa credenciales y privilegios MySQL.
 - **Módulos EJS/layouts no encontrados**: ejecuta `npm install`.
@@ -177,6 +177,12 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-09 16:21] – Columna “Procedencia”, formulario multicolumna con buscador y limpieza de shapes/colores
+- Se elimina la representación por formas/colores (triángulos/círculos/cuadrados) y la leyenda asociada.
+- Se añade la columna “Procedencia” (categorías + proveedores) con popover en Productos y Bajo stock.
+- En “Nuevo producto/Editar”, categorías y proveedores se muestran en varias columnas y con buscador en vivo.
+- Limpieza de CSS/JS/EJS relacionado a shapes/leyenda; comentarios y documentación actualizada.
+
 ## [2025-09-09 03:40] – Detalle con símbolos, triángulo en localización, alineado/espaciado, popover de operadores al pasar y leyenda
 - Detalle de producto con todos los datos y símbolos junto a cada dato; badge Bajo stock conservado.
 - Localizaciones representadas con triángulos coherentes en todas las vistas.
@@ -191,6 +197,7 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - En productos, las formas se muestran a la derecha del nombre; localización con triángulo coherente.
 - Las tarjetas del panel ahora son clicables y llevan a sus vistas.
 - Revisión y comentarios añadidos; limpieza de restos si los hubiera.
+
 ## [2025-09-09 01:00] – Búsqueda minimalista, colores por fila, círculos por taxonomía y confirmación de borrado
 - Simplificado panel de búsqueda (sin títulos/ayudas en operadores; placeholders “Precio/Stock/Stock mín.” y “num”).
 - Eliminados fondos por vista (fondo neutro).

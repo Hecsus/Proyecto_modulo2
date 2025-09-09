@@ -56,11 +56,13 @@ views/pages/*
 public/js/main.js
   - Activa tooltips y popovers de Bootstrap.
   - Muestra un popup informativo si se busca con números sin operador (usa SweetAlert2).
+  - Filtra en vivo las listas de categorías y proveedores en el formulario de producto.
 
 public/css/styles.css
   - Variables de colores y estilos generales.
   - Clases `.view-*` dan fondo distinto según `viewClass`.
   - `badge-bajo-stock` resalta productos con poco stock.
+  - `.procedencia-cell` centra el botón de procedencia y `.options-grid` distribuye checkboxes en columnas.
 
 3. Flujo de una petición
 ------------------------
@@ -94,11 +96,7 @@ Con esta guía deberías seguir el flujo de ruta → validador → controlador �
 --------------------------
 - En formularios de Productos y Bajo stock, si escribes un número sin elegir operador aparece un aviso de SweetAlert2. Solo se muestra una vez por campo y la búsqueda sigue usando '=' por defecto.
 - Los campos numéricos muestran primero el operador (select) y luego el número. Placeholders: "Precio/Stock/Stock mín." y "num".
-- Colores y formas:
-  * Categorías → círculo.
-  * Proveedores → cuadrado.
-  * Localizaciones → triángulo.
-  Cada id usa `id % 12` para asignar color (`shape-bucket-*`) con tooltip que muestra el nombre.
-- Las filas de categorías/proveedores/localizaciones usan `row-bucket-*` para colorear el fondo suavemente.
+- Se eliminaron las formas y colores por bucket. Ahora los productos muestran una columna "Procedencia" con un popover que lista categorías y proveedores; si falta información se muestra "—".
+- En el formulario de producto, categorías y proveedores se presentan en un grid de varias columnas con un buscador en vivo. Para más columnas, ajusta las clases `row-cols-*` en la vista.
+- El script `public/js/main.js` inicializa tooltips, popovers, filtrado en vivo y confirma las eliminaciones.
 - En el panel de resumen, cada tarjeta es un enlace completo gracias a `a.stretched-link`.
-- Todo esto se activa en `public/js/main.js`: inicializa los tooltips, muestra el popup de operadores y confirma las eliminaciones.

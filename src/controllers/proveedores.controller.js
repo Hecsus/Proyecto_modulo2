@@ -42,7 +42,7 @@ exports.list = async (req, res) => {
 
   res.render('pages/proveedores/list', {
     title: 'Proveedores',
-    proveedores: rows, // se envía id para determinar bucket de color por fila
+    proveedores: rows,
     errors: [],
     query: req.query,
     page,

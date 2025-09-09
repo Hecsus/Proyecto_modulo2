@@ -42,7 +42,7 @@ exports.list = async (req, res) => {
 
   res.render('pages/categorias/list', {
     title: 'Categorías',
-    categorias: rows, // incluye id para calcular bucket de color en la vista
+    categorias: rows,
     errors: [],
     query: req.query,
     page,

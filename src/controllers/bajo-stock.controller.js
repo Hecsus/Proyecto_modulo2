@@ -60,7 +60,7 @@ exports.list = async (req, res) => {
     [...params, limit, offset]
   );
 
-  // Enlaza categorías y proveedores para cada producto del listado (colores deterministas)
+  // Enlaza categorías y proveedores para cada producto del listado (procedencia)
   const ids = rows.map(r => r.id);
   const catsByProd = {};
   const provsByProd = {};

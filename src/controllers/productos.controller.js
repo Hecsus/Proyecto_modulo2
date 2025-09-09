@@ -63,10 +63,10 @@ exports.list = async (req, res) => {
     [...params, limit, offset]
   );
 
-  // Obtiene categorías y proveedores relacionados en batch para colorear chips
+  // Obtiene categorías y proveedores relacionados para mostrar procedencia
   const ids = rows.map(r => r.id); // IDs de los productos listados
-  const catsByProd = {};          // bucket de categorías por producto
-  const provsByProd = {};         // bucket de proveedores por producto
+  const catsByProd = {};          // categorías por producto
+  const provsByProd = {};         // proveedores por producto
   if (ids.length) {
     const [catRows] = await pool.query(
       'SELECT pc.producto_id, c.id, c.nombre FROM producto_categoria pc JOIN categorias c ON c.id = pc.categoria_id WHERE pc.producto_id IN (?)',
