@@ -86,7 +86,11 @@ const mkFilter = (inputSelector, gridSelector) => {
 mkFilter('[data-filter="categorias"]',  '[data-options="categorias"]');
 mkFilter('[data-filter="proveedores"]', '[data-options="proveedores"]');
 
-// [auth] Toggle mostrar/ocultar contraseña (reutilizable por data-target)
+/* Toggle mostrar/ocultar contraseña.
+   Propósito: mejorar accesibilidad al permitir ver la contraseña.
+   Entradas: botones con data-toggle="password" y data-target.
+   Salidas: alterna type, icono, aria-pressed y aria-label.
+   Dependencias: DOM nativo. */
 document.querySelectorAll('[data-toggle="password"]').forEach(btn => {
   const input = document.querySelector(btn.dataset.target);
   if (!input) return;

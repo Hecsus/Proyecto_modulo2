@@ -1,6 +1,18 @@
 const pool = require('../config/db');
 const { validationResult, matchedData } = require('express-validator');
 const { addNumericFilter } = require('../utils/sql'); // Helper para construir comparaciones numéricas seguras
+const path = require('path');
+const fs = require('fs');
+
+// Directorio de imágenes de productos
+const UPLOAD_DIR = path.join(__dirname, '../public/uploads/products');
+const findImagePath = id => {
+  for (const ext of ['.jpg', '.jpeg', '.png', '.webp']) {
+    const file = path.join(UPLOAD_DIR, `${id}${ext}`);
+    if (fs.existsSync(file)) return file;
+  }
+  return null;
+};
 
 // Listar productos con filtros, ordenación y paginación
 exports.list = async (req, res) => {
@@ -128,10 +140,12 @@ exports.form = async (req, res) => {
       producto.categoriaIds = pc.map(r => r.categoria_id); // IDs de categorías actuales
       const [pp] = await pool.query('SELECT proveedor_id FROM producto_proveedor WHERE producto_id=?', [req.params.id]);
       producto.proveedorIds = pp.map(r => r.proveedor_id); // IDs de proveedores actuales
+      const img = findImagePath(producto.id);
+      producto.imageUrl = img ? `/resources/uploads/products/${path.basename(img)}` : null;
     }
   }
   const title = req.params.id ? 'Editar producto' : 'Nuevo producto';
-  res.render('pages/productos/form', { title, producto, categorias, proveedores, localizaciones, errors: [], oldInput: null, viewClass: 'view-productos' });
+  res.render('pages/productos/form', { title, producto, categorias, proveedores, localizaciones, returnTo: req.query.returnTo, errors: [], oldInput: null, viewClass: 'view-productos' });
 };
 
 // Crear producto
@@ -141,10 +155,10 @@ exports.create = async (req, res) => {
   const [proveedores] = await pool.query('SELECT * FROM proveedores');
   const [localizaciones] = await pool.query('SELECT * FROM localizaciones');
   if (!errors.isEmpty()) {
-    return res.render('pages/productos/form', { title: 'Nuevo producto', producto: null, categorias, proveedores, localizaciones, errors: errors.array(), oldInput: req.body, viewClass: 'view-productos' });
+    return res.render('pages/productos/form', { title: 'Nuevo producto', producto: null, categorias, proveedores, localizaciones, returnTo: req.body.returnTo, errors: errors.array(), oldInput: req.body, viewClass: 'view-productos' });
   }
 
-  const { nombre, descripcion, precio, costo, stock, stock_minimo, observaciones, localizacion_id, categoriaIds = [], proveedorIds = [] } = req.body; // Datos del formulario
+  const { nombre, descripcion, precio, costo, stock, stock_minimo, observaciones, localizacion_id, returnTo, categoriaIds = [], proveedorIds = [] } = req.body; // Datos del formulario
   const categoriasArr = Array.isArray(categoriaIds) ? categoriaIds : (categoriaIds ? [categoriaIds] : []);
   const proveedoresArr = Array.isArray(proveedorIds) ? proveedorIds : (proveedorIds ? [proveedorIds] : []);
 
@@ -156,6 +170,15 @@ exports.create = async (req, res) => {
       [nombre, descripcion, precio, costo, stock, stock_minimo, observaciones, localizacion_id]
     );
     const prodId = r.insertId;
+    if (req.file) {
+      for (const ext of ['.jpg', '.jpeg', '.png', '.webp']) {
+        const existing = path.join(UPLOAD_DIR, `${prodId}${ext}`);
+        if (fs.existsSync(existing)) fs.unlinkSync(existing);
+      }
+      const ext = path.extname(req.file.originalname).toLowerCase();
+      const dest = path.join(UPLOAD_DIR, `${prodId}${ext}`);
+      fs.renameSync(req.file.path, dest);
+    }
 
     for (const cid of categoriasArr) {
       await conn.query('INSERT INTO producto_categoria (producto_id, categoria_id) VALUES (?,?)', [prodId, cid]);
@@ -166,10 +189,10 @@ exports.create = async (req, res) => {
 
     await conn.commit();
     req.session.flash = { type: 'success', message: 'Producto creado con éxito.' };
-    res.redirect('/productos');
+    res.redirect(returnTo || '/productos');
   } catch (e) {
     await conn.rollback();
-    res.render('pages/productos/form', { title: 'Nuevo producto', producto: null, categorias, proveedores, localizaciones, errors: [{ msg: e.message }], oldInput: req.body, viewClass: 'view-productos' });
+    res.render('pages/productos/form', { title: 'Nuevo producto', producto: null, categorias, proveedores, localizaciones, returnTo: req.body.returnTo, errors: [{ msg: e.message }], oldInput: req.body, viewClass: 'view-productos' });
   } finally {
     conn.release();
   }
@@ -184,9 +207,9 @@ exports.update = async (req, res) => {
   const [localizaciones] = await pool.query('SELECT * FROM localizaciones');
   if (!errors.isEmpty()) {
     const [rows] = await pool.query('SELECT * FROM productos WHERE id=?', [id]);
-    return res.render('pages/productos/form', { title: 'Editar producto', producto: rows[0], categorias, proveedores, localizaciones, errors: errors.array(), oldInput: req.body, viewClass: 'view-productos' });
+    return res.render('pages/productos/form', { title: 'Editar producto', producto: rows[0], categorias, proveedores, localizaciones, returnTo: req.body.returnTo, errors: errors.array(), oldInput: req.body, viewClass: 'view-productos' });
   }
-  const { nombre, descripcion, precio, costo, stock, stock_minimo, observaciones, localizacion_id, categoriaIds = [], proveedorIds = [] } = req.body; // Datos normalizados
+  const { nombre, descripcion, precio, costo, stock, stock_minimo, observaciones, localizacion_id, returnTo, categoriaIds = [], proveedorIds = [] } = req.body; // Datos normalizados
   const categoriasArr = Array.isArray(categoriaIds) ? categoriaIds : (categoriaIds ? [categoriaIds] : []);
   const proveedoresArr = Array.isArray(proveedorIds) ? proveedorIds : (proveedorIds ? [proveedorIds] : []);
 
@@ -204,12 +227,21 @@ exports.update = async (req, res) => {
       await conn.query('INSERT INTO producto_proveedor (producto_id, proveedor_id) VALUES (?,?)', [id, pid]);
     }
     await conn.commit();
+    if (req.file) {
+      for (const ext of ['.jpg', '.jpeg', '.png', '.webp']) {
+        const existing = path.join(UPLOAD_DIR, `${id}${ext}`);
+        if (fs.existsSync(existing)) fs.unlinkSync(existing);
+      }
+      const ext = path.extname(req.file.originalname).toLowerCase();
+      const dest = path.join(UPLOAD_DIR, `${id}${ext}`);
+      fs.renameSync(req.file.path, dest);
+    }
     req.session.flash = { type: 'success', message: 'Producto actualizado.' };
-    res.redirect('/productos');
+    res.redirect(returnTo || '/productos');
   } catch (e) {
     await conn.rollback();
     const [rows] = await pool.query('SELECT * FROM productos WHERE id=?', [id]);
-    res.render('pages/productos/form', { title: 'Editar producto', producto: rows[0], categorias, proveedores, localizaciones, errors: [{ msg: e.message }], oldInput: req.body, viewClass: 'view-productos' });
+    res.render('pages/productos/form', { title: 'Editar producto', producto: rows[0], categorias, proveedores, localizaciones, returnTo: req.body.returnTo, errors: [{ msg: e.message }], oldInput: req.body, viewClass: 'view-productos' });
   } finally {
     conn.release();
   }
@@ -217,8 +249,9 @@ exports.update = async (req, res) => {
 
 // Eliminar producto
 exports.remove = async (req, res) => {
+  const { returnTo } = req.body;
   await pool.query('DELETE FROM productos WHERE id = ?', [req.params.id]);
-  res.redirect('/productos');
+  res.redirect(returnTo || '/productos');
 };
 
 // Detalle de producto
@@ -245,10 +278,13 @@ exports.detail = async (req, res) => {
   producto.categorias = cats;
   producto.proveedores = provs;
   const isBajoStock = producto.stock < producto.stock_minimo; // Calcula si está por debajo del mínimo
+  const img = findImagePath(id);
+  const imageUrl = img ? `/resources/uploads/products/${path.basename(img)}` : null;
   res.render('pages/productos/detail', {
     title: 'Detalle de producto',
     producto,
     returnTo: req.query.returnTo,
+    imageUrl,
     isBajoStock,
     viewClass: 'view-productos'
   });

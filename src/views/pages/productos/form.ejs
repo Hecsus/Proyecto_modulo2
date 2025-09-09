@@ -1,6 +1,7 @@
 <%# Formulario de producto con checkboxes multicolumna y buscador en categorías/proveedores %>
 <h1><%= producto ? 'Editar' : 'Nuevo' %> producto</h1>
-<form action="<%= producto ? '/productos/' + producto.id + '/editar' : '/productos/nuevo' %>" method="POST">
+<form action="<%= producto ? '/productos/' + producto.id + '/editar' : '/productos/nuevo' %>" method="POST" enctype="multipart/form-data">
+  <input type="hidden" name="returnTo" value="<%= returnTo || '' %>">
   <div class="mb-3">
     <label class="form-label">Nombre</label>
     <input type="text" name="nombre" class="form-control" value="<%= oldInput?.nombre || producto?.nombre || '' %>">
@@ -32,6 +33,11 @@
   <div class="mb-3">
     <label class="form-label">Observaciones</label>
     <textarea name="observaciones" class="form-control" maxlength="1000"><%= oldInput?.observaciones || producto?.observaciones || '' %></textarea>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Imagen</label>
+    <input type="file" name="imagen" class="form-control" accept=".jpg,.jpeg,.png,.webp">
+    <% if (producto?.imageUrl) { %><div class="form-text">Se reemplazará si subes otra</div><% } %>
   </div>
   <div class="mb-3">
     <label class="form-label">Localización</label>

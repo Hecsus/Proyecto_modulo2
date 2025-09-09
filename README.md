@@ -94,6 +94,16 @@ DB_NAME=inventario
 - `/db-health`
 - `/resources` para archivos estáticos
 
+## Subida de imágenes
+- Directorio público: `/resources/uploads/products/`
+- Formatos permitidos: `.jpg`, `.jpeg`, `.png`, `.webp`
+- Límite: un archivo opcional por producto; se sobrescribe al editar
+
+## Rate limit de login (desarrollo)
+- 5 intentos fallidos bloquean el login por 10 minutos
+- Contadores en memoria (se reinician al reiniciar el servidor)
+- Para producción considerar Redis o base de datos
+
 ## Seguridad y dependencias
 - No usar `npm audit fix --force`: podría instalar Express 5.x o dependencias incompatibles.
 - Reinstalación limpia (Windows): `scripts/clean-install.ps1`.
@@ -187,7 +197,19 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
  - Crear producto con dos categorías y dos proveedores incluyendo observaciones; comprobar en detalle y listado.
  - Editar producto cambiando categorías y proveedores; verificar que la transacción actualiza las asociaciones.
  - Alta de usuario: probar email inválido o duplicado, emailConfirm distinto, contraseñas <8 o desiguales; los campos de contraseña no se repueblan y los toggles funcionan.
- - Cambio de contraseña: confirma el SweetAlert2, valida longitud y coincidencia; tras error los campos quedan vacíos.
+- Cambio de contraseña: confirma el SweetAlert2, valida longitud y coincidencia; tras error los campos quedan vacíos.
+- returnTo:
+  - Ir a `/productos?page=3&search=...`, abrir Detalles, pulsar Volver → regresa a la misma página (y filtros).
+  - Editar un producto desde la página 2 → tras guardar, redirige a la página 2.
+  - Eliminar un producto desde la página 4 → tras eliminar, redirige a la página 4.
+- Toggle password:
+  - En login, el botón alterna visibilidad, cambia icono y aria-pressed/label. En error, email persiste, password no.
+- Rate limit login:
+  - Probar 5 veces con credenciales incorrectas → redirige a `/auth/locked`. Esperar 10 min o reiniciar para volver a intentar (nota: in-memory).
+- Imágenes de producto:
+  - Crear producto sin imagen → detalle no muestra imagen.
+  - Editar y subir imagen .jpg → detalle muestra imagen a la derecha.
+  - Reemplazar imagen subiendo otra → se actualiza.
 ## Troubleshooting
 - **DB access denied**: revisa credenciales y privilegios MySQL.
 - **Módulos EJS/layouts no encontrados**: ejecuta `npm install`.
@@ -198,6 +220,11 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-10 18:30] – Navegación returnTo, toggle contraseña y seguridad
+- Navegación returnTo para conservar paginación/filtros
+- Login: toggle ver/ocultar contraseña arreglado
+- Seguridad: bloqueo de login tras 5 intentos fallidos (10 min)
+- Productos: subida de imágenes opcional, mostrada en detalle
 ## [2025-09-09 22:15] – Login con toggle reutilizable y validaciones reforzadas
 - Login: botón "ver contraseña" restaurado y email persistente al fallar.
 - Productos: categorías y proveedores se guardan en crear/editar mediante tablas puente y transacción en update.
