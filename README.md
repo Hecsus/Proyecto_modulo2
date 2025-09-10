@@ -218,11 +218,12 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - Navegación returnTo sigue funcionando tras crear/editar/eliminar.
 
 ### Pruebas manuales de UI
-- Navbar con espacio superior y enlace activo resaltado.
-- Panel: todas las tarjetas mismos tamaños, iconos a ~1.75rem, colores Bootstrap.
-- Productos: badge rojo ‘Bajo stock’ junto a stock cuando stock <= stock_minimo.
-- Bajo stock: sin botón ‘Volver’; listado correcto.
-- Proveedores: icono tamaño normal (no gigante).
+- Navbar: hay espacio superior (spacer) y el enlace activo se ve resaltado (fondo/borde).
+- Panel: todas las tarjetas mismo alto, iconos ~1.75rem, colores contextuales y toda la tarjeta es clicable.
+- Productos (lista): si stock <= stock_minimo, se ve badge roja “Bajo stock” junto al número.
+- Detalle: imagen con borde redondeado y sombra; si no hay imagen, placeholder “Sin imagen”.
+- Bajo stock: vista accesible desde navbar y desde el panel; sin botón “Volver”.
+- Iconos (categorías/proveedores/localizaciones) nunca gigantes; respetan .icon-inline.
 
 ## Troubleshooting
 - **DB access denied**: revisa credenciales y privilegios MySQL.
@@ -234,6 +235,8 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-10 21:00] – Remix visual consolidado
+- Remix de estilos: navbar con respiración y activo visible; panel con tarjetas uniformes; badge “Bajo stock” restaurada; iconos dimensionados.
 ## [2025-09-10 20:00] – Ajustes de UI
 - Restaurado espaciado de navbar y estado activo en navegación.
 - Tarjetas del panel uniformes con colores consistentes e iconos a tamaño correcto.
