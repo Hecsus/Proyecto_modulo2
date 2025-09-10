@@ -48,7 +48,7 @@ function moveToProductImage(file, productId) {
 
 // 5) Utilidad para obtener la URL pública si existe alguna imagen del producto
 function getProductImageUrl(productId) {
-  const base = `/resources/uploads/products`;
+  const base = `/uploads/products`; // Ruta pública estática para las imágenes
   const pathPublic = path.join(__dirname, '..', 'public', 'uploads', 'products');
   for (const ext of ['.jpg', '.jpeg', '.png', '.webp']) {
     const p = path.join(pathPublic, `${productId}${ext}`);

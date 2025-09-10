@@ -119,7 +119,7 @@
         <td>
           <span><%= p.stock %></span>
           <% if (p.stock <= p.stock_minimo) { %>
-            <span class="badge badge-lowstock ms-2">Bajo stock</span>
+            <i class="bx bx-error text-danger ms-2" aria-label="Bajo stock" title="Bajo stock"></i>
           <% } %>
         </td>
         <td><%= p.stock_minimo %></td>

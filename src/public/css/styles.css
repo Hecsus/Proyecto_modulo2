@@ -26,7 +26,6 @@
 /* Tablas legibles con badges de stock accesibles */
 .table td, .table th{ vertical-align:middle; }
 .icon-inline{ font-size:1rem; vertical-align:middle; }
-.badge-lowstock{ background:var(--danger); color:#fff; border-radius:.5rem; font-weight:600; padding:.35em .6em; }
 
 /* Detalle de producto: imagen y QR con bordes suaves */
 .product-media{ box-shadow:var(--shadow-2); border-radius:var(--radius-lg); }

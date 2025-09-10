@@ -20,6 +20,7 @@ Aplicación de gestión de inventario pensada para prácticas del módulo 2. Inc
 - express-session ^1.18.0
 - express-validator
 - bcryptjs
+- qrcode
 
 ## Estructura de carpetas
 ```
@@ -39,8 +40,11 @@ Aplicación de gestión de inventario pensada para prácticas del módulo 2. Inc
 │   │   ├── partials/      # Partes reutilizables
 │   │   └── pages/         # Vistas específicas
 │   └── public/
-│       ├── css/
-│       └── js/
+│       ├── css/           # Estilos corporativos adicionales
+│       ├── images/        # logo.svg reemplazable por la empresa
+│       ├── js/
+│       └── uploads/
+│           └── products/  # Archivos subidos de productos
 └── README.md
 ```
 
@@ -48,7 +52,17 @@ Aplicación de gestión de inventario pensada para prácticas del módulo 2. Inc
 - Rutas: **kebab-case** (`/bajo-stock`)
 - Controladores: **camelCase**
 - Vistas: EJS bajo `layouts/`, `partials/` y `pages/`
-- Archivos estáticos servidos desde `/resources` (`src/public`)
+- Archivos estáticos servidos desde `/resources` y `/uploads` (carpeta `src/public`)
+
+## Diseño corporativo y logo
+- Estilos propios en `src/public/css/styles.css` complementan Bootstrap 5 para un aspecto empresarial.
+- El logo de ejemplo se encuentra en `src/public/images/logo.svg` y puede reemplazarse manteniendo el mismo nombre/ubicación.
+- La barra de navegación y el formulario de login muestran este logo por defecto.
+
+## Código QR en productos
+- La vista de detalle genera un QR con datos clave (nombre, precio, stock, etc.).
+- El QR puede **descargarse** o **imprimirse** para etiquetar físicamente el producto.
+- Las imágenes se guardan en `src/public/uploads/products` y se sirven desde `/uploads/products/...`.
 
 ## Guía de lectura del código
 - **src/app.js**: configuración de Express y rutas principales.
@@ -95,7 +109,7 @@ DB_NAME=inventario
 - `/resources` para archivos estáticos
 
 ## Subida de imágenes
-- Directorio público: `/resources/uploads/products/`
+- Directorio público: `/uploads/products/`
 - Formatos permitidos: `.jpg`, `.jpeg`, `.png`, `.webp`
 - Límite: un archivo opcional por producto; se sobrescribe al editar
 
@@ -262,7 +276,7 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - Eliminado botón ‘Volver’ en vista Bajo stock.
 
 ## [2025-09-10 19:30] – Imágenes y redirecciones seguras
-- Corregida ruta de imágenes de producto para que se muestren desde `/resources/uploads/products`.
+- Corregida ruta de imágenes de producto para que se muestren desde `/uploads/products`.
 - Validación de returnTo para evitar redirecciones externas.
 - Restaurada ruta y vista de Bajo Stock.
 ## [2025-09-10 19:00] – Subida segura y detalle de imágenes

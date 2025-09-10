@@ -1,6 +1,7 @@
 const pool = require('../config/db'); // Conexión a la BD
 const bcrypt = require('bcryptjs');   // Para comparar hashes
 const { validationResult } = require('express-validator'); // Manejo de validaciones
+const validateReturnTo = require('../utils/returnTo');      // Evita redirecciones externas
 
 /**
  * Muestra el formulario de login.
@@ -11,7 +12,9 @@ const { validationResult } = require('express-validator'); // Manejo de validaci
  * Manejo de errores: si la vista no existe, Express responderá 500.
  */
 exports.showLogin = (req, res) => {
-  res.render('pages/auth/login', { title: 'Login', errors: null, oldInput: {}, viewClass: '' });
+  // Sanitizamos returnTo sólo si viene definido en la query
+  const returnTo = req.query.returnTo ? validateReturnTo(req.query.returnTo) : '';
+  res.render('pages/auth/login', { title: 'Login', errors: null, oldInput: {}, returnTo, viewClass: '' });
 };
 
 /**
@@ -23,12 +26,14 @@ exports.showLogin = (req, res) => {
  */
 exports.login = async (req, res) => {
   const errors = validationResult(req);            // Captura errores de validación
-  const { email, password } = req.body;            // Extrae datos del formulario
+  const { email, password, returnTo } = req.body;  // Extrae datos del formulario
+  const safeReturn = returnTo ? validateReturnTo(returnTo) : '';   // Valida ruta de retorno
   if (!errors.isEmpty()) {                         // Si hay fallos de validación
     return res.status(400).render('pages/auth/login', {
       title: 'Login',
       errors: errors.mapped?.() || null,
       oldInput: { email },                        // No reenviamos la contraseña
+      returnTo: safeReturn,
       viewClass: ''
     });
   }
@@ -42,6 +47,7 @@ exports.login = async (req, res) => {
         title: 'Login',
         errors: { auth: { msg: 'Credenciales inválidas' } },
         oldInput: { email },
+        returnTo: safeReturn,
         viewClass: ''
       });
     }
@@ -52,17 +58,19 @@ exports.login = async (req, res) => {
         title: 'Login',
         errors: { auth: { msg: 'Credenciales inválidas' } },
         oldInput: { email },
+        returnTo: safeReturn,
         viewClass: ''
       });
     }
     req.session.user = { id: user.id, nombre: user.nombre, rol: user.rol_nombre }; // Guarda datos mínimos en sesión
     req.session.flash = { type: 'success', message: 'Bienvenido' };                 // Mensaje de bienvenida
-    res.redirect('/panel');                                                        // Redirige al panel
+    res.redirect(safeReturn || '/panel');                                           // Redirección validada
   } catch (err) {
     return res.status(500).render('pages/auth/login', {
       title: 'Login',
       errors: { server: { msg: 'Error inesperado' } },
       oldInput: { email },
+      returnTo: safeReturn,
       viewClass: ''
     });
   }

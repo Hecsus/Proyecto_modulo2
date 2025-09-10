@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="/resources/css/styles.css"><!-- Estilos propios -->
   </head>
   <body>
+    <% const hideChrome = typeof hideChrome !== 'undefined' ? hideChrome : false; %><!-- Valor por defecto para evitar ReferenceError -->
     <% if (!hideChrome) { %><%- include('../partials/header') %><div class="navbar-spacer"></div><% } %><!-- Navbar opcional -->
     <main class="container <%= (typeof viewClass !== 'undefined' && viewClass) ? viewClass : '' %>"><!-- Contenido principal -->
       <%- body %>

@@ -7,7 +7,7 @@ exports.index = async (req, res) => {
     const icons = {                                                     // Iconos Boxicons para cada tarjeta
       productos: 'bx bx-box',
       categorias: 'bx bx-list-ul',
-      proveedores: 'bx bxs-truck',
+      proveedores: 'bx bx-truck',
       localizaciones: 'bx bx-map',
       bajoStock: 'bx bx-error',
       usuarios: 'bx bx-user',

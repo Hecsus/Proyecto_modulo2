@@ -42,9 +42,9 @@ app.set('layout', 'layouts/layout');             // Layout por defecto a utiliza
 
 app.use(express.urlencoded({ extended: false })); // Parseo de formularios (application/x-www-form-urlencoded)
 
-// Servimos archivos estáticos (CSS, JS, imágenes) bajo la URL pública /resources.
-// Esto permite referenciar /resources/uploads/... en las vistas sin exponer el árbol completo.
-app.use('/resources', express.static(path.join(__dirname, 'public')));
+// Servimos archivos estáticos (CSS, JS, imágenes) bajo /resources y las imágenes de productos bajo /uploads.
+app.use('/resources', express.static(path.join(__dirname, 'public'))); // Recursos estáticos generales
+app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads'))); // Acceso directo a /uploads/products
 
 /*
  * Por qué usamos express-session@^1.18.0:
