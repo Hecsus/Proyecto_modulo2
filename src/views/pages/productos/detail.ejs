@@ -1,14 +1,16 @@
 <%# Detalle de producto; muestra imagen o placeholder elegante %>
 <div class="row">
   <div class="col-md-8"><%# Columna izquierda: texto %>
-    <div class="d-flex align-items-center gap-2 mb-3">
-      <h1 class="mb-0"><%= producto.nombre %></h1>
-      <% if (isBajoStock) { %><span class="badge badge-bajo-stock">Bajo stock</span><% } %>
-    </div>
+    <h1 class="mb-3"><%= producto.nombre %></h1>
     <p><strong>Descripción:</strong> <%= producto.descripcion || '-' %></p>
     <p><strong>Precio:</strong> <%= producto.precio %></p>
     <p><strong>Costo:</strong> <%= producto.costo %></p>
-    <p><strong>Stock:</strong> <%= producto.stock %></p>
+    <p><strong>Stock:</strong>
+      <span><%= producto.stock %></span>
+      <% if (isBajoStock) { %>
+        <span class="badge badge-lowstock ms-2">Bajo stock</span>
+      <% } %>
+    </p>
     <p><strong>Stock mín.:</strong> <%= producto.stock_minimo %></p>
     <% const cats = producto.categorias.length ? producto.categorias.map(c=>c.nombre).join(', ') : '—';
        const provs = producto.proveedores.length ? producto.proveedores.map(p=>p.nombre).join(', ') : '—'; %>

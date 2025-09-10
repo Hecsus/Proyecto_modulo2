@@ -216,6 +216,14 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
   - Sustituir imagen con .png → se actualiza y elimina la extensión anterior.
 - En login, el botón ver/ocultar alterna correctamente y cambia icono/aria.
 - Navegación returnTo sigue funcionando tras crear/editar/eliminar.
+
+### Pruebas manuales de UI
+- Navbar con espacio superior y enlace activo resaltado.
+- Panel: todas las tarjetas mismos tamaños, iconos a ~1.75rem, colores Bootstrap.
+- Productos: badge rojo ‘Bajo stock’ junto a stock cuando stock <= stock_minimo.
+- Bajo stock: sin botón ‘Volver’; listado correcto.
+- Proveedores: icono tamaño normal (no gigante).
+
 ## Troubleshooting
 - **DB access denied**: revisa credenciales y privilegios MySQL.
 - **Módulos EJS/layouts no encontrados**: ejecuta `npm install`.
@@ -226,6 +234,12 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-10 20:00] – Ajustes de UI
+- Restaurado espaciado de navbar y estado activo en navegación.
+- Tarjetas del panel uniformes con colores consistentes e iconos a tamaño correcto.
+- Reinstaurado badge rojo ‘Bajo stock’ junto a Stock en listas y detalle.
+- Eliminado botón ‘Volver’ en vista Bajo stock.
+
 ## [2025-09-10 19:30] – Imágenes y redirecciones seguras
 - Corregida ruta de imágenes de producto para que se muestren desde `/resources/uploads/products`.
 - Validación de returnTo para evitar redirecciones externas.

@@ -347,7 +347,6 @@ exports.bajoStock = async (req, res) => {
     proveedores,
     query: req.query,
     errors: errors.array(),
-    returnTo: req.query.returnTo, // Para botón Volver
     viewClass: 'view-bajo-stock'
   });
 };
