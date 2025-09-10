@@ -24,9 +24,9 @@
   </div>
   <div class="col-md-4"><%# Columna derecha: imagen o placeholder %>
     <% if (imageUrl) { %>
-      <img src="<%= imageUrl %>" alt="Imagen de <%= producto.nombre %>" class="img-fluid rounded shadow-sm">
+      <img src="<%= imageUrl %>" alt="Imagen de <%= producto.nombre %>" class="img-fluid product-media">
     <% } else { %>
-      <div class="border rounded d-flex align-items-center justify-content-center p-4 text-muted" style="min-height:220px">
+      <div class="placeholder-img d-flex align-items-center justify-content-center p-4">
         <i class="bx bx-image-alt fs-1 me-2" aria-hidden="true"></i> <span>Sin imagen</span>
       </div>
     <% } %>
