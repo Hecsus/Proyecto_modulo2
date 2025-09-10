@@ -1,0 +1,38 @@
+<header>
+  <!-- Barra de navegación principal -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Inventario</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse nav-separated" id="navbarNav">
+        <% const path = typeof activePath !== 'undefined' ? activePath : currentPath; %>
+        <% if (isAuthenticated) { %>
+          <div class="navbar-identity d-lg-none mb-2">👋 Hola, <strong><%= userName %></strong> (<%= userRole %>)</div>
+        <% } %>
+        <!-- Menú principal: enlaces a secciones del inventario -->
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <% if (isAuthenticated) { %>
+            <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= path.startsWith('/panel') ? 'active' : '' %>" href="/panel" <%= path.startsWith('/panel') ? 'aria-current="page"' : '' %>>Inicio</a></li>
+            <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= path.startsWith('/productos') ? 'active' : '' %>" href="/productos" <%= path.startsWith('/productos') ? 'aria-current="page"' : '' %>>Productos</a></li>
+            <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= path.startsWith('/bajo-stock') ? 'active' : '' %>" href="/bajo-stock" <%= path.startsWith('/bajo-stock') ? 'aria-current="page"' : '' %>>Bajo stock</a></li>
+            <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= path.startsWith('/categorias') ? 'active' : '' %>" href="/categorias" <%= path.startsWith('/categorias') ? 'aria-current="page"' : '' %>>Categorías</a></li>
+            <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= path.startsWith('/proveedores') ? 'active' : '' %>" href="/proveedores" <%= path.startsWith('/proveedores') ? 'aria-current="page"' : '' %>>Proveedores</a></li>
+            <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= path.startsWith('/localizaciones') ? 'active' : '' %>" href="/localizaciones" <%= path.startsWith('/localizaciones') ? 'aria-current="page"' : '' %>>Localizaciones</a></li>
+            <% if (userRole === 'admin') { %>
+              <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= path.startsWith('/usuarios') ? 'active' : '' %>" href="/usuarios" <%= path.startsWith('/usuarios') ? 'aria-current="page"' : '' %>>Usuarios</a></li>
+            <% } %>
+          <% } %>
+        </ul>
+        <!-- Acciones de sesión: saludo y logout/login -->
+        <ul class="navbar-nav">
+          <% if (isAuthenticated) { %>
+            <li class="nav-item d-none d-lg-block"><span class="navbar-text me-3">👋 Hola, <strong><%= userName %></strong> (<%= userRole %>)</span></li>
+            <li class="nav-item"><a class="nav-link ps-3 ms-3" href="/auth/logout">Salir</a></li>
+          <% } else { %>
+            <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= path === '/login' ? 'active' : '' %>" href="/login" <%= path === '/login' ? 'aria-current="page"' : '' %>>Login</a></li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>

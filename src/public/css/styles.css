@@ -1,0 +1,66 @@
+/* Escala y variables base */
+:root{
+  /* Paleta base (puedes ajustar si el proyecto tenía otra) */
+  --space-1: .5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --radius-lg: 1rem;
+  --shadow-1: 0 2px 10px rgba(0,0,0,.06);
+  --brand-active-bg: #e7f1ff; /* azul muy suave para activo */
+  --brand-active-border: #b6d3ff;
+  --danger-strong: #dc3545;  /* Bootstrap danger */
+}
+
+/* Espacio bajo navbar para que no “pegue” al borde superior */
+.navbar-spacer{ height: var(--space-2); }
+
+/* Estado activo del enlace de navegación */
+.navbar .nav-link.active{
+  background: var(--brand-active-bg);
+  border: 1px solid var(--brand-active-border);
+  border-radius: var(--radius-lg);
+}
+
+/* Tarjetas de resumen del panel */
+.card-summary{
+  min-height: 140px;             /* uniformidad */
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+}
+.card-summary .summary-icon{
+  font-size: 1.75rem;            /* iconos consistentes */
+  opacity: .9;
+}
+.card-summary .summary-value{
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Iconos embebidos en tablas (categorías, proveedores, etc.) */
+.icon-inline{
+  font-size: 1rem;
+  vertical-align: middle;
+}
+
+/* Badge de bajo stock coherente y legible */
+.badge-lowstock{
+  background: var(--danger-strong);
+  color: #fff;
+  border-radius: .5rem;
+  font-weight: 600;
+  padding: .35em .6em;
+}
+
+/* Botón de procedencia centrado */
+.procedencia-cell{ text-align: center; }
+
+/* Grids multicolumna de checkboxes */
+.options-grid .form-check{
+  display: flex;
+  align-items: center;
+}
+
+/* [login] Ajuste para el botón del toggle de contraseña */
+.input-group .btn{min-width:2.5rem;}
