@@ -49,7 +49,7 @@ views/partials/*
   - `footer.ejs` scripts comunes.
 
 views/pages/*
-  - Vistas principales: `panel.ejs`, `productos/list.ejs`, `bajo-stock.ejs`, formularios, etc.
+  - Vistas principales: `panel.ejs`, `productos/list.ejs`, `productos/bajoStock.ejs`, formularios, etc.
   - Reciben datos desde el controlador para mostrarlos.
   - El badge "Bajo stock" aparece si `stock < stock_minimo`.
 
@@ -112,7 +112,7 @@ Con esta guía deberías seguir el flujo de ruta → validador → controlador �
 
 8. Cambios recientes (panel, login, procedencia)
 -----------------------------------------------
-- La tarjeta "Bajo stock" del panel ahora enlaza a `/productos/bajo-stock` y hace toda la card clicable.
+- La tarjeta "Bajo stock" del panel ahora enlaza a `/bajo-stock` y hace toda la card clicable.
 - El formulario de login usa `oldInput` y `errors` para persistir el email tras fallos y lista mensajes de `express-validator`.
 - Un botón accesible permite mostrar u ocultar la contraseña sin recargar la página.
 - Se eliminó la sección "Procedencia" del detalle de producto porque ya se muestran categorías y proveedores directamente.

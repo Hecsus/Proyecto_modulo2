@@ -1,4 +1,5 @@
 <header>
+  <!-- Barra de navegación principal -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">Inventario</a>
@@ -7,6 +8,7 @@
         <% if (isAuthenticated) { %>
           <div class="navbar-identity d-lg-none mb-2">👋 Hola, <strong><%= userName %></strong> (<%= userRole %>)</div>
         <% } %>
+        <!-- Menú principal: enlaces a secciones del inventario -->
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <% if (isAuthenticated) { %>
               <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= currentPath.startsWith('/panel') ? 'active' : '' %>" href="/panel">Panel</a></li>
@@ -14,12 +16,14 @@
               <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= currentPath.startsWith('/categorias') ? 'active' : '' %>" href="/categorias">Categorías</a></li>
               <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= currentPath.startsWith('/proveedores') ? 'active' : '' %>" href="/proveedores">Proveedores</a></li>
               <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= currentPath.startsWith('/localizaciones') ? 'active' : '' %>" href="/localizaciones">Localizaciones</a></li>
-              <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= currentPath.startsWith('/productos/bajo-stock') ? 'active' : '' %>" href="/productos/bajo-stock">Bajo stock</a></li>
+              <!-- Acceso rápido al listado de productos con stock bajo -->
+              <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= currentPath.startsWith('/bajo-stock') ? 'active' : '' %>" href="/bajo-stock">Bajo stock</a></li>
             <% if (userRole === 'admin') { %>
                 <li class="nav-item"><a class="nav-link ps-3 ms-3 <%= currentPath.startsWith('/usuarios') ? 'active' : '' %>" href="/usuarios">Usuarios</a></li>
             <% } %>
           <% } %>
         </ul>
+        <!-- Acciones de sesión: saludo y logout/login -->
         <ul class="navbar-nav">
           <% if (isAuthenticated) { %>
             <li class="nav-item d-none d-lg-block"><span class="navbar-text me-3">👋 Hola, <strong><%= userName %></strong> (<%= userRole %>)</span></li>

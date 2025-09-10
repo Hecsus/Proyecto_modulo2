@@ -3,6 +3,7 @@ const { validationResult, matchedData } = require('express-validator');
 const { addNumericFilter } = require('../utils/sql'); // Helper para construir comparaciones numéricas seguras
 // Utilidades de subida y acceso a imágenes
 const { moveToProductImage, getProductImageUrl } = require('../utils/upload');
+const validateReturnTo = require('../utils/returnTo'); // Sanitiza returnTo para evitar redirecciones externas
 
 // Listar productos con filtros, ordenación y paginación
 exports.list = async (req, res) => {
@@ -178,7 +179,8 @@ exports.create = async (req, res) => {
 
     await conn.commit();
     req.session.flash = { type: 'success', message: 'Producto creado con éxito.' };
-    res.redirect(returnTo || '/productos');
+    // Redirección segura: solo rutas internas válidas
+    res.redirect(validateReturnTo(returnTo));
   } catch (e) {
     await conn.rollback();
     res.render('pages/productos/form', { title: 'Nuevo producto', producto: null, categorias, proveedores, localizaciones, returnTo: req.body.returnTo, errors: [{ msg: e.message }], oldInput: req.body, viewClass: 'view-productos' });
@@ -225,7 +227,8 @@ exports.update = async (req, res) => {
     // Si hay archivo nuevo, moverlo y limpiar otras extensiones
     if (req.file) moveToProductImage(req.file, id);
     req.session.flash = { type: 'success', message: 'Producto actualizado.' };
-    res.redirect(returnTo || '/productos');
+    // Redirección con returnTo validado
+    res.redirect(validateReturnTo(returnTo));
   } catch (e) {
     await conn.rollback();
     const [rows] = await pool.query('SELECT * FROM productos WHERE id=?', [id]);
@@ -239,7 +242,114 @@ exports.update = async (req, res) => {
 exports.remove = async (req, res) => {
   const { returnTo } = req.body;
   await pool.query('DELETE FROM productos WHERE id = ?', [req.params.id]);
-  res.redirect(returnTo || '/productos');
+  // Redirige a una ruta interna segura
+  res.redirect(validateReturnTo(returnTo));
+};
+
+// Listado de productos con stock por debajo del mínimo.
+// Entradas: filtros opcionales en req.query validados por listFilters.
+// Salidas: renderiza tabla filtrada en pages/productos/bajoStock.ejs.
+// Seguridad: consultas parametrizadas y sin redirección externa.
+exports.bajoStock = async (req, res) => {
+  const errors = validationResult(req);           // Resultado de validaciones
+  const data = matchedData(req, { locations: ['query'] }); // Datos saneados
+
+  const page = parseInt(req.query.page) || 1;     // Página actual
+  const limit = 10;                               // Registros por página
+  const offset = (page - 1) * limit;              // Desplazamiento para SQL
+
+  const SORTABLE = {                              // Whitelist de columnas ordenables
+    id: 'p.id',
+    nombre: 'p.nombre',
+    precio: 'p.precio',
+    costo: 'p.costo',
+    stock: 'p.stock',
+    stock_minimo: 'p.stock_minimo',
+    localizacion: 'l.nombre'
+  };
+
+  const sortCol = SORTABLE[data.sortBy] || 'p.id';
+  const sortDirSql = (data.sortDir || 'asc').toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+
+  const joins = [];                       // Posibles joins según filtros
+  const clauses = ['p.stock <= p.stock_minimo']; // Filtro fijo de bajo stock
+  const params = [];                      // Valores parametrizados
+
+  if (data.qName) {
+    clauses.push('p.nombre LIKE ?');
+    params.push(`%${data.qName}%`);
+  }
+  addNumericFilter(clauses, params, 'p.precio', data.price, data.priceOp);
+  addNumericFilter(clauses, params, 'p.stock', data.stock, data.stockOp);
+  addNumericFilter(clauses, params, 'p.stock_minimo', data.min, data.minOp);
+  if (data.localizacionId) {
+    clauses.push('p.localizacion_id = ?');
+    params.push(data.localizacionId);
+  }
+  if (data.categoriaId) {
+    joins.push('JOIN producto_categoria pc ON pc.producto_id = p.id');
+    clauses.push('pc.categoria_id = ?');
+    params.push(data.categoriaId);
+  }
+  if (data.proveedorId) {
+    joins.push('JOIN producto_proveedor pp ON pp.producto_id = p.id');
+    clauses.push('pp.proveedor_id = ?');
+    params.push(data.proveedorId);
+  }
+
+  const whereSql = 'WHERE ' + clauses.join(' AND ');
+  const joinSql = joins.join(' ');
+  const baseSql = `FROM productos p LEFT JOIN localizaciones l ON p.localizacion_id = l.id ${joinSql} ${whereSql}`;
+
+  const [rows] = await pool.query(
+    `SELECT DISTINCT p.*, l.id AS localizacion_id, l.nombre AS localizacion ${baseSql} ORDER BY ${sortCol} ${sortDirSql} LIMIT ? OFFSET ?`,
+    [...params, limit, offset]
+  );
+
+  const ids = rows.map(r => r.id);
+  const catsByProd = {};
+  const provsByProd = {};
+  if (ids.length) {
+    const [catRows] = await pool.query(
+      'SELECT pc.producto_id, c.id, c.nombre FROM producto_categoria pc JOIN categorias c ON c.id = pc.categoria_id WHERE pc.producto_id IN (?)',
+      [ids]
+    );
+    catRows.forEach(r => { (catsByProd[r.producto_id] ||= []).push({ id: r.id, nombre: r.nombre }); });
+    const [provRows] = await pool.query(
+      'SELECT pp.producto_id, pr.id, pr.nombre FROM producto_proveedor pp JOIN proveedores pr ON pr.id = pp.proveedor_id WHERE pp.producto_id IN (?)',
+      [ids]
+    );
+    provRows.forEach(r => { (provsByProd[r.producto_id] ||= []).push({ id: r.id, nombre: r.nombre }); });
+  }
+  rows.forEach(p => {
+    p.categorias = catsByProd[p.id] || [];
+    p.proveedores = provsByProd[p.id] || [];
+  });
+
+  const [countRows] = await pool.query(
+    `SELECT COUNT(DISTINCT p.id) AS total ${baseSql}`,
+    params
+  );
+  const totalPages = Math.ceil(countRows[0].total / limit);
+
+  const [localizaciones] = await pool.query('SELECT id, nombre FROM localizaciones');
+  const [categorias] = await pool.query('SELECT id, nombre FROM categorias');
+  const [proveedores] = await pool.query('SELECT id, nombre FROM proveedores');
+
+  res.render('pages/productos/bajoStock', {
+    title: 'Bajo stock',
+    basePath: '/bajo-stock',
+    productos: rows,
+    page,
+    totalPages,
+    localizaciones,
+    categorias,
+    proveedores,
+    query: req.query,
+    errors: errors.array(),
+    returnTo: req.query.returnTo, // Para botón Volver
+    viewClass: 'view-bajo-stock'
+  });
 };
 
 // Detalle de producto

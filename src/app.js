@@ -24,8 +24,7 @@ const requireRole = require('./middlewares/requireRole'); // Middleware que limi
 
 const authRoutes = require('./routes/auth.routes');               // Conjunto de rutas de autenticación
 const panelRoutes = require('./routes/panel.routes');             // Conjunto de rutas del panel de inventario
-const productosRoutes = require('./routes/productos.routes');     // Conjunto de rutas CRUD de productos
-const bajoStockRoutes = require('./routes/bajo-stock.routes');    // Conjunto de rutas de productos con bajo stock
+const productosRoutes = require('./routes/productos.routes');     // Rutas de productos y bajo stock
 const categoriasRoutes = require('./routes/categorias.routes');   // Conjunto de rutas CRUD de categorías
 const proveedoresRoutes = require('./routes/proveedores.routes'); // Conjunto de rutas CRUD de proveedores
 const localizacionesRoutes = require('./routes/localizaciones.routes'); // Conjunto de rutas CRUD de localizaciones
@@ -43,7 +42,9 @@ app.set('layout', 'layouts/layout');             // Layout por defecto a utiliza
 
 app.use(express.urlencoded({ extended: false })); // Parseo de formularios (application/x-www-form-urlencoded)
 
-app.use(express.static(path.join(__dirname, 'public'))); // Servir archivos estáticos como /resources
+// Servimos archivos estáticos (CSS, JS, imágenes) bajo la URL pública /resources.
+// Esto permite referenciar /resources/uploads/... en las vistas sin exponer el árbol completo.
+app.use('/resources', express.static(path.join(__dirname, 'public')));
 
 /*
  * Por qué usamos express-session@^1.18.0:
@@ -102,8 +103,10 @@ app.get('/db-health', async (req, res) => {       // Verifica conexión con la b
 
 app.use('/', authRoutes);                         // Monta rutas de login/logout
 app.use('/panel', requireAuth, panelRoutes);      // Panel de inventario con métricas
-app.use('/productos', requireAuth, productosRoutes);       // CRUD de productos (protección por login)
-app.use('/productos/bajo-stock', requireAuth, bajoStockRoutes); // Listado de productos con bajo stock
+// Rutas de productos (CRUD completo)
+app.use('/productos', productosRoutes.productosRouter);
+// Listado específico de productos con stock bajo
+app.use('/bajo-stock', productosRoutes.bajoStockRouter);
 app.use('/categorias', requireAuth, categoriasRoutes);    // CRUD de categorías (protección por login)
 app.use('/proveedores', requireAuth, proveedoresRoutes);  // CRUD de proveedores (protección por login)
 app.use('/localizaciones', requireAuth, localizacionesRoutes); // CRUD de localizaciones (protección por login)
