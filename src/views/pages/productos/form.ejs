@@ -34,10 +34,12 @@
     <label class="form-label">Observaciones</label>
     <textarea name="observaciones" class="form-control" maxlength="1000"><%= oldInput?.observaciones || producto?.observaciones || '' %></textarea>
   </div>
+  <%# Campo de imagen (opcional, 3MB, valida formatos) %>
   <div class="mb-3">
     <label class="form-label">Imagen</label>
-    <input type="file" name="imagen" class="form-control" accept=".jpg,.jpeg,.png,.webp">
-    <% if (producto?.imageUrl) { %><div class="form-text">Se reemplazará si subes otra</div><% } %>
+    <input type="file" name="imagen" accept=".jpg,.jpeg,.png,.webp" class="form-control">
+    <small class="text-muted">Opcional. Máx 3MB. Formatos: JPG, PNG o WEBP.</small>
+    <% if (producto?.imageUrl) { %><div class="form-text">Se reemplazará si subes otra.</div><% } %>
   </div>
   <div class="mb-3">
     <label class="form-label">Localización</label>

@@ -86,12 +86,12 @@ const mkFilter = (inputSelector, gridSelector) => {
 mkFilter('[data-filter="categorias"]',  '[data-options="categorias"]');
 mkFilter('[data-filter="proveedores"]', '[data-options="proveedores"]');
 
-/* Toggle mostrar/ocultar contraseña.
-   Propósito: mejorar accesibilidad al permitir ver la contraseña.
-   Entradas: botones con data-toggle="password" y data-target.
-   Salidas: alterna type, icono, aria-pressed y aria-label.
-   Dependencias: DOM nativo. */
-document.querySelectorAll('[data-toggle="password"]').forEach(btn => {
+// [auth] Toggle mostrar/ocultar contraseña
+// Propósito: alternar visibilidad del campo password de forma accesible.
+// Entradas: botones data-toggle="password" con data-target.
+// Salidas: cambia type, icono e indicadores ARIA.
+// Errores: ignora si no existe el input indicado.
+document.querySelectorAll('[data-toggle="password"]').forEach((btn) => {
   const input = document.querySelector(btn.dataset.target);
   if (!input) return;
   btn.addEventListener('click', () => {

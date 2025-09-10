@@ -1,6 +1,6 @@
-<%# Detalle de producto con imagen opcional %>
+<%# Detalle de producto; muestra imagen o placeholder elegante %>
 <div class="row">
-  <div class="col-md-8">
+  <div class="col-md-8"><%# Columna izquierda: texto %>
     <div class="d-flex align-items-center gap-2 mb-3">
       <h1 class="mb-0"><%= producto.nombre %></h1>
       <% if (isBajoStock) { %><span class="badge badge-bajo-stock">Bajo stock</span><% } %>
@@ -20,10 +20,14 @@
     <% } %>
     <a href="<%= returnTo || '/productos' %>" class="btn btn-secondary">Volver</a>
   </div>
-  <% if (imageUrl) { %>
-    <div class="col-md-4">
-      <img src="<%= imageUrl %>" alt="Imagen del producto" class="img-fluid">
-    </div>
-  <% } %>
+  <div class="col-md-4"><%# Columna derecha: imagen o placeholder %>
+    <% if (imageUrl) { %>
+      <img src="<%= imageUrl %>" alt="Imagen de <%= producto.nombre %>" class="img-fluid rounded shadow-sm">
+    <% } else { %>
+      <div class="border rounded d-flex align-items-center justify-content-center p-4 text-muted" style="min-height:220px">
+        <i class="bx bx-image-alt fs-1 me-2" aria-hidden="true"></i> <span>Sin imagen</span>
+      </div>
+    <% } %>
+  </div>
 </div>
 <!-- [checklist] Requisito implementado | Validación aplicada | SQL parametrizado (si aplica) | Comentarios modo curso | Sin código muerto -->

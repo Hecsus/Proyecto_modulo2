@@ -184,7 +184,8 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - [ ] Auditoría de producción sin vulnerabilidades críticas.
 
 ## Pruebas manuales sugeridas
-- `npm install`
+- `npm install` (sin avisos de Multer 1.x)
+- `npm ls multer` → muestra versión ^2.x
 - `npm start`
 - Abrir [http://localhost:3000/](http://localhost:3000/) → redirige a `/login` si no hay sesión.
 - Abrir [http://localhost:3000/login](http://localhost:3000/login) y probar credenciales válidas/invalidas.
@@ -207,9 +208,11 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - Rate limit login:
   - Probar 5 veces con credenciales incorrectas → redirige a `/auth/locked`. Esperar 10 min o reiniciar para volver a intentar (nota: in-memory).
 - Imágenes de producto:
-  - Crear producto sin imagen → detalle no muestra imagen.
-  - Editar y subir imagen .jpg → detalle muestra imagen a la derecha.
-  - Reemplazar imagen subiendo otra → se actualiza.
+  - Crear producto sin imagen → detalle muestra placeholder "Sin imagen".
+  - Editar y subir imagen .jpg → detalle muestra la imagen a la derecha.
+  - Sustituir imagen con .png → se actualiza y elimina la extensión anterior.
+- En login, el botón ver/ocultar alterna correctamente y cambia icono/aria.
+- Navegación returnTo sigue funcionando tras crear/editar/eliminar.
 ## Troubleshooting
 - **DB access denied**: revisa credenciales y privilegios MySQL.
 - **Módulos EJS/layouts no encontrados**: ejecuta `npm install`.
@@ -220,6 +223,11 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-10 19:00] – Subida segura y detalle de imágenes
+- Actualizado Multer a 2.x (subida segura con validación y límite 3MB)
+- Imágenes de producto: guardar como <id>.<ext> y mostrar en detalle
+- Placeholder elegante cuando no hay imagen
+- Limpieza de JS muerto en `main.js`
 ## [2025-09-10 18:30] – Navegación returnTo, toggle contraseña y seguridad
 - Navegación returnTo para conservar paginación/filtros
 - Login: toggle ver/ocultar contraseña arreglado

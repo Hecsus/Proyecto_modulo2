@@ -1,18 +1,8 @@
 const pool = require('../config/db');
 const { validationResult, matchedData } = require('express-validator');
 const { addNumericFilter } = require('../utils/sql'); // Helper para construir comparaciones numéricas seguras
-const path = require('path');
-const fs = require('fs');
-
-// Directorio de imágenes de productos
-const UPLOAD_DIR = path.join(__dirname, '../public/uploads/products');
-const findImagePath = id => {
-  for (const ext of ['.jpg', '.jpeg', '.png', '.webp']) {
-    const file = path.join(UPLOAD_DIR, `${id}${ext}`);
-    if (fs.existsSync(file)) return file;
-  }
-  return null;
-};
+// Utilidades de subida y acceso a imágenes
+const { moveToProductImage, getProductImageUrl } = require('../utils/upload');
 
 // Listar productos con filtros, ordenación y paginación
 exports.list = async (req, res) => {
@@ -140,8 +130,8 @@ exports.form = async (req, res) => {
       producto.categoriaIds = pc.map(r => r.categoria_id); // IDs de categorías actuales
       const [pp] = await pool.query('SELECT proveedor_id FROM producto_proveedor WHERE producto_id=?', [req.params.id]);
       producto.proveedorIds = pp.map(r => r.proveedor_id); // IDs de proveedores actuales
-      const img = findImagePath(producto.id);
-      producto.imageUrl = img ? `/resources/uploads/products/${path.basename(img)}` : null;
+      // Imagen existente: derivar URL pública si el archivo está presente
+      producto.imageUrl = getProductImageUrl(producto.id);
     }
   }
   const title = req.params.id ? 'Editar producto' : 'Nuevo producto';
@@ -149,6 +139,12 @@ exports.form = async (req, res) => {
 };
 
 // Crear producto
+// Crear producto
+// Propósito: inserta producto y asociaciones, opcionalmente guarda imagen.
+// Entradas: campos del formulario, req.file (imagen opcional), returnTo.
+// Salidas: redirige a listado o returnTo con mensaje flash.
+// Validación: usa express-validator; si falla, re-renderiza con errores.
+// Errores: rollback de transacción y despliegue de mensaje.
 exports.create = async (req, res) => {
   const errors = validationResult(req);
   const [categorias] = await pool.query('SELECT * FROM categorias');
@@ -170,15 +166,8 @@ exports.create = async (req, res) => {
       [nombre, descripcion, precio, costo, stock, stock_minimo, observaciones, localizacion_id]
     );
     const prodId = r.insertId;
-    if (req.file) {
-      for (const ext of ['.jpg', '.jpeg', '.png', '.webp']) {
-        const existing = path.join(UPLOAD_DIR, `${prodId}${ext}`);
-        if (fs.existsSync(existing)) fs.unlinkSync(existing);
-      }
-      const ext = path.extname(req.file.originalname).toLowerCase();
-      const dest = path.join(UPLOAD_DIR, `${prodId}${ext}`);
-      fs.renameSync(req.file.path, dest);
-    }
+    // Si se subió imagen, moverla al destino final con nombre <id>.<ext>
+    if (req.file) moveToProductImage(req.file, prodId);
 
     for (const cid of categoriasArr) {
       await conn.query('INSERT INTO producto_categoria (producto_id, categoria_id) VALUES (?,?)', [prodId, cid]);
@@ -199,6 +188,12 @@ exports.create = async (req, res) => {
 };
 
 // Editar producto
+// Editar producto
+// Propósito: actualiza datos y asociaciones; reemplaza imagen si se sube otra.
+// Entradas: id en params, campos del formulario, req.file opcional, returnTo.
+// Salidas: redirige a listado o returnTo con mensaje flash.
+// Validación: express-validator; en error se muestran mensajes.
+// Errores: rollback de transacción y re-render con datos actuales.
 exports.update = async (req, res) => {
   const errors = validationResult(req);
   const id = req.params.id;
@@ -227,15 +222,8 @@ exports.update = async (req, res) => {
       await conn.query('INSERT INTO producto_proveedor (producto_id, proveedor_id) VALUES (?,?)', [id, pid]);
     }
     await conn.commit();
-    if (req.file) {
-      for (const ext of ['.jpg', '.jpeg', '.png', '.webp']) {
-        const existing = path.join(UPLOAD_DIR, `${id}${ext}`);
-        if (fs.existsSync(existing)) fs.unlinkSync(existing);
-      }
-      const ext = path.extname(req.file.originalname).toLowerCase();
-      const dest = path.join(UPLOAD_DIR, `${id}${ext}`);
-      fs.renameSync(req.file.path, dest);
-    }
+    // Si hay archivo nuevo, moverlo y limpiar otras extensiones
+    if (req.file) moveToProductImage(req.file, id);
     req.session.flash = { type: 'success', message: 'Producto actualizado.' };
     res.redirect(returnTo || '/productos');
   } catch (e) {
@@ -255,10 +243,10 @@ exports.remove = async (req, res) => {
 };
 
 // Detalle de producto
-// Propósito: mostrar ficha de producto con categorías/proveedores y estado de stock
-// Entradas: req.params.id (ID numérico del producto)
-// Salidas: renderiza vista de detalle con producto y bandera isBajoStock
-// Dependencias: pool (MySQL), tablas productos, categorias, proveedores, localizaciones
+// Propósito: mostrar ficha con relaciones, stock y posible imagen.
+// Entradas: req.params.id (numérico), query.returnTo.
+// Salidas: renderiza vista detalle con imageUrl calculada.
+// Dependencias: pool (MySQL), util getProductImageUrl.
 exports.detail = async (req, res) => {
   const id = req.params.id;
   const [rows] = await pool.query(
@@ -278,8 +266,8 @@ exports.detail = async (req, res) => {
   producto.categorias = cats;
   producto.proveedores = provs;
   const isBajoStock = producto.stock < producto.stock_minimo; // Calcula si está por debajo del mínimo
-  const img = findImagePath(id);
-  const imageUrl = img ? `/resources/uploads/products/${path.basename(img)}` : null;
+  // URL pública de imagen (o null si no hay)
+  const imageUrl = getProductImageUrl(id);
   res.render('pages/productos/detail', {
     title: 'Detalle de producto',
     producto,
