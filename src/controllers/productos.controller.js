@@ -3,6 +3,7 @@ const { validationResult, matchedData } = require('express-validator');
 const { addNumericFilter } = require('../utils/sql'); // Helper para construir comparaciones numéricas seguras
 // Utilidades de subida y acceso a imágenes
 const { moveToProductImage, getProductImageUrl } = require('../utils/upload');
+const { validateReturnTo } = require('../utils/returnTo'); // Sanitiza rutas de retorno para evitar redirecciones abiertas
 
 // Listar productos con filtros, ordenación y paginación
 exports.list = async (req, res) => {
@@ -116,6 +117,118 @@ exports.list = async (req, res) => {
   });
 };
 
+// Listado de productos con stock por debajo o igual al mínimo
+// Entradas: filtros opcionales en query string y parámetro returnTo para el botón "Volver".
+// Salidas: renderiza tabla paginada de productos en bajo stock.
+// Seguridad: returnTo sanitizado para evitar redirecciones abiertas.
+exports.bajoStock = async (req, res) => {
+  const errors = validationResult(req);                    // Validación de query params
+  const data = matchedData(req, { locations: ['query'] }); // Datos saneados
+
+  const page = parseInt(req.query.page) || 1; // Página actual
+  const limit = 10;                           // Elementos por página
+  const offset = (page - 1) * limit;          // Desplazamiento
+
+  const SORTABLE = {                          // Columnas permitidas para ordenar
+    id: 'p.id',
+    nombre: 'p.nombre',
+    precio: 'p.precio',
+    costo: 'p.costo',
+    stock: 'p.stock',
+    stock_minimo: 'p.stock_minimo',
+    localizacion: 'l.nombre'
+  };
+  const sortCol = SORTABLE[data.sortBy] || 'p.id';
+  const sortDirSql = (data.sortDir || 'asc').toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+
+  const joins = [];
+  const where = ['p.stock <= p.stock_minimo']; // Filtro fijo de bajo stock
+  const params = [];
+
+  if (data.qName) {
+    where.push('p.nombre LIKE ?');
+    params.push(`%${data.qName}%`);
+  }
+  addNumericFilter(where, params, 'p.precio', data.price, data.priceOp);
+  addNumericFilter(where, params, 'p.stock', data.stock, data.stockOp);
+  addNumericFilter(where, params, 'p.stock_minimo', data.min, data.minOp);
+  if (data.localizacionId) {
+    where.push('p.localizacion_id = ?');
+    params.push(data.localizacionId);
+  }
+  if (data.categoriaId) {
+    joins.push('JOIN producto_categoria pc ON pc.producto_id = p.id');
+    where.push('pc.categoria_id = ?');
+    params.push(data.categoriaId);
+  }
+  if (data.proveedorId) {
+    joins.push('JOIN producto_proveedor pp ON pp.producto_id = p.id');
+    where.push('pp.proveedor_id = ?');
+    params.push(data.proveedorId);
+  }
+
+  const whereSql = 'WHERE ' + where.join(' AND ');
+  const joinSql = joins.join(' ');
+  const baseSql = `FROM productos p LEFT JOIN localizaciones l ON p.localizacion_id = l.id ${joinSql} ${whereSql}`;
+
+  const [rows] = await pool.query(
+    `SELECT DISTINCT p.*, l.id AS localizacion_id, l.nombre AS localizacion ${baseSql} ORDER BY ${sortCol} ${sortDirSql} LIMIT ? OFFSET ?`,
+    [...params, limit, offset]
+  );
+
+  // Enlaza categorías y proveedores para cada producto
+  const ids = rows.map(r => r.id);
+  const catsByProd = {};
+  const provsByProd = {};
+  if (ids.length) {
+    const [catRows] = await pool.query(
+      'SELECT pc.producto_id, c.id, c.nombre FROM producto_categoria pc JOIN categorias c ON c.id = pc.categoria_id WHERE pc.producto_id IN (?)',
+      [ids]
+    );
+    catRows.forEach(r => {
+      (catsByProd[r.producto_id] ||= []).push({ id: r.id, nombre: r.nombre });
+    });
+    const [provRows] = await pool.query(
+      'SELECT pp.producto_id, pr.id, pr.nombre FROM producto_proveedor pp JOIN proveedores pr ON pr.id = pp.proveedor_id WHERE pp.producto_id IN (?)',
+      [ids]
+    );
+    provRows.forEach(r => {
+      (provsByProd[r.producto_id] ||= []).push({ id: r.id, nombre: r.nombre });
+    });
+  }
+  rows.forEach(p => {
+    p.categorias = catsByProd[p.id] || [];
+    p.proveedores = provsByProd[p.id] || [];
+  });
+
+  const [countRows] = await pool.query(
+    `SELECT COUNT(DISTINCT p.id) AS total ${baseSql}`,
+    params
+  );
+  const totalPages = Math.ceil(countRows[0].total / limit);
+
+  const [localizaciones] = await pool.query('SELECT id, nombre FROM localizaciones');
+  const [categorias] = await pool.query('SELECT id, nombre FROM categorias');
+  const [proveedores] = await pool.query('SELECT id, nombre FROM proveedores');
+
+  const returnTo = validateReturnTo(req.query.returnTo || '/productos');
+
+  res.render('pages/productos/bajoStock', {
+    title: 'Bajo stock',           // Encabezado de la vista
+    basePath: '/bajo-stock',       // Ruta base para paginación y limpiar filtros
+    productos: rows,
+    page,
+    totalPages,
+    localizaciones,
+    categorias,
+    proveedores,
+    query: req.query,
+    errors: errors.array(),
+    returnTo,
+    viewClass: 'view-productos'
+  });
+};
+
 // Mostrar formulario de creación/edición
 exports.form = async (req, res) => {
   const [categorias] = await pool.query('SELECT * FROM categorias');
@@ -138,7 +251,6 @@ exports.form = async (req, res) => {
   res.render('pages/productos/form', { title, producto, categorias, proveedores, localizaciones, returnTo: req.query.returnTo, errors: [], oldInput: null, viewClass: 'view-productos' });
 };
 
-// Crear producto
 // Crear producto
 // Propósito: inserta producto y asociaciones, opcionalmente guarda imagen.
 // Entradas: campos del formulario, req.file (imagen opcional), returnTo.
@@ -178,7 +290,7 @@ exports.create = async (req, res) => {
 
     await conn.commit();
     req.session.flash = { type: 'success', message: 'Producto creado con éxito.' };
-    res.redirect(returnTo || '/productos');
+    res.redirect(validateReturnTo(returnTo));
   } catch (e) {
     await conn.rollback();
     res.render('pages/productos/form', { title: 'Nuevo producto', producto: null, categorias, proveedores, localizaciones, returnTo: req.body.returnTo, errors: [{ msg: e.message }], oldInput: req.body, viewClass: 'view-productos' });
@@ -187,7 +299,6 @@ exports.create = async (req, res) => {
   }
 };
 
-// Editar producto
 // Editar producto
 // Propósito: actualiza datos y asociaciones; reemplaza imagen si se sube otra.
 // Entradas: id en params, campos del formulario, req.file opcional, returnTo.
@@ -225,7 +336,7 @@ exports.update = async (req, res) => {
     // Si hay archivo nuevo, moverlo y limpiar otras extensiones
     if (req.file) moveToProductImage(req.file, id);
     req.session.flash = { type: 'success', message: 'Producto actualizado.' };
-    res.redirect(returnTo || '/productos');
+    res.redirect(validateReturnTo(returnTo));
   } catch (e) {
     await conn.rollback();
     const [rows] = await pool.query('SELECT * FROM productos WHERE id=?', [id]);
@@ -237,9 +348,9 @@ exports.update = async (req, res) => {
 
 // Eliminar producto
 exports.remove = async (req, res) => {
-  const { returnTo } = req.body;
+  const { returnTo } = req.body;                                  // Ruta a donde volver tras eliminar
   await pool.query('DELETE FROM productos WHERE id = ?', [req.params.id]);
-  res.redirect(returnTo || '/productos');
+  res.redirect(validateReturnTo(returnTo));                       // Redirige solo a rutas internas
 };
 
 // Detalle de producto
@@ -277,4 +388,3 @@ exports.detail = async (req, res) => {
     viewClass: 'view-productos'
   });
 };
-// [checklist] Requisito implementado | Validación aplicada | SQL parametrizado (si aplica) | Comentarios modo curso | Sin código muerto

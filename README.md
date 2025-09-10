@@ -45,7 +45,7 @@ Aplicación de gestión de inventario pensada para prácticas del módulo 2. Inc
 ```
 
 ## Convenciones
-- Rutas: **kebab-case** (`/productos/bajo-stock`)
+- Rutas: **kebab-case** (`/bajo-stock`)
 - Controladores: **camelCase**
 - Vistas: EJS bajo `layouts/`, `partials/` y `pages/`
 - Archivos estáticos servidos desde `/resources` (`src/public`)
@@ -90,7 +90,7 @@ DB_NAME=inventario
 - `/login`
 - `/health`
 - `/productos`
-- `/productos/bajo-stock`
+- `/bajo-stock`
 - `/db-health`
 - `/resources` para archivos estáticos
 
@@ -178,7 +178,7 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - [ ] GET `/` redirige a `/panel` cuando hay sesión.
 - [ ] GET `/login` responde 200 y valida con bcrypt.
 - [ ] GET `/health` responde `{status:"ok"}`.
-- [ ] Tarjeta “Bajo stock” en el panel lleva a `/productos/bajo-stock`.
+- [ ] Tarjeta “Bajo stock” en el panel lleva a `/bajo-stock`.
 - [ ] CRUDs principales operan correctamente (rutas protegidas por rol).
 - [ ] Sin referencias a `nodemon` ni `uid2`.
 - [ ] Auditoría de producción sin vulnerabilidades críticas.
@@ -191,8 +191,11 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - Abrir [http://localhost:3000/login](http://localhost:3000/login) y probar credenciales válidas/invalidas.
 - Abrir [http://localhost:3000/health](http://localhost:3000/health) → `{status:"ok"}`.
 - Desde el panel, pulsar tarjeta **Productos** → `/productos`.
-- Desde el panel, pulsar tarjeta **Bajo stock** → `/productos/bajo-stock` (lista filtrada).
-- En `/productos/bajo-stock` verificar listado con `stock < stock_minimo` y navegación con `returnTo` en detalles.
+- Desde el panel, pulsar tarjeta **Bajo stock** → `/bajo-stock` (lista filtrada).
+- En `/bajo-stock` verificar listado con `stock < stock_minimo` y navegación con `returnTo` en detalles.
+- Crear producto con imagen y comprobar que se muestra en detalle.
+- Intentar returnTo externo → se ignora y redirige a `/productos`.
+- Acceder a Bajo Stock desde barra y desde panel → lista productos correctos.
 - Confirmar que solo administradores ven botones de crear/editar/eliminar.
  - Login: forzar error y verificar que el email persiste, la contraseña queda vacía y el toggle funciona.
  - Crear producto con dos categorías y dos proveedores incluyendo observaciones; comprobar en detalle y listado.
@@ -223,6 +226,10 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-10 21:00] – Ajustes de imágenes y bajo stock
+- Corregida ruta de imágenes de producto para que se muestren desde /resources/uploads/products
+- Validación de returnTo para evitar redirecciones externas
+- Restaurada ruta y vista de Bajo Stock
 ## [2025-09-10 19:00] – Subida segura y detalle de imágenes
 - Actualizado Multer a 2.x (subida segura con validación y límite 3MB)
 - Imágenes de producto: guardar como <id>.<ext> y mostrar en detalle
@@ -246,7 +253,7 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - Cambio de contraseña con doble validación, confirmación y toggle.
 - Limpieza de código y comentarios añadidos; SQL parametrizado y validaciones reforzadas.
 ## [2025-09-10 12:00] – Seguridad reforzada y bajo stock integrado
-- Tarjeta “Bajo stock” del panel enlaza a `/productos/bajo-stock`.
+- Tarjeta “Bajo stock” del panel enlaza a `/bajo-stock`.
 - Sesiones con cookies seguras y variables de entorno obligatorias.
 - Rutas de escritura protegidas con `requireRole('admin')` y enlaces ocultos según rol.
 - Documentación y guía de aprendizaje actualizadas.

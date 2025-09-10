@@ -1,5 +1,6 @@
-<%# Listado de productos con bajo stock. Columna "Procedencia" con popover; sin formas ni leyenda %>
+<%# Listado de productos con stock <= mínimo. Similar a list.ejs pero filtrado %>
 <h1>Bajo stock</h1>
+<a href="<%= returnTo %>" class="btn btn-secondary mb-3">Volver</a>
 <button class="btn btn-outline-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#searchBox">Buscar</button>
 <div id="searchBox" class="collapse"><!-- Collapse cerrado por defecto -->
   <% if (errors && errors.length) { %>
