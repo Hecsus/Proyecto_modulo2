@@ -14,7 +14,7 @@ const validateReturnTo = require('../utils/returnTo');      // Evita redireccion
 exports.showLogin = (req, res) => {
   // Sanitizamos returnTo sólo si viene definido en la query
   const returnTo = req.query.returnTo ? validateReturnTo(req.query.returnTo) : '';
-  res.render('pages/auth/login', { title: 'Login', errors: null, oldInput: {}, returnTo, viewClass: '' });
+  res.render('pages/auth/login', { title: 'Login', errors: null, oldInput: {}, returnTo, viewClass: '', hideChrome: true });
 };
 
 /**
@@ -34,7 +34,8 @@ exports.login = async (req, res) => {
       errors: errors.mapped?.() || null,
       oldInput: { email },                        // No reenviamos la contraseña
       returnTo: safeReturn,
-      viewClass: ''
+      viewClass: '',
+      hideChrome: true
     });
   }
   try {
@@ -48,7 +49,8 @@ exports.login = async (req, res) => {
         errors: { auth: { msg: 'Credenciales inválidas' } },
         oldInput: { email },
         returnTo: safeReturn,
-        viewClass: ''
+        viewClass: '',
+        hideChrome: true
       });
     }
     const user = rows[0];
@@ -59,7 +61,8 @@ exports.login = async (req, res) => {
         errors: { auth: { msg: 'Credenciales inválidas' } },
         oldInput: { email },
         returnTo: safeReturn,
-        viewClass: ''
+        viewClass: '',
+        hideChrome: true
       });
     }
     req.session.user = { id: user.id, nombre: user.nombre, rol: user.rol_nombre }; // Guarda datos mínimos en sesión
@@ -71,7 +74,8 @@ exports.login = async (req, res) => {
       errors: { server: { msg: 'Error inesperado' } },
       oldInput: { email },
       returnTo: safeReturn,
-      viewClass: ''
+      viewClass: '',
+      hideChrome: true
     });
   }
 };
