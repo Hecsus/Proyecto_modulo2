@@ -99,6 +99,16 @@ DB_NAME=inventario
 - Formatos permitidos: `.jpg`, `.jpeg`, `.png`, `.webp`
 - Límite: un archivo opcional por producto; se sobrescribe al editar
 
+## Branding / Logo
+- Logo SVG ubicado en `/resources/images/logo.svg`.
+- Reemplázalo por uno propio usando el mismo nombre o ajustando `views/layouts/layout.ejs`.
+- El mismo archivo se usa como favicon mediante `<link rel="icon" href="/resources/images/logo.svg">`.
+
+## QR en detalle de producto
+- Cada detalle genera un QR con: id, nombre, precio, costo, stock, stock mínimo, categorías, proveedores, localización y URL.
+- Botones para **Imprimir QR** (abre vista A6) y **Descargar QR** en PNG.
+- Solo incluye información pública del inventario; evita datos sensibles.
+
 ## Rate limit de login (desarrollo)
 - 5 intentos fallidos bloquean el login por 10 minutos
 - Contadores en memoria (se reinician al reiniciar el servidor)
@@ -224,6 +234,10 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - Detalle: imagen con borde redondeado y sombra; si no hay imagen, placeholder “Sin imagen”.
 - Bajo stock: vista accesible desde navbar y desde el panel; sin botón “Volver”.
 - Iconos (categorías/proveedores/localizaciones) nunca gigantes; respetan .icon-inline.
+- Navegar por todas las vistas: navbar activo visible y panel con tarjetas uniformes.
+- Productos → Detalle: ver imagen (si existe) y QR a la derecha; imprimir y descargar QR.
+- Abrir `/productos/:id/qr` y pulsar “Imprimir” → formato A6.
+- Reemplazar `logo.svg` y refrescar: se ve el nuevo logo.
 
 ## Troubleshooting
 - **DB access denied**: revisa credenciales y privilegios MySQL.
@@ -235,6 +249,10 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-11 10:00] – Rediseño visual corporativo
+- Rediseño visual corporativo (navbar, panel, tablas, detalle)
+- Logo SVG de ejemplo y favicon
+- QR en Detalle de producto + vista imprimible
 ## [2025-09-10 21:00] – Remix visual consolidado
 - Remix de estilos: navbar con respiración y activo visible; panel con tarjetas uniformes; badge “Bajo stock” restaurada; iconos dimensionados.
 ## [2025-09-10 20:00] – Ajustes de UI
