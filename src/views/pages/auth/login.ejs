@@ -6,8 +6,12 @@
   Validaciones: errores de `express-validator` mostrados en lista.
   Seguridad/UX: persistimos email y ofrecemos botón accesible para mostrar/ocultar contraseña sin repoblarla.
 -->
-<h1>Login</h1>
+<div class="text-center mb-4">
+  <img src="/resources/images/logo.svg" alt="Logo corporativo" class="mb-2" style="height:64px; width:auto;">
+  <h1>Login</h1>
+</div>
 <form action="/auth/login" method="POST" class="col-md-4 mx-auto">
+  <input type="hidden" name="returnTo" value="<%= returnTo || '' %>"><!-- Ruta interna a la que volver tras login -->
   <div class="mb-3">
     <label class="form-label">Email</label>
     <input type="email" name="email" value="<%= (oldInput && oldInput.email) || '' %>" class="form-control" required>

@@ -7,7 +7,7 @@
     <p><strong>Costo:</strong> <%= producto.costo %></p>
     <p><strong>Stock:</strong>
       <span><%= producto.stock %></span>
-      <% if (isBajoStock) { %><span class="badge badge-lowstock ms-2">Bajo stock</span><% } %>
+      <% if (isBajoStock) { %><i class="bx bx-error text-danger ms-2" aria-label="Bajo stock" title="Bajo stock"></i><% } %>
     </p>
     <p><strong>Stock mín.:</strong> <%= producto.stock_minimo %></p>
     <% const cats = producto.categorias.length ? producto.categorias.map(c=>c.nombre).join(', ') : '—';

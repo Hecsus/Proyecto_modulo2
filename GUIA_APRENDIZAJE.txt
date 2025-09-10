@@ -117,4 +117,12 @@ Con esta guía deberías seguir el flujo de ruta → validador → controlador �
 - Un botón accesible permite mostrar u ocultar la contraseña sin recargar la página.
 - Se eliminó la sección "Procedencia" del detalle de producto porque ya se muestran categorías y proveedores directamente.
 - Comentarios clave están repartidos en `routes/`, `controllers/`, `validators/`, `middlewares/`, `views/` y `public/` para facilitar el aprendizaje.
+
+9. Diseño corporativo, logo y códigos QR
+---------------------------------------
+- `public/css/styles.css` define colores y márgenes propios sobre Bootstrap 5.
+- Navbar y login muestran un logo de ejemplo ubicado en `public/images/logo.svg`; basta sustituir ese archivo para personalizarlo.
+- El detalle de producto genera un **código QR** (librería `qrcode`) con datos básicos. Puede descargarse o imprimirse.
+- Las imágenes de productos se almacenan en `public/uploads/products` y se sirven desde la ruta `/uploads/products/...`.
+- El login limita a 5 intentos fallidos y bloquea el acceso durante 10 minutos.
 # [checklist] guía actualizada
