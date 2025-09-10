@@ -74,13 +74,19 @@ app.use((req, res, next) => {                   // Middleware que gestiona mensa
   next();
 });
 
+app.use((req, res, next) => {                   // Valores por defecto seguros para las vistas
+  res.locals.hideChrome = false;                // Navbar visible salvo que se indique lo contrario
+  res.locals.viewClass = '';                    // Clase CSS opcional para personalizar el <main>
+  res.locals.activePath = req.path;             // Ruta actual para resaltar enlaces activos en la navbar
+  next();                                       // Continúa con el siguiente middleware
+});
+
 app.use((req, res, next) => {                     // Middleware que expone datos de sesión y ruta actual
   res.locals.currentPath = req.path;              // Ruta actual para resaltar enlaces activos
   res.locals.isAuthenticated = !!req.session.user; // Booleano con estado de autenticación
   res.locals.userName = req.session.user ? req.session.user.nombre : null; // Nombre del usuario
   res.locals.userRole = req.session.user ? req.session.user.rol : null;    // Rol del usuario logueado
   res.locals.request = req;                      // Objeto de la petición disponible en las vistas
-  res.locals.viewClass = res.locals.viewClass || ''; // Clase de fondo por vista; cadena vacía por defecto
   next();                                         // Continúa con el siguiente middleware
 });
 

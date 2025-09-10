@@ -16,12 +16,18 @@
     <link rel="stylesheet" href="/resources/css/styles.css"><!-- Estilos propios -->
   </head>
   <body>
-    <% const hideChrome = typeof hideChrome !== 'undefined' ? hideChrome : false; %><!-- Valor por defecto para evitar ReferenceError -->
-    <% if (!hideChrome) { %><%- include('../partials/header') %><div class="navbar-spacer"></div><% } %><!-- Navbar opcional -->
+    <% 
+      // _hideChrome toma el valor desde res.locals.hideChrome si está definido; si no, usa false como seguro
+      var _hideChrome = (typeof hideChrome === 'undefined') ? false : hideChrome; 
+    %>
+    <% if (!_hideChrome) { %>
+      <%- include('../partials/header') %><!-- Navbar superior reutilizable -->
+      <div class="navbar-spacer"></div><!-- Espaciador para evitar solapamiento con contenido -->
+    <% } %>
     <main class="container <%= (typeof viewClass !== 'undefined' && viewClass) ? viewClass : '' %>"><!-- Contenido principal -->
       <%- body %>
     </main>
-    <% if (!hideChrome) { %><%- include('../partials/footer') %><% } %><!-- Pie opcional -->
+    <% if (!_hideChrome) { %><%- include('../partials/footer') %><% } %><!-- Pie opcional -->
     <% if (flash) { %><!-- Mensajes flash con SweetAlert2 -->
       <script>
         Swal.fire({

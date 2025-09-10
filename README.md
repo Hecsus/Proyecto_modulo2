@@ -253,6 +253,12 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - Abrir `/productos/:id/qr` y pulsar “Imprimir” → formato A6.
 - Reemplazar `logo.svg` y refrescar: se ve el nuevo logo.
 
+### Pruebas manuales básicas
+- Abrir `/login` (con hideChrome: true) → renderiza sin error.
+- Abrir `/productos` y `/bajo-stock` → navbar ok y enlace activo visible.
+- Ver detalle de producto → imagen visible, QR visible, sin errores.
+- Imprimir QR (vista específica) → sin navbar (gracias a hideChrome).
+
 ## Troubleshooting
 - **DB access denied**: revisa credenciales y privilegios MySQL.
 - **Módulos EJS/layouts no encontrados**: ejecuta `npm install`.
@@ -263,6 +269,10 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-11 12:30] – Ajustes de layout y navegación
+- Corrección: default seguro de hideChrome en res.locals y eliminación de TDZ en layout.ejs.
+- Marcado de enlace activo con activePath en header.
+- Revisión de regresiones visuales sin cambios funcionales.
 ## [2025-09-11 10:00] – Rediseño visual corporativo
 - Rediseño visual corporativo (navbar, panel, tablas, detalle)
 - Logo SVG de ejemplo y favicon
