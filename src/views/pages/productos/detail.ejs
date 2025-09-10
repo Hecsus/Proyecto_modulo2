@@ -1,0 +1,29 @@
+<%# Detalle de producto con imagen opcional %>
+<div class="row">
+  <div class="col-md-8">
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <h1 class="mb-0"><%= producto.nombre %></h1>
+      <% if (isBajoStock) { %><span class="badge badge-bajo-stock">Bajo stock</span><% } %>
+    </div>
+    <p><strong>Descripción:</strong> <%= producto.descripcion || '-' %></p>
+    <p><strong>Precio:</strong> <%= producto.precio %></p>
+    <p><strong>Costo:</strong> <%= producto.costo %></p>
+    <p><strong>Stock:</strong> <%= producto.stock %></p>
+    <p><strong>Stock mín.:</strong> <%= producto.stock_minimo %></p>
+    <% const cats = producto.categorias.length ? producto.categorias.map(c=>c.nombre).join(', ') : '—';
+       const provs = producto.proveedores.length ? producto.proveedores.map(p=>p.nombre).join(', ') : '—'; %>
+    <p><strong>Categorías:</strong> <%= cats %></p>
+    <p><strong>Proveedores:</strong> <%= provs %></p>
+    <p><strong>Localización:</strong> <%= producto.localizacion || '-' %></p>
+    <% if (producto.observaciones) { %>
+      <p><strong>Observaciones:</strong> <%= producto.observaciones %></p>
+    <% } %>
+    <a href="<%= returnTo || '/productos' %>" class="btn btn-secondary">Volver</a>
+  </div>
+  <% if (imageUrl) { %>
+    <div class="col-md-4">
+      <img src="<%= imageUrl %>" alt="Imagen del producto" class="img-fluid">
+    </div>
+  <% } %>
+</div>
+<!-- [checklist] Requisito implementado | Validación aplicada | SQL parametrizado (si aplica) | Comentarios modo curso | Sin código muerto -->
