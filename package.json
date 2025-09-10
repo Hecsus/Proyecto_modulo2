@@ -21,7 +21,8 @@
     "express-session": "^1.18.0",
     "express-validator": "^7.2.1",
     "bcryptjs": "^2.4.3",
-    "multer": "^2.0.0"
+    "multer": "^2.0.0",
+    "qrcode": "^1.5.3"
   },
   "overrides": {
     "debug": "4.3.7",

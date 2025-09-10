@@ -4,6 +4,7 @@ const { addNumericFilter } = require('../utils/sql'); // Helper para construir c
 // Utilidades de subida y acceso a imágenes
 const { moveToProductImage, getProductImageUrl } = require('../utils/upload');
 const validateReturnTo = require('../utils/returnTo'); // Sanitiza returnTo para evitar redirecciones externas
+const { buildProductQR } = require('../utils/qrcode'); // Generación de QR de productos
 
 // Listar productos con filtros, ordenación y paginación
 exports.list = async (req, res) => {
@@ -352,10 +353,10 @@ exports.bajoStock = async (req, res) => {
 };
 
 // Detalle de producto
-// Propósito: mostrar ficha con relaciones, stock y posible imagen.
+// Propósito: mostrar ficha completa con imagen y QR.
 // Entradas: req.params.id (numérico), query.returnTo.
-// Salidas: renderiza vista detalle con imageUrl calculada.
-// Dependencias: pool (MySQL), util getProductImageUrl.
+// Salidas: renderiza vista detalle con imageUrl y qrDataUrl.
+// Seguridad: solo expone datos públicos del inventario.
 exports.detail = async (req, res) => {
   const id = req.params.id;
   const [rows] = await pool.query(
@@ -377,13 +378,51 @@ exports.detail = async (req, res) => {
   const isBajoStock = producto.stock < producto.stock_minimo; // Calcula si está por debajo del mínimo
   // URL pública de imagen (o null si no hay)
   const imageUrl = getProductImageUrl(id);
+  // QR con datos esenciales para etiquetado rápido
+  const urlDetalle = `/productos/${id}`;
+  const qrDataUrl = await buildProductQR({ ...producto, url: urlDetalle });
   res.render('pages/productos/detail', {
     title: 'Detalle de producto',
     producto,
     returnTo: req.query.returnTo,
     imageUrl,
     isBajoStock,
+    qrDataUrl,
     viewClass: 'view-productos'
+  });
+};
+
+// Vista imprimible del QR
+// Propósito: generar un A6 con código QR y datos mínimos.
+// Entradas: req.params.id.
+// Salidas: HTML simple sin navbar ni footer.
+// Seguridad: QR contiene información no sensible del inventario.
+exports.qr = async (req, res) => {
+  const id = req.params.id;
+  const [rows] = await pool.query(
+    `SELECT p.*, l.id AS localizacion_id, l.nombre AS localizacion FROM productos p LEFT JOIN localizaciones l ON p.localizacion_id = l.id WHERE p.id = ?`,
+    [id]
+  );
+  if (!rows.length) return res.redirect('/productos');
+  const producto = rows[0];
+  const [cats] = await pool.query(
+    `SELECT c.* FROM categorias c JOIN producto_categoria pc ON c.id = pc.categoria_id WHERE pc.producto_id = ?`,
+    [id]
+  );
+  const [provs] = await pool.query(
+    `SELECT pr.* FROM proveedores pr JOIN producto_proveedor pp ON pr.id = pp.proveedor_id WHERE pp.producto_id = ?`,
+    [id]
+  );
+  producto.categorias = cats;
+  producto.proveedores = provs;
+  const urlDetalle = `/productos/${id}`;
+  const qrDataUrl = await buildProductQR({ ...producto, url: urlDetalle });
+  res.render('pages/productos/qr', {
+    title: 'QR del producto',
+    producto,
+    qrDataUrl,
+    hideChrome: true,
+    viewClass: 'd-flex justify-content-center align-items-center'
   });
 };
 // [checklist] Requisito implementado | Validación aplicada | SQL parametrizado (si aplica) | Comentarios modo curso | Sin código muerto

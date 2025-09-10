@@ -21,6 +21,8 @@ productosRouter.get('/:id/editar', requireAuth, controller.form);
 productosRouter.post('/:id/editar', requireAuth, upload.single('imagen'), productValidator, controller.update);
 // Eliminar producto
 productosRouter.post('/:id/eliminar', requireAuth, controller.remove);
+// QR imprimible del producto
+productosRouter.get('/:id/qr', requireAuth, controller.qr);
 // Detalle de producto
 productosRouter.get('/:id', requireAuth, controller.detail);
 
