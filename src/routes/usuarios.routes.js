@@ -7,7 +7,13 @@ const requireAuth = require('../middlewares/requireAuth'); // Debe estar autenti
 const requireRole = require('../middlewares/requireRole'); // Solo admin accede
 
 // GET /usuarios - listado de usuarios
-router.get('/', requireAuth, requireRole('admin'), listFilters, controller.list);
+router.get(
+  '/',
+  requireAuth,
+  requireRole('admin'),
+  listFilters,             // Valida filtros (role ∈ {admin, operador}, etc.) y mantiene feedback consistente
+  controller.list
+);
 
 // GET /usuarios/nuevo - formulario de creación
 router.get('/nuevo', requireAuth, requireRole('admin'), controller.form);

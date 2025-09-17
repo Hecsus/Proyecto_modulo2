@@ -208,6 +208,9 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - [ ] Auditoría de producción sin vulnerabilidades críticas.
 
 ## Pruebas manuales sugeridas
+- Abrir `/login`, `/productos`, `/bajo-stock`, `/usuarios` → todas las vistas cargan sin errores de layout ni ReferenceError.
+- En `/usuarios`, aplicar filtro `role` → "admin" y luego "operador" → los listados solo muestran el rol seleccionado.
+- Probar `/usuarios?role=foo` (o usando el formulario) → el validador muestra alerta de filtros inválidos sin romper la página.
 - `npm install` (sin avisos de Multer 1.x)
 - `npm ls multer` → muestra versión ^2.x
 - `npm start`
@@ -269,6 +272,10 @@ Las páginas de detalle incluyen `returnTo` para regresar a la vista previa.
 - **Errores al importar seeds**: asegúrate de que la base existe y de tener permisos.
 
 ## CHANGELOG
+## [2025-09-11 14:45] – Defaults seguros y filtros de usuario efectivos
+- Fix TDZ en layout.ejs usando `_hideChrome` (sin redeclarar).
+- Defaults seguros en `res.locals` (hideChrome, viewClass, activePath).
+- Búsqueda de usuarios: filtro de rol simplificado (admin/operador) y consulta efectiva.
 ## [2025-09-11 12:30] – Ajustes de layout y navegación
 - Corrección: default seguro de hideChrome en res.locals y eliminación de TDZ en layout.ejs.
 - Marcado de enlace activo con activePath en header.

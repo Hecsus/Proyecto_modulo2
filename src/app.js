@@ -74,11 +74,12 @@ app.use((req, res, next) => {                   // Middleware que gestiona mensa
   next();
 });
 
-app.use((req, res, next) => {                   // Valores por defecto seguros para las vistas
-  res.locals.hideChrome = false;                // Navbar visible salvo que se indique lo contrario
-  res.locals.viewClass = '';                    // Clase CSS opcional para personalizar el <main>
-  res.locals.activePath = req.path;             // Ruta actual para resaltar enlaces activos en la navbar
-  next();                                       // Continúa con el siguiente middleware
+app.use((req, res, next) => {                                   // Middleware pedagógico: define defaults sin pisar personalizados
+  res.locals.hideChrome =                                           // Usamos el valor previo si ya es booleano
+    (typeof res.locals.hideChrome === 'boolean') ? res.locals.hideChrome : false; // Caso contrario lo fijamos a false (navbar visible)
+  res.locals.viewClass = res.locals.viewClass || '';                // viewClass vacío evita clases undefined en <main>
+  res.locals.activePath = req.path;                                // Guardamos la ruta actual para resaltar navegación
+  next();                                                           // Continuamos con el flujo de middlewares
 });
 
 app.use((req, res, next) => {                     // Middleware que expone datos de sesión y ruta actual

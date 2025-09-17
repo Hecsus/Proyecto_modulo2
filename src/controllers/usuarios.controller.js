@@ -7,14 +7,12 @@ exports.list = async (req, res) => {
   const errors = validationResult(req);
   const data = matchedData(req, { locations: ['query'] });
 
-  const [roles] = await pool.query('SELECT id, nombre FROM roles');
-
   if (!errors.isEmpty()) {
+    // Caso pedagógico: si la validación falla (p. ej. role=foo) mostramos el listado completo con alerta
     const [rows] = await pool.query('SELECT u.id, u.nombre, u.apellidos, u.email, u.telefono, r.nombre AS rol FROM usuarios u JOIN roles r ON u.rol_id=r.id ORDER BY u.id ASC');
     return res.render('pages/usuarios/list', {
       title: 'Usuarios',
       usuarios: rows,
-      roles,
       errors: errors.array(),
       query: req.query,
       page: 1,
@@ -32,25 +30,19 @@ exports.list = async (req, res) => {
   const sortCol = SORTABLE[data.sortBy] || 'u.id';
   const sortDir = (data.sortDir || 'asc').toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
 
-  const clauses = [];
-  const params = [];
+  const clauses = [];                                // Cláusulas WHERE individuales
+  const params = [];                                 // Valores asociados para las ? (previene inyección)
   if (data.id) { clauses.push('u.id = ?'); params.push(data.id); }
   if (data.nombre) { clauses.push('u.nombre LIKE ?'); params.push(`%${data.nombre}%`); }
   if (data.email) { clauses.push('u.email LIKE ?'); params.push(`%${data.email}%`); }
   if (data.telefono) { clauses.push('u.telefono LIKE ?'); params.push(`%${data.telefono}%`); }
-  if (data.rol) {
-    const rolId = parseInt(data.rol);
-    if (!isNaN(rolId)) {
-      clauses.push('u.rol_id = ?');
-      params.push(rolId);
-    } else {
-      const role = roles.find(r => r.nombre === data.rol);
-      if (role) { clauses.push('u.rol_id = ?'); params.push(role.id); }
-    }
+  if (data.role) {                                      // Filtro específico por nombre de rol (admin/operador)
+    clauses.push('r.nombre = ?');                       // Parametrizamos contra la columna de rol legible
+    params.push(data.role);                             // express-validator garantiza valores seguros
   }
   const whereSql = clauses.length ? 'WHERE ' + clauses.join(' AND ') : '';
 
-  const baseSql = `FROM usuarios u JOIN roles r ON u.rol_id = r.id ${whereSql}`;
+  const baseSql = `FROM usuarios u JOIN roles r ON u.rol_id = r.id ${whereSql}`; // Reutilizamos fragmento para SELECT y COUNT
   const [rows] = await pool.query(
     `SELECT u.id, u.nombre, u.apellidos, u.email, u.telefono, r.nombre AS rol ${baseSql} ORDER BY ${sortCol} ${sortDir} LIMIT ? OFFSET ?`,
     [...params, pageSize, offset]
@@ -64,7 +56,6 @@ exports.list = async (req, res) => {
   res.render('pages/usuarios/list', {
     title: 'Usuarios',
     usuarios: rows,
-    roles,
     errors: [],
     query: req.query,
     page,

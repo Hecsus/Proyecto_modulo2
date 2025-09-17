@@ -51,7 +51,11 @@ const listFilters = [
   query('nombre').optional({ checkFalsy: true }).trim().isLength({ min: 1, max: 100 }),
   query('email').optional({ checkFalsy: true }).trim().isLength({ min: 1, max: 100 }),
   query('telefono').optional({ checkFalsy: true }).trim().isLength({ min: 1, max: 20 }),
-  query('rol').optional({ checkFalsy: true }).trim().isLength({ min: 1, max: 50 }),
+  query('role')
+    .optional({ nullable: true, checkFalsy: true }) // Permite omitir el filtro sin error
+    .trim()                                         // Quita espacios accidentales antes de validar
+    .toLowerCase()                                  // Normaliza mayúsculas/minúsculas
+    .isIn(['admin', 'operador']),                   // Solo roles canónicos del sistema
   query('sortBy').optional({ checkFalsy: true }).isIn(SORT_BY),
   query('sortDir').optional({ checkFalsy: true }).isIn(SORT_DIR),
   query('page').optional({ checkFalsy: true }).isInt({ min: 1 }).toInt(),

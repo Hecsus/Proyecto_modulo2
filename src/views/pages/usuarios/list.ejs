@@ -1,8 +1,10 @@
+<!-- Encabezado de la vista: título y acceso rápido a alta de usuario -->
 <h1>Usuarios</h1>
 <a href="/usuarios/nuevo" class="btn btn-success mb-3">Nuevo</a>
 <% if (message) { %>
   <div class="alert alert-<%= message.type %>"><%= message.text %></div>
 <% } %>
+<!-- Panel de filtros colapsable: evita ruido visual pero mantiene búsqueda avanzada a mano -->
 <button class="btn btn-outline-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#searchBox">Buscar</button>
 <div id="searchBox" class="collapse <%= (Object.keys(query||{}).length ? 'show' : '') %>">
   <% if (errors && errors.length) { %>
@@ -13,7 +15,7 @@
       </ul>
     </div>
   <% } %>
-  <form class="row g-2 mb-3" method="get">
+  <form class="row g-2 mb-3" method="get"><!-- Formulario GET para componer la query string -->
     <div class="col-md-2">
       <input type="number" name="id" class="form-control" placeholder="ID" value="<%= query.id || '' %>">
     </div>
@@ -27,12 +29,10 @@
       <input type="text" name="telefono" class="form-control" placeholder="Teléfono" value="<%= query.telefono || '' %>">
     </div>
     <div class="col-md-2">
-      <select name="rol" class="form-select">
-        <option value="">Rol</option>
-        <% roles.forEach(r => { %>
-          <option value="<%= r.id %>" <%= String(query.rol) === String(r.id) ? 'selected' : '' %>><%= r.nombre %></option>
-          <option value="<%= r.nombre %>" <%= query.rol === r.nombre ? 'selected' : '' %>><%= r.nombre %> (nombre)</option>
-        <% }) %>
+      <select name="role" class="form-select"><!-- Filtro de rol simplificado con valores canónicos -->
+        <option value="">Rol</option><!-- Opción neutra para no filtrar -->
+        <option value="admin" <%= query.role === 'admin' ? 'selected' : '' %>>Admin</option><!-- Solo admins -->
+        <option value="operador" <%= query.role === 'operador' ? 'selected' : '' %>>Operador</option><!-- Solo operadores -->
       </select>
     </div>
     <div class="col-md-2">
@@ -56,6 +56,7 @@
     </div>
   </form>
 </div>
+<!-- Tabla de resultados: muestra usuarios con acciones de mantenimiento -->
 <table class="table table-striped">
   <thead>
     <tr>

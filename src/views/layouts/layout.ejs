@@ -24,7 +24,7 @@
       <%- include('../partials/header') %><!-- Navbar superior reutilizable -->
       <div class="navbar-spacer"></div><!-- Espaciador para evitar solapamiento con contenido -->
     <% } %>
-    <main class="container <%= (typeof viewClass !== 'undefined' && viewClass) ? viewClass : '' %>"><!-- Contenido principal -->
+    <main class="container <%= viewClass %>"><!-- Contenido principal: viewClass ya llega saneado desde res.locals -->
       <%- body %>
     </main>
     <% if (!_hideChrome) { %><%- include('../partials/footer') %><% } %><!-- Pie opcional -->
